@@ -76,29 +76,29 @@ if page == "My Private Journal 📖":
             
             audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
             
-            if audio_source == "App Audio Library (Data Saver)":
+           if audio_source == "App Audio Library (Data Saver)":
                 local_choice = st.selectbox("Choose an audio track:", [
                     "Founder's A Cappella 🎤", 
-                    "Peaceful Rain 🌧️", 
+                    "Peaceful Chirping 🌧️", 
                     "Ocean Waves 🌊", 
                     "Forest Birds 🌲", 
                     "Soft Wind 🍃", 
                     "Zen Flute 🎶"
                 ])
                 
-                # Check your exact file names here!
+                # These must match your NEW filenames in GitHub exactly!
                 if local_choice == "Founder's A Cappella 🎤":
-                    st.audio("ehsaan Mera hoga.mp3") 
-                elif local_choice == "Birds and Waterfall 🌧️":
-                    st.audio("birds-and-waterfall-250309 (1).mp3")
-                elif local_choice == "Waves 🌊":
-                    st.audio("waterside-soft-lake-lite-waves-402561 (1).mp3")
+                    st.audio("ehsaan.mp3") 
+                elif local_choice == "Peaceful Chirping 🌧️":
+                    st.audio("birds.mp3")
+                elif local_choice == "Ocean Waves 🌊":
+                    st.audio("waves.mp3")
                 elif local_choice == "Forest Birds 🌲":
-                    st.audio("birds39-forest-20772 (1).mp3")
+                    st.audio("forest.mp3")
                 elif local_choice == "Soft Wind 🍃":
-                    st.audio("soft-wind-sound-314943 (1).mp3")
+                    st.audio("wind.mp3")
                 elif local_choice == "Zen Flute 🎶":
-                    st.audio("missing-in-wind-japanese-ancient-flute-simulate-wind-sound-166932 (1).mp3")
+                    st.audio("flute.mp3")
                 
                 st.caption("*(Audio-only tracks use significantly less mobile data.)*")
                 
