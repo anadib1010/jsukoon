@@ -27,10 +27,15 @@ def save_journal(user_text, ai_response, hidden_mood):
 # ==========================================
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️"])
+
+# SET YOUR WHATSAPP NUMBER HERE
+MY_NUMBER = "919876543210" # Replace with your real number
+
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
+# Theme CSS
 if theme == "Peaceful 🌿":
     css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; } .stButton>button { background-color: #4A7055 !important; color: white !important; }</style>"""
 elif theme == "Midnight Calm 🌙":
@@ -39,6 +44,19 @@ else:
     css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }</style>"""
 
 st.markdown(css, unsafe_allow_html=True)
+
+# --- FEEDBACK BUTTON IN SIDEBAR ---
+st.sidebar.markdown("---")
+st.sidebar.subheader("💬 Help & Community")
+feedback_msg = urllib.parse.quote("Hi! I have some feedback or a question about the Sukoon app.")
+st.sidebar.markdown(f'''
+    <a href="https://wa.me/{MY_NUMBER}?text={feedback_msg}" target="_blank">
+        <button style="width:100%; border-radius:8px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">
+            Send Feedback / Support
+        </button>
+    </a>
+    ''', unsafe_allow_html=True)
+
 st.sidebar.markdown("---")
 st.sidebar.caption("⚖️ **LEGAL & MEDICAL DISCLAIMER:**")
 st.sidebar.caption("*Sukoon is designed solely for personal mindfulness and aesthetic exploration. It is NOT a medical or psychological tool.*")
@@ -90,22 +108,17 @@ if page == "My Private Journal 📖":
 # ==========================================
 elif page == "The Marketplace 🛍️":
     st.title("The Marketplace")
-    st.write("Connect with us via WhatsApp to purchase these grounding items.")
+    st.write("Connect via WhatsApp to purchase these grounding items.")
     st.write("---")
-
-    # UPDATE THIS TO YOUR ACTUAL WHATSAPP NUMBER
-    MY_NUMBER = "918882850790" 
 
     def display_product(label, img_file, desc):
         st.markdown(f"#### {label}")
         if os.path.exists(img_file): st.image(img_file, use_container_width=True)
         else: st.warning(f"📸 Image '{img_file}' missing.")
         st.write(desc)
-        
-        # Create WhatsApp Link
-        msg = urllib.parse.quote(f"Hi! I'm interested in purchasing the {label} from Sukoon.")
+        msg = urllib.parse.quote(f"Hi! I'm interested in the {label} from Sukoon.")
         wa_url = f"https://wa.me/{MY_NUMBER}?text={msg}"
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding naturally sourced stones.")
