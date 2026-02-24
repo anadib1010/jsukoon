@@ -5,7 +5,7 @@ import os
 import google.generativeai as genai
 
 # ==========================================
-# THE THEME ENGINE (Now with Midnight Calm!)
+# THE THEME ENGINE (Perfected Colors!)
 # ==========================================
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
@@ -24,7 +24,6 @@ elif theme == "Midnight Calm 🌙":
     css = """
     <style>
     .stApp { background-color: #121212; color: #E0E0E0; }
-    /* Upgraded to a soft, peaceful Twilight Blue (#AEC6CF) */
     h1, h2, h3 { color: #AEC6CF !important; font-family: 'Georgia', serif; }
     textarea { background-color: #1E1E1E !important; color: #AEC6CF !important; border: 1px solid #AEC6CF !important; }
     div[data-baseweb="base-input"] { background-color: transparent !important; }
@@ -36,9 +35,10 @@ else: # Psychedelic 🌀
     <style>
     .stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; }
     h1, h2, h3 { color: #FFFFFF !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; }
-    textarea { background-color: rgba(0, 0, 0, 0.6) !important; color: #00ffcc !important; border: 2px solid #ff00cc !important; }
+    /* Upgraded to a deep, dark Psychedelic Indigo-Blue glass box */
+    textarea { background-color: rgba(15, 10, 60, 0.8) !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }
     div[data-baseweb="base-input"] { background-color: transparent !important; }
-    .stButton>button, .stFormSubmitButton>button { background-color: #000000 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}
+    .stButton>button, .stFormSubmitButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}
     </style>
     """
 
