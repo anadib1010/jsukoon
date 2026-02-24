@@ -151,7 +151,7 @@ elif page == "Our Vision 🕊️":
         true luxury is silence and mental clarity. 
         
         Our founder envisioned a space where technology doesn't distract you, 
-         लेकिन (but) actually helps you return to yourself. By combining the ancient 
+        but actually helps you return to yourself. By combining the ancient 
         wisdom of grounding objects with the modern support of empathetic AI, 
         Sukoon is designed to be your pocket-sized retreat.
         """)
