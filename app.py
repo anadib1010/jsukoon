@@ -129,6 +129,6 @@ elif st.session_state.current_page == "Vision":
     st.write("### The Journey")
     st.write("Sukoon is more than an app; it is a commitment to mental clarity.")
     st.markdown("<br>", unsafe_allow_html=True)
-    wa_support = "https://wa.me/919876543210?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
+    wa_support = "https://wa.me/918882850790?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
     v_btn = f'<div style="text-align: center;"><a href="{wa_support}" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; font-size:16px; background-color:{soft_blue}; color:#0A0E0B;">💬 Connect with Founder</button></a></div>'
     st.markdown(v_btn, unsafe_allow_html=True)
