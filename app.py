@@ -43,47 +43,57 @@ st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
-# --- ADVANCED UI FIXES FOR OVERLAPPING ARROWS ---
+# --- THE "DEEP CLEAN" CSS FIX ---
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 
-/* Global Font */
-html, body, [class*="st-"] { 
+/* Apply clean font to everything */
+html, body, [class*="st-"], .stMarkdown, p, div { 
     font-family: 'Inter', sans-serif !important; 
 }
 
-/* Thin Headers */
+/* Thin headers */
 h1, h2, h3 { 
     font-weight: 200 !important; 
     letter-spacing: -1px !important; 
+    margin-bottom: 10px !important;
 }
 
-/* FIX: Prevent arrow_down from superimposing */
-div[data-baseweb="select"] > div {
-    padding-right: 40px !important;
-}
-
-/* Hides the glitchy 'arrow_drop_down' text some browsers show */
-span[data-baseweb="icon"] {
+/* HIDE THE GLITCHY ICONS (arrow_drop_down, etc) */
+svg[class*="e1f1d6gn2"], 
+span[class*="e1f1d6gn2"], 
+div[data-baseweb="icon"],
+[data-testid="stExpanderChevron"] {
     display: none !important;
 }
 
-/* Custom dropdown arrow for a clean look */
+/* Clean up Select Boxes */
+div[data-baseweb="select"] > div {
+    border-radius: 10px !important;
+    background-color: transparent !important;
+    padding-right: 30px !important;
+}
+
+/* Add a simple, non-glitchy arrow */
 div[data-baseweb="select"]::after {
-    content: "▼";
+    content: "▾";
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 10px;
-    opacity: 0.5;
+    font-size: 14px;
+    color: inherit;
     pointer-events: none;
+    opacity: 0.6;
 }
 
+/* Buttons */
 .stButton>button { 
     font-weight: 300 !important; 
     border-radius: 20px !important; 
+    border: none !important;
+    transition: 0.3s;
 }
 </style>
 """
@@ -98,8 +108,8 @@ else:
 
 st.markdown(css, unsafe_allow_html=True)
 
-# Support Button
-feedback_msg = urllib.parse.quote("Hi! I have a question about the Sukoon app.")
+# Sidebar Support
+feedback_msg = urllib.parse.quote("Hi! I have a question about Sukoon.")
 st.sidebar.markdown(f'''<a href="https://wa.me/{MY_NUMBER}?text={feedback_msg}" target="_blank"><button style="width:100%; border-radius:8px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">Send Feedback / Support</button></a>''', unsafe_allow_html=True)
 
 # ==========================================
@@ -114,31 +124,34 @@ if page == "My Private Journal 📖":
         st.markdown(f"### *Today's Reflection*")
         st.info(f"“{get_daily_quote()}”")
         
-        with st.expander("🎵 Play Peaceful Sounds"):
-            audio_source = st.radio("Source:", ["App Library", "YouTube Streams"])
-            if audio_source == "App Library":
-                local_choice = st.selectbox("Choose Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"])
-                audio_files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-                target_file = audio_files[local_choice]
-                if os.path.exists(target_file): st.audio(target_file)
-                else: st.warning(f"⚠️ Missing file.")
-            elif audio_source == "YouTube Streams":
-                stream_choice = st.selectbox("Choose Video:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
-                if stream_choice == "Forest Rain": st.video("https://www.youtube.com/watch?v=BIcl7DrBcjg")
-                elif stream_choice == "Ocean Sunset": st.video("https://www.youtube.com/watch?v=unvd_fjiiAQ")
-                elif stream_choice == "Soothing Flute": st.video("https://www.youtube.com/watch?v=UF5H3EfvXTk")
+        # Wrapped everything in a tidy layout
+        with st.expander("🎵 Peaceful Soundscape Settings"):
+            # Source selection
+            src = st.radio("Pick your format:", ["Local Audio", "Video Stream"], horizontal=True)
+            
+            if src == "Local Audio":
+                choice = st.selectbox("Select Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"])
+                files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
+                if os.path.exists(files[choice]): st.audio(files[choice])
+                else: st.warning("Audio file not found.")
+            else:
+                v_choice = st.selectbox("Select Video:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
+                v_links = {"Forest Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean Sunset": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Soothing Flute": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
+                st.video(v_links[v_choice])
 
+        st.markdown("---")
         with st.form("diary_form"):
-            diary_entry = st.text_area("What is on your mind today?")
-            submitted = st.form_submit_button("Share my thoughts")
+            diary_entry = st.text_area("Share your heart...")
+            submitted = st.form_submit_button("Send to your Guide")
+            
             if submitted and diary_entry:
                 if any(p in diary_entry.lower() for p in ["suicide", "kill myself", "harm myself", "want to die"]):
                     st.session_state.emergency_lock = True
                     st.rerun()
                 else:
-                    with st.spinner("Listening..."):
+                    with st.spinner("Listening deeply..."):
                         try:
-                            instr = f"User: '{diary_entry}'. Celebrate joy, soft empathy for grief, or 3 professional tips for office stress. End with a breathing exercise."
+                            instr = f"User: '{diary_entry}'. Celebrate joy, offer soft empathy for grief, or 3 professional tips for office stress. End with a breathing exercise."
                             response = super_brain.generate_content(instr)
                             st.success(response.text)
                             save_journal(diary_entry, response.text, "Processed")
@@ -157,7 +170,7 @@ elif page == "The Marketplace 🛍️":
     def display_product(label, img_file, desc):
         st.markdown(f"#### {label}")
         if os.path.exists(img_file): st.image(img_file, use_container_width=True)
-        else: st.warning(f"📸 Missing image.")
+        else: st.warning(f"📸 Image missing.")
         st.write(desc)
         wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
         st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
@@ -178,4 +191,4 @@ elif page == "The Marketplace 🛍️":
 elif page == "Our Vision 🕊️":
     st.title("The Story of Sukoon")
     st.subheader("Welcome to our sanctuary.")
-    st.write("Sukoon was born out of a realization: in an increasingly loud world, true luxury is silence and mental clarity.")
+    st.write("Sukoon was born out of a realization: true luxury is silence and mental clarity.")
