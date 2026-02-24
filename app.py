@@ -11,10 +11,14 @@ st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("⚠️ API Key is missing! Please check GitHub Secrets.")
+    st.error("⚠️ API Key is missing! Please check Streamlit Cloud Secrets.")
 else:
-    genai.configure(api_key=api_key)
-    super_brain = genai.GenerativeModel('gemini-1.5-flash')
+    try:
+        genai.configure(api_key=api_key)
+        # CHANGED: Using the latest stable model alias
+        super_brain = genai.GenerativeModel('gemini-1.5-flash-latest')
+    except Exception as e:
+        st.error(f"Setup Error: {str(e)}")
 
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
@@ -23,6 +27,7 @@ if "current_page" not in st.session_state:
 
 def get_daily_quote():
     try:
+        # Prompting for a fresh mindfulness quote
         q_prompt = "Create a short, unique 1-sentence mindfulness quote."
         return super_brain.generate_content(q_prompt).text
     except:
@@ -79,22 +84,28 @@ if st.session_state.current_page == "Journal":
         st.video(v_links[v_choice])
         
     st.markdown("---")
-    with st.form("diary_form"):
+    with st.form("diary_form", clear_on_submit=True):
         diary_entry = st.text_area("What is on your mind today?")
-        if st.form_submit_button("Consult Guide"):
+        submitted = st.form_submit_button("Consult Guide")
+        if submitted:
             if not api_key:
-                st.warning("Please set your GEMINI_API_KEY in Streamlit Cloud Secrets.")
+                st.warning("Please set your GEMINI_API_KEY in Secrets.")
             elif diary_entry:
                 with st.spinner("Listening..."):
                     try:
-                        response = super_brain.generate_content(f"Respond to: {diary_entry}").text
-                        st.success(response)
-                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": response})
+                        # Direct and simple prompt for better response reliability
+                        response = super_brain.generate_content(f"User says: {diary_entry}. Give a short, empathetic mindfulness response and one tiny tip.")
+                        ai_text = response.text
+                        st.success(ai_text)
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": ai_text})
                     except Exception as e:
                         st.error(f"The Guide is resting. (Error: {str(e)})")
     
     for entry in reversed(st.session_state.private_journal):
-        st.write(f"🕒 {entry['time']} | {entry['diary']}")
+        st.markdown(f"🕒 **{entry['time']}**")
+        st.write(f"💭 {entry['diary']}")
+        st.write(f"✨ {entry['ai']}")
+        st.markdown("---")
 
 elif st.session_state.current_page == "Marketplace":
     st.markdown("## The Marketplace")
