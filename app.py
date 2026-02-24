@@ -72,6 +72,21 @@ if page == "My Private Journal 📖":
     else:
         st.write("Welcome. Your thoughts here are completely private and will vanish when you close the page.")
 
+        # ---------------------------------------------------------
+        # PEACEFUL SOUNDSCAPES
+        # ---------------------------------------------------------
+        with st.expander("🎵 Play Peaceful Sounds"):
+            st.write("Select a soundscape to play in the background while you journal:")
+            sound_choice = st.selectbox("Choose your ambiance:", 
+                ["Gentle Rain 🌧️", "Ocean Waves 🌊", "Soothing Flute 🎶"])
+                
+            if sound_choice == "Gentle Rain 🌧️":
+                st.video("https://www.youtube.com/watch?v=BIcl7DrBcjg")
+            elif sound_choice == "Ocean Waves 🌊":
+                st.video("https://www.youtube.com/watch?v=unvd_fjiiAQ")
+            elif sound_choice == "Soothing Flute 🎶":
+                st.video("https://www.youtube.com/watch?v=UF5H3EfvXTk")
+
         with st.form("diary_form"):
             diary_entry = st.text_area("Dear Diary...")
             submitted = st.form_submit_button("Share my thoughts")
@@ -81,23 +96,19 @@ if page == "My Private Journal 📖":
                 if diary_entry == "":
                     st.warning("Please write something first!")
                 else:
-                    # 1. CHECK FOR TRIGGER WORDS FIRST
                     trigger_phrases = [
                         "suicide", "kill myself", "end my life", "want to die", 
                         "hurt myself", "harm myself", "cut myself", 
                         "kill someone", "hurt someone", "harm someone", "don't want to live"
                     ]
                     
-                    # Convert input to lowercase to catch everything
                     user_text_lower = diary_entry.lower()
                     is_crisis = any(phrase in user_text_lower for phrase in trigger_phrases)
 
                     if is_crisis:
-                        # Trip the alarm and instantly refresh the page!
                         st.session_state.emergency_lock = True
                         st.rerun()
                     else:
-                        # 2. NO CRISIS DETECTED -> ASK THE AI
                         with st.spinner("Your AI guide is thinking..."):
                             prompt = f"""You are a highly empathetic mindfulness guide. Read this diary entry and silently detect the user's underlying emotional state. Diary Entry: '{diary_entry}' You must respond STRICTLY in this exact format:
                             Mood: [Write exactly ONE word describing their emotion]
