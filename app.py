@@ -55,6 +55,9 @@ if page == "My Private Journal 📖":
         diary_entry = st.text_area("Dear Diary...")
         submitted = st.form_submit_button("Share my thoughts")
         
+        # INLINE LEGAL DISCLAIMER
+        st.caption("⚠️ *Disclaimer: Sukoon is an AI companion for mindfulness. It is not a medical, psychological, or psychiatric tool. If you are in distress, please seek professional help immediately.*")
+        
         if submitted:
             if diary_entry == "":
                 st.warning("Please write something first!")
