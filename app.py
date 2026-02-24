@@ -5,8 +5,8 @@ import google.generativeai as genai
 import urllib.parse
 from google.api_core import exceptions
 
-# --- THE CONFIG ---
-st.set_page_config(page_title="Sukoon", initial_sidebar_state="auto")
+# --- THE CONFIG (Now Sidebar is HIDDEN by default) ---
+st.set_page_config(page_title="Sukoon", layout="wide", initial_sidebar_state="collapsed")
 
 # ==========================================
 # WAKE UP THE SUPER BRAIN
@@ -35,103 +35,86 @@ def save_journal(user_text, ai_response, hidden_mood):
     st.session_state.private_journal.append(entry)
 
 # ==========================================
-# THE SIDEBAR
+# THE TOP NAVIGATION BAR (Horizontal Menu)
 # ==========================================
-st.sidebar.markdown("### 🧭 Navigation")
-page = st.sidebar.radio("Go to:", ["Journal", "Marketplace", "Vision"], label_visibility="collapsed")
+# Using columns to create a balanced top bar
+nav_col1, nav_col2, nav_col3, nav_col4, nav_col5 = st.columns([2, 1, 1, 1, 1])
 
-MY_NUMBER = "919876543210" # Your number
+with nav_col1:
+    st.markdown("<h2 style='margin-top: -10px;'>Sukoon</h2>", unsafe_allow_html=True)
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🎨 Atmosphere")
-theme = st.sidebar.selectbox("Vibe", ["Peaceful", "Midnight", "Psychedelic"], label_visibility="collapsed")
+# Initialize page state
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "Journal"
 
-# --- THE REINFORCED "GLITCH-KILLER" CSS ---
+with nav_col2:
+    if st.button("Journal 📖", use_container_width=True):
+        st.session_state.current_page = "Journal"
+with nav_col3:
+    if st.button("Marketplace 🛍️", use_container_width=True):
+        st.session_state.current_page = "Marketplace"
+with nav_col4:
+    if st.button("Vision 🕊️", use_container_width=True):
+        st.session_state.current_page = "Vision"
+with nav_col5:
+    # Theme toggle inside the top bar
+    theme = st.selectbox("Vibe", ["Peaceful 🌿", "Midnight 🌙"], label_visibility="collapsed")
+
+# ==========================================
+# DYNAMIC STYLING (CSS)
+# ==========================================
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif !important; }
 h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* 1. THE NUCLEAR OPTION: Target the actual text content */
-span:contains("keyboard"), 
-span:contains("arrow"),
-div:contains("keyboard"),
-[data-testid="stSidebarCollapseIcon"] {
-    visibility: hidden !important;
+/* Hide Sidebar Toggle and the 'keyboard' glitch completely */
+[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"] {
     display: none !important;
-    font-size: 0 !important;
-    color: transparent !important;
-    width: 0 !important;
-    height: 0 !important;
 }
 
-/* 2. STYLE THE BUTTON WITHOUT THE TEXT */
-button[kind="headerNoPadding"] {
-    background-color: rgba(74, 112, 85, 0.1) !important;
-    border-radius: 50% !important;
-    width: 38px !important;
-    height: 38px !important;
-    border: 1px solid rgba(0,0,0,0.1) !important;
+.stButton>button { 
+    font-weight: 300 !important; 
+    border-radius: 10px !important; 
+    border: 1px solid rgba(0,0,0,0.1);
+    height: 45px;
 }
-
-/* 3. ADD A STABLE ICON MANUALLY */
-button[kind="headerNoPadding"]::after {
-    content: "☰";
-    font-size: 20px !important;
-    visibility: visible !important;
-    display: block !important;
-    color: inherit;
-    position: absolute;
-    left: 10px;
-    top: 4px;
-}
-
-.stButton>button { font-weight: 300 !important; border-radius: 10px !important; }
 </style>
 """
 st.markdown(font_css, unsafe_allow_html=True)
 
-if theme == "Peaceful":
-    css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; } .stButton>button { background-color: #4A7055 !important; color: white !important; }</style>"""
-elif theme == "Midnight":
-    css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; } .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; }</style>"""
-else:
-    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }</style>"""
+if theme == "Peaceful 🌿":
+    css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; } .stButton>button { background-color: transparent; color: #4A7055; border: 1px solid #4A7055; } .stButton>button:hover { background-color: #4A7055; color: white; }</style>"""
+else: # Midnight
+    css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; } .stButton>button { background-color: transparent; color: #AEC6CF; border: 1px solid #AEC6CF; } .stButton>button:hover { background-color: #AEC6CF; color: #121212; }</style>"""
 
 st.markdown(css, unsafe_allow_html=True)
 
-wa_support = f"https://wa.me/{MY_NUMBER}?text=Support"
-st.sidebar.markdown(f'<a href="{wa_support}" target="_blank"><button style="width:100%; border-radius:5px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer;">Contact Founder</button></a>', unsafe_allow_html=True)
+# ==========================================
+# THE MAIN CONTENT AREAS
+# ==========================================
+st.markdown("---")
 
-# ==========================================
-# ROOM 1: THE JOURNAL
-# ==========================================
-if page == "Journal":
-    st.title("Sukoon")
-    
+if st.session_state.current_page == "Journal":
     if st.session_state.emergency_lock:
-        st.error("🚨 CRISIS ALERT")
+        st.error("🚨 CRISIS ALERT: Please seek help. Emergency: 112")
     else:
         st.markdown(f"### *{get_daily_quote()}*")
-        st.markdown("---")
-        st.markdown("#### 🎵 Soundscape")
         
-        sound_type = st.radio("Type", ["Silent", "Local Audio", "YouTube"], horizontal=True, label_visibility="collapsed")
-        
-        if sound_type == "Local Audio":
-            choice = st.radio("Select:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-            files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-            if os.path.exists(files[choice]): st.audio(files[choice])
-        
-        elif sound_type == "YouTube":
-            v_choice = st.radio("Select:", ["Rain", "Ocean", "Zen"], horizontal=True)
-            v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
-            st.video(v_links[v_choice])
+        with st.expander("🎵 Peaceful Soundscape Settings"):
+            src = st.radio("Format:", ["Local Audio", "YouTube"], horizontal=True)
+            if src == "Local Audio":
+                choice = st.selectbox("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"])
+                files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
+                if os.path.exists(files[choice]): st.audio(files[choice])
+            else:
+                v_choice = st.selectbox("Video:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
+                v_links = {"Forest Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean Sunset": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Soothing Flute": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
+                st.video(v_links[v_choice])
 
-        st.markdown("---")
         with st.form("diary_form"):
-            diary_entry = st.text_area("What is on your mind?")
+            diary_entry = st.text_area("What's on your mind today?")
             if st.form_submit_button("Share with Guide"):
                 if diary_entry:
                     with st.spinner("Listening..."):
@@ -141,31 +124,41 @@ if page == "Journal":
                             st.success(response.text)
                             save_journal(diary_entry, response.text, "Processed")
                         except:
-                            st.error("The Guide is in silence. Try again shortly.")
+                            st.error("The Guide is resting. Try again soon.")
 
         for entry in reversed(st.session_state.private_journal):
             st.write(f"🕒 {entry['time']} | {entry['diary']}")
 
-# ==========================================
-# ROOM 2: THE MARKETPLACE
-# ==========================================
-elif page == "Marketplace":
-    st.title("The Marketplace")
+elif st.session_state.current_page == "Marketplace":
+    st.markdown("## The Marketplace")
+    st.write("Grounding items for your daily practice.")
+    
+    MY_NUMBER = "919876543210" # Your number
     def display_product(label, img_file, desc):
         st.markdown(f"#### {label}")
         if os.path.exists(img_file): st.image(img_file)
         st.write(desc)
-        wa_url = f"https://wa.me/{MY_NUMBER}?text=Interest:{label}"
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:5px; padding:10px; background-color:#25D366; color:white; border:none;">Buy on WhatsApp</button></a>', unsafe_allow_html=True)
+        wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
-    with c1: display_product("Stones", "stones.jpg", "Grounding naturally sourced stones.")
-    with c2: display_product("Beads", "beads.jpg", "Tactile wooden beads.")
-    with c3: display_product("Yantras", "yantras.jpg", "Focal points.")
+    with c1: display_product("Natural Stones", "stones.jpg", "Grounding stones.")
+    with c2: display_product("Crafted Beads", "beads.jpg", "Breathing beads.")
+    with c3: display_product("Geometric Yantras", "yantras.jpg", "Concentration focal points.")
     
-# ==========================================
-# ROOM 3: OUR VISION
-# ==========================================
-elif page == "Vision":
-    st.title("The Story of Sukoon")
-    st.write("Sukoon was born out of a realization: in an increasingly loud world, true luxury is silence and mental clarity.")
+    st.write("---")
+    c4, c5, c6 = st.columns(3)
+    with c4: display_product("Joyful Sculptures", "buddha.jpg", "Contentment figures.")
+    with c5: display_product("Spatial Decor", "vaastu.jpg", "Environmental balance.")
+    with c6: display_product("Heritage Art", "art.jpg", "Serene art.")
+
+elif st.session_state.current_page == "Vision":
+    st.markdown("## Our Vision")
+    st.write("""
+    Sukoon was born out of a realization: in an increasingly loud world, true luxury is silence and mental clarity. 
+    Our mission is to help you find sukoon (peace) in the chaos of everyday life.
+    """)
+    st.markdown("---")
+    st.write("**Contact Founder for Support**")
+    wa_support = f"https://wa.me/919876543210?text=Support"
+    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="border-radius:5px; padding:10px; background-color:#25D366; color:white; border:none;">Message on WhatsApp</button></a>', unsafe_allow_html=True)
