@@ -7,35 +7,34 @@ import urllib.parse
 # --- CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
 
-# --- AI SETUP (Self-Correcting Model Selection) ---
+# --- AI SETUP ---
 api_key = os.environ.get("GEMINI_API_KEY")
 
-if not api_key:
-    st.error("⚠️ API Key is missing in Streamlit Secrets!")
-else:
+if api_key:
     genai.configure(api_key=api_key)
-    
-    # Discovery Logic: Find a model that works for your specific API version
     try:
+        # Discovery Logic
         models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        # We try to find 'flash' first, then 'pro', otherwise take the first available
-        target_model = next((m for m in models if 'flash' in m), 
-                            next((m for m in models if 'pro' in m), models[0]))
+        target_model = next((m for m in models if 'flash' in m), models[0])
         super_brain = genai.GenerativeModel(target_model)
-    except Exception as e:
-        st.error(f"Discovery Error: {str(e)}")
+    except:
+        super_brain = None
+else:
+    super_brain = None
 
-# --- UI STATE ---
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Journal"
 
 def get_daily_quote():
-    try:
-        return super_brain.generate_content("Give a 1-sentence mindfulness quote.").text
-    except:
-        return "Peace begins with a single, conscious breath."
+    # Only call AI if we have a brain, otherwise use a default to save quota
+    if super_brain:
+        try:
+            return super_brain.generate_content("Give a 1-sentence mindfulness quote.").text
+        except:
+            pass
+    return "Peace begins with a single, conscious breath."
 
 # --- NAVIGATION ---
 st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
@@ -59,9 +58,9 @@ else:
 st.markdown(f"""
 <style>
     html, body, .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
-    h1, h2, h3, h4, label, p {{ color: {txt} !important; }}
+    h1, h2, h3, h4, label, p {{ color: {txt} !important; font-weight: 200 !important; }}
     textarea {{ background-color: {input_bg} !important; color: {txt} !important; border: 1px solid #444 !important; }}
-    .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {txt} !important; }}
+    .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {txt} !important; border-radius: 10px; }}
     hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
 </style>
 """, unsafe_allow_html=True)
@@ -75,21 +74,25 @@ if st.session_state.current_page == "Journal":
     audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
     if audio_type == "Library":
         choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
+        # Corrected dictionary format
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-        if os.path.exists(files.get(choice, "")): st.audio(files[choice])
+        target = files.get(choice)
+        if target and os.path.exists(target): st.audio(target)
     
     st.markdown("---")
     with st.form("diary_form", clear_on_submit=True):
         diary_entry = st.text_area("What is on your mind today?")
         if st.form_submit_button("Consult Guide"):
-            if diary_entry:
+            if super_brain and diary_entry:
                 with st.spinner("Listening..."):
                     try:
                         resp = super_brain.generate_content(diary_entry).text
                         st.success(resp)
                         st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
                     except Exception as e:
-                        st.error(f"The Guide is resting. Error: {str(e)}")
+                        st.error("The Guide is at capacity for today. Please try again tomorrow.")
+            else:
+                st.warning("The Guide is resting.")
 
     for entry in reversed(st.session_state.private_journal):
         st.write(f"🕒 {entry['time']} | {entry['diary']}")
