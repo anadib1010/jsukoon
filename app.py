@@ -52,17 +52,17 @@ svg, span[data-baseweb="icon"], [data-testid="stExpanderChevron"] {
 /* Nav Buttons */
 div[data-testid="stHorizontalBlock"] button {
     height: 40px !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    min-width: 120px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    min-width: 100px !important;
     white-space: nowrap !important;
-    font-size: 15px !important;
+    font-size: 14px !important;
     border-radius: 10px !important;
 }
 
 /* Marketplace Hover */
 div[data-testid="stColumn"] {
-    padding: 15px;
+    padding: 10px;
     transition: all 0.4s ease;
     border-radius: 20px;
 }
@@ -143,4 +143,29 @@ if st.session_state.current_page == "Journal":
                         try:
                             instr = f"User: '{diary_entry}'. Empathy for grief, celebrate joy, or office stress tips. End with a breathing exercise."
                             response = super_brain.generate_content(instr)
-                            st.success(
+                            st.success(response.text)
+                            save_journal(diary_entry, response.text, "Processed")
+                        except Exception as e:
+                            st.error("The Guide is resting. Try again soon.")
+        for entry in reversed(st.session_state.private_journal):
+            st.write(f"🕒 {entry['time']} | {entry['diary']}")
+
+elif st.session_state.current_page == "Marketplace":
+    st.markdown("## The Marketplace")
+    MY_NUMBER = "919876543210" 
+    def display_product(label, img_file, desc):
+        st.markdown(f"#### {label}")
+        if os.path.exists(img_file): st.image(img_file, use_container_width=True)
+        st.write(desc)
+        wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:12px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer; font-family:Inter;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    with c1: display_product("Natural Stones", "stones.jpg", "Grounding stones.")
+    with c2: display_product("Crafted Beads", "beads.jpg", "Tactile beads.")
+    with c3: display_product("Geometric Yantras", "yantras.jpg", "Focal points.")
+
+elif st.session_state.current_page == "Vision":
+    st.markdown("## Our Vision")
+    st.write("Sukoon exists to provide peace in a loud world.")
+    wa_support = f"https://wa.me/919876543210?text=Support"
+    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="border-radius:10px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; font-family:Inter;">Message on WhatsApp</button></a>', unsafe_allow_html=True)
