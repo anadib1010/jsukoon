@@ -43,12 +43,25 @@ st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
+# --- UPDATED CLEAN TYPOGRAPHY CSS ---
 if theme == "Peaceful 🌿":
-    css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; } .stButton>button { background-color: #4A7055 !important; color: white !important; }</style>"""
+    css = """<style>
+    .stApp { background-color: #F9FDF9; color: #2E4032; } 
+    h1, h2, h3 { font-weight: 300 !important; color: #4A7055 !important; font-family: 'Inter', 'Helvetica Neue', sans-serif !important; letter-spacing: -0.5px; } 
+    .stButton>button { background-color: #4A7055 !important; color: white !important; border-radius: 20px; border: none; }
+    </style>"""
 elif theme == "Midnight Calm 🌙":
-    css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; } .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; }</style>"""
+    css = """<style>
+    .stApp { background-color: #121212; color: #E0E0E0; } 
+    h1, h2, h3 { font-weight: 300 !important; color: #AEC6CF !important; font-family: 'Inter', 'Georgia', serif !important; letter-spacing: 0.5px; } 
+    .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; border-radius: 20px; border: none; }
+    </style>"""
 else:
-    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }</style>"""
+    css = """<style>
+    .stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } 
+    h1, h2, h3 { font-weight: 300 !important; color: #FFFFFF !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif !important; } 
+    .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; border-radius: 20px; }
+    </style>"""
 
 st.markdown(css, unsafe_allow_html=True)
 
@@ -62,13 +75,13 @@ st.sidebar.caption("*Sukoon is designed solely for personal mindfulness explorat
 # ROOM 1: THE JOURNAL
 # ==========================================
 if page == "My Private Journal 📖":
-    st.title("🌿 Sukoon")
+    st.title("Sukoon")
     
     if st.session_state.emergency_lock:
         st.error("🚨 **CRISIS ALERT** 🚨")
         st.markdown("*Emergency: 112 | Vandrevala Foundation: 9999 666 555*")
     else:
-        st.markdown(f"### *Today's Reflection:*")
+        st.markdown(f"### *Today's Reflection*")
         st.info(f"“{get_daily_quote()}”")
         
         with st.expander("🎵 Play Peaceful Sounds"):
@@ -117,7 +130,7 @@ elif page == "The Marketplace 🛍️":
         else: st.warning(f"📸 Image missing.")
         st.write(desc)
         wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding stones.")
@@ -136,13 +149,9 @@ elif page == "Our Vision 🕊️":
     st.title("The Story of Sukoon")
     
     col_a, col_b = st.columns([1, 2])
-    
     with col_a:
-        # If you have a photo of yourself, name it 'founder.jpg' and upload to GitHub
-        if os.path.exists("founder.jpg"):
-            st.image("founder.jpg", caption="Your Founder")
-        else:
-            st.markdown("## 🧘‍♂️")
+        if os.path.exists("founder.jpg"): st.image("founder.jpg", caption="Your Founder")
+        else: st.markdown("## 🧘‍♂️")
     
     with col_b:
         st.subheader("Welcome to our sanctuary.")
@@ -151,17 +160,5 @@ elif page == "Our Vision 🕊️":
         true luxury is silence and mental clarity. 
         
         Our founder envisioned a space where technology doesn't distract you, 
-        but actually helps you return to yourself. By combining the ancient 
-        wisdom of grounding objects with the modern support of empathetic AI, 
-        Sukoon is designed to be your pocket-sized retreat.
+        लेकिन (but) actually helps you return to yourself. 
         """)
-    
-    st.write("---")
-    st.markdown("### Why we exist")
-    st.write("""
-    1. **Mindful AI:** Using intelligence to heal and listen, not just to compute.
-    2. **Tangible Peace:** Providing physical anchors like stones and beads to keep you grounded in the 'now'.
-    3. **Ethical Tech:** A commitment to your privacy and mental safety above all else.
-    """)
-    
-    st.info("“Our mission is to help you find sukoon (peace) in the chaos of everyday life.”")
