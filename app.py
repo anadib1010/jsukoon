@@ -10,8 +10,11 @@ api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 super_brain = genai.GenerativeModel('gemini-2.5-flash')
 
+# Set up the Sandbox AND the Emergency Lock
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
+if "emergency_lock" not in st.session_state:
+    st.session_state.emergency_lock = False
 
 def save_journal(user_text, ai_response, hidden_mood):
     now = datetime.now()
@@ -40,7 +43,6 @@ else: # Psychedelic 🌀
 st.markdown(css, unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
-# THE LEGAL SHIELD
 st.sidebar.caption("⚖️ **LEGAL & MEDICAL DISCLAIMER:**")
 st.sidebar.caption("*Sukoon is designed solely for personal mindfulness, journaling, and aesthetic exploration. It is NOT a medical or psychological application. The AI guidance and tools provided are not a substitute for professional medical advice, psychiatric diagnosis, or therapy. Always seek the advice of a qualified health provider with any questions regarding mental health or medical conditions.*")
 
@@ -49,51 +51,85 @@ st.sidebar.caption("*Sukoon is designed solely for personal mindfulness, journal
 # ==========================================
 if page == "My Private Journal 📖":
     st.title("🌿 Sukoon: Your Peaceful Space")
-    st.write("Welcome. Your thoughts here are completely private and will vanish when you close the page.")
-
-    with st.form("diary_form"):
-        diary_entry = st.text_area("Dear Diary...")
-        submitted = st.form_submit_button("Share my thoughts")
-        
-        # INLINE LEGAL DISCLAIMER
-        st.caption("⚠️ *Disclaimer: Sukoon is an AI companion for mindfulness. It is not a medical, psychological, or psychiatric tool. If you are in distress, please seek professional help immediately.*")
-        
-        if submitted:
-            if diary_entry == "":
-                st.warning("Please write something first!")
-            else:
-                with st.spinner("Your AI guide is thinking..."):
-                    prompt = f"""You are a highly empathetic mindfulness guide. Read this diary entry and silently detect the user's underlying emotional state. Diary Entry: '{diary_entry}' You must respond STRICTLY in this exact format:
-                    Mood: [Write exactly ONE word describing their emotion]
-                    Message: [Write two short, comforting sentences]"""
-                    
-                    response = super_brain.generate_content(prompt)
-                    ai_output = response.text
-                    
-                    try:
-                        parts = ai_output.split("Message:")
-                        detected_mood = parts[0].replace("Mood:", "").strip()
-                        comforting_message = parts[1].strip()
-                    except:
-                        detected_mood = "Unknown"
-                        comforting_message = ai_output
-                    
-                    st.success("Your guide has replied:")
-                    st.write(comforting_message)
-                    st.caption(f"*(Silent detection: The AI sensed you are feeling {detected_mood})*")
-                    save_journal(diary_entry, comforting_message, detected_mood)
-
-    st.write("---")
-    st.subheader("📖 Today's Private Thoughts")
-    if len(st.session_state.private_journal) == 0:
-        st.write("Your sand garden is empty. Write your first entry above!")
+    
+    # ---------------------------------------------------------
+    # CRISIS INTERVENTION SYSTEM
+    # ---------------------------------------------------------
+    if st.session_state.emergency_lock:
+        st.error("🚨 **CRISIS ALERT: PLEASE GET HELP IMMEDIATELY** 🚨")
+        st.write("Your safety is the absolute priority right now. We have detected phrases indicating you may be in immediate danger.")
+        st.write("Sukoon is an AI, not a human, and cannot provide the support you need right now. Please reach out to a professional who can help.")
+        st.markdown("""
+        ### 📞 Immediate Resources:
+        * **Emergency Services:** 112
+        * **Kiran Mental Health Helpline:** 1800-599-0019
+        * **Vandrevala Foundation:** 9999 666 555
+        * **AASRA Helpline:** +91-9820466726
+        """)
+        st.info("To ensure your safety, the AI journal has been temporarily locked. Please call one of the numbers above or go to the nearest hospital.")
+    
+    # NORMAL JOURNAL VIEW (If no crisis detected)
     else:
-        for entry in reversed(st.session_state.private_journal):
-            st.write("🕒", entry["time"])
-            st.write(f"**Detected Mood:** {entry.get('mood', 'Unknown')}") 
-            st.write("**You:**", entry["diary"])
-            st.write("**AI Guide:**", entry["ai_advice"])
-            st.write("-")
+        st.write("Welcome. Your thoughts here are completely private and will vanish when you close the page.")
+
+        with st.form("diary_form"):
+            diary_entry = st.text_area("Dear Diary...")
+            submitted = st.form_submit_button("Share my thoughts")
+            st.caption("⚠️ *Disclaimer: Sukoon is an AI companion for mindfulness. It is not a medical, psychological, or psychiatric tool. If you are in distress, please seek professional help immediately.*")
+            
+            if submitted:
+                if diary_entry == "":
+                    st.warning("Please write something first!")
+                else:
+                    # 1. CHECK FOR TRIGGER WORDS FIRST
+                    trigger_phrases = [
+                        "suicide", "kill myself", "end my life", "want to die", 
+                        "hurt myself", "harm myself", "cut myself", 
+                        "kill someone", "hurt someone", "harm someone", "don't want to live"
+                    ]
+                    
+                    # Convert input to lowercase to catch everything
+                    user_text_lower = diary_entry.lower()
+                    is_crisis = any(phrase in user_text_lower for phrase in trigger_phrases)
+
+                    if is_crisis:
+                        # Trip the alarm and instantly refresh the page!
+                        st.session_state.emergency_lock = True
+                        st.rerun()
+                    else:
+                        # 2. NO CRISIS DETECTED -> ASK THE AI
+                        with st.spinner("Your AI guide is thinking..."):
+                            prompt = f"""You are a highly empathetic mindfulness guide. Read this diary entry and silently detect the user's underlying emotional state. Diary Entry: '{diary_entry}' You must respond STRICTLY in this exact format:
+                            Mood: [Write exactly ONE word describing their emotion]
+                            Message: [Write two short, comforting sentences]"""
+                            
+                            response = super_brain.generate_content(prompt)
+                            ai_output = response.text
+                            
+                            try:
+                                parts = ai_output.split("Message:")
+                                detected_mood = parts[0].replace("Mood:", "").strip()
+                                comforting_message = parts[1].strip()
+                            except:
+                                detected_mood = "Unknown"
+                                comforting_message = ai_output
+                            
+                            st.success("Your guide has replied:")
+                            st.write(comforting_message)
+                            st.caption(f"*(Silent detection: The AI sensed you are feeling {detected_mood})*")
+                            save_journal(diary_entry, comforting_message, detected_mood)
+
+        st.write("---")
+        st.subheader("📖 Today's Private Thoughts")
+        if len(st.session_state.private_journal) == 0:
+            st.write("Your sand garden is empty. Write your first entry above!")
+        else:
+            for entry in reversed(st.session_state.private_journal):
+                st.write("🕒", entry["time"])
+                st.write(f"**Detected Mood:** {entry.get('mood', 'Unknown')}") 
+                st.write("**You:**", entry["diary"])
+                st.write("**AI Guide:**", entry["ai_advice"])
+                st.write("-")
 
 # ==========================================
 # ROOM 2: THE MARKETPLACE
@@ -103,7 +139,6 @@ elif page == "The Marketplace 🛍️":
     st.write("Curated physical items to ground your space and support your mindfulness practice.")
     st.write("---")
 
-    # ROW 1
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -126,7 +161,6 @@ elif page == "The Marketplace 🛍️":
 
     st.write("---")
 
-    # ROW 2
     col4, col5, col6 = st.columns(3)
 
     with col4:
