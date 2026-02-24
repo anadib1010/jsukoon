@@ -5,9 +5,9 @@ import google.generativeai as genai
 import urllib.parse
 from google.api_core import exceptions
 
-# --- CRITICAL: SIDEBAR CONFIGURATION ---
-# This line tells the app to stay in 'expanded' mode to avoid the glitchy toggle button
-st.set_page_config(page_title="Sukoon", initial_sidebar_state="expanded")
+# --- SMART CONFIGURATION ---
+# 'auto' allows it to collapse on mobile but stay open on desktop if possible
+st.set_page_config(page_title="Sukoon", initial_sidebar_state="auto")
 
 # ==========================================
 # WAKE UP THE SUPER BRAIN
@@ -47,29 +47,38 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### 🎨 Atmosphere")
 theme = st.sidebar.selectbox("Vibe", ["Peaceful", "Midnight", "Psychedelic"], label_visibility="collapsed")
 
-# --- THE FINAL "GLITCH-KILLER" CSS ---
+# --- THE "HIDDEN BUT CLICKABLE" CSS ---
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif !important; }
 h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* HIDE THE SIDEBAR TOGGLE BUTTON ENTIRELY */
-button[kind="headerNoPadding"] {
-    display: none !important;
-}
-
-/* HIDE ALL MATERIAL ICON TEXT STRINGS */
-span, div, button {
-    font-family: 'Inter', sans-serif !important;
-}
-
-/* Specific text-string eraser */
-[data-testid="stSidebarCollapseIcon"], 
-:contains("keyboard_double_arrow") {
-    display: none !important;
+/* 1. HIDE THE GLITCHY TEXT STRING */
+span:contains("keyboard"), [data-testid="stSidebarCollapseIcon"] {
     visibility: hidden !important;
     font-size: 0 !important;
+}
+
+/* 2. MAKE THE TOGGLE BUTTON VISIBLE & PRETTY AGAIN */
+button[kind="headerNoPadding"] {
+    visibility: visible !important;
+    background-color: rgba(74, 112, 85, 0.1) !important;
+    border-radius: 8px !important;
+    width: 60px !important;
+}
+
+/* 3. ADD A MANUAL "MENU" LABEL FOR MOBILE USERS */
+button[kind="headerNoPadding"]::after {
+    content: "MENU";
+    visibility: visible !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    letter-spacing: 1px;
+    color: inherit;
+    position: absolute;
+    left: 12px;
+    top: 10px;
 }
 
 .stButton>button { font-weight: 300 !important; border-radius: 10px !important; }
