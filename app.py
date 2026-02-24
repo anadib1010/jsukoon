@@ -10,7 +10,7 @@ from google.api_core import exceptions
 # ==========================================
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
-super_brain = genai.GenerativeModel('gemini-1.5-flash') # Slightly more stable for free tier
+super_brain = genai.GenerativeModel('gemini-1.5-flash')
 
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
@@ -35,7 +35,7 @@ def save_journal(user_text, ai_response, hidden_mood):
 # THE SIDEBAR
 # ==========================================
 st.sidebar.title("🧭 Navigation")
-page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️"])
+page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️", "Our Vision 🕊️"])
 
 MY_NUMBER = "919876543210" # Your number
 
@@ -95,20 +95,12 @@ if page == "My Private Journal 📖":
                 else:
                     with st.spinner("Your guide is listening..."):
                         try:
-                            prompt = f"""
-                            You are the 'Sukoon Mindfulness Guide'. User: '{diary_entry}'
-                            1. If HAPPY: Celebrate! 
-                            2. If SAD: Be soft, ask to share more.
-                            3. If OFFICE/MANAGER STRESS: Give 3 professional tips to handle a difficult boss and validate feelings.
-                            4. End with a breathing exercise (4-7-8 or Box Breathing).
-                            """
+                            prompt = f"User: '{diary_entry}'. Celebration if happy, soft empathy if sad, career mentorship for office stress, end with breathing exercise."
                             response = super_brain.generate_content(prompt)
                             st.success(response.text)
                             save_journal(diary_entry, response.text, "Processed")
                         except exceptions.ResourceExhausted:
-                            st.warning("🏮 The Guide is currently meditating (Rate Limit Reached). Please wait 60 seconds and try again.")
-                        except Exception as e:
-                            st.error("The Guide is having a moment of silence. Please try again shortly.")
+                            st.warning("🏮 The Guide is currently meditating. Please wait 60 seconds.")
 
         st.write("---")
         for entry in reversed(st.session_state.private_journal):
@@ -136,3 +128,40 @@ elif page == "The Marketplace 🛍️":
     with c4: display_product("Joyful Sculptures", "buddha.jpg", "Contentment figures.")
     with c5: display_product("Spatial Decor", "vaastu.jpg", "Balance pieces.")
     with c6: display_product("Heritage Art", "art.jpg", "Serene art.")
+
+# ==========================================
+# ROOM 3: OUR VISION (ABOUT FOUNDER)
+# ==========================================
+elif page == "Our Vision 🕊️":
+    st.title("The Story of Sukoon")
+    
+    col_a, col_b = st.columns([1, 2])
+    
+    with col_a:
+        # If you have a photo of yourself, name it 'founder.jpg' and upload to GitHub
+        if os.path.exists("founder.jpg"):
+            st.image("founder.jpg", caption="Your Founder")
+        else:
+            st.markdown("## 🧘‍♂️")
+    
+    with col_b:
+        st.subheader("Welcome to our sanctuary.")
+        st.write("""
+        **Sukoon** was born out of a simple realization: in an increasingly loud world, 
+        true luxury is silence and mental clarity. 
+        
+        Our founder envisioned a space where technology doesn't distract you, 
+         लेकिन (but) actually helps you return to yourself. By combining the ancient 
+        wisdom of grounding objects with the modern support of empathetic AI, 
+        Sukoon is designed to be your pocket-sized retreat.
+        """)
+    
+    st.write("---")
+    st.markdown("### Why we exist")
+    st.write("""
+    1. **Mindful AI:** Using intelligence to heal and listen, not just to compute.
+    2. **Tangible Peace:** Providing physical anchors like stones and beads to keep you grounded in the 'now'.
+    3. **Ethical Tech:** A commitment to your privacy and mental safety above all else.
+    """)
+    
+    st.info("“Our mission is to help you find sukoon (peace) in the chaos of everyday life.”")
