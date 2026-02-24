@@ -60,9 +60,7 @@ if page == "My Private Journal 📖":
             
             if audio_source == "App Audio Library (Data Saver)":
                 local_choice = st.selectbox("Choose an audio track:", ["Founder's A Cappella 🎤", "Rain 🌧️", "Waves 🌊", "Birds 🌲", "Wind 🍃", "Flute 🎶"])
-                if local_choice == "Founder's A Cappella 🎤":
-                    st.audio("ehsaan.mp3") 
-                elif local_choice == "Forest 🌧️":
+                if local_choice == "Forest 🌧️":
                     st.audio("forest.mp3")
                 elif local_choice == "Waves 🌊":
                     st.audio("waves.mp3")
