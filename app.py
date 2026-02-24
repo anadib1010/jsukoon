@@ -20,7 +20,7 @@ def save_journal(user_text, ai_response, hidden_mood):
     st.session_state.private_journal.append(entry)
 
 # ==========================================
-# THE SIDEBAR (Navigation & Theme)
+# THE SIDEBAR (Navigation, Theme & Legal)
 # ==========================================
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️"])
@@ -38,6 +38,11 @@ else: # Psychedelic 🌀
     css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; } textarea { background-color: rgba(15, 10, 60, 0.8) !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; } div[data-baseweb="base-input"] { background-color: transparent !important; } .stButton>button, .stFormSubmitButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}</style>"""
 
 st.markdown(css, unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
+# THE LEGAL SHIELD
+st.sidebar.caption("⚖️ **LEGAL & MEDICAL DISCLAIMER:**")
+st.sidebar.caption("*Sukoon is designed solely for personal mindfulness, journaling, and aesthetic exploration. It is NOT a medical or psychological application. The AI guidance and tools provided are not a substitute for professional medical advice, psychiatric diagnosis, or therapy. Always seek the advice of a qualified health provider with any questions regarding mental health or medical conditions.*")
 
 # ==========================================
 # ROOM 1: THE JOURNAL
@@ -95,23 +100,46 @@ elif page == "The Marketplace 🛍️":
     st.write("Curated physical items to ground your space and support your mindfulness practice.")
     st.write("---")
 
-    # Creating 3 uniform columns for our products
+    # ROW 1
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.header("🪨") # Placeholder for a real image later!
+        st.header("🪨")
         st.subheader("Natural Stones")
-        st.write("Unpolished, naturally sourced stones. Perfect for providing a cool, grounding physical touchstone during moments of high stress or racing thoughts.")
+        st.write("Unpolished, naturally sourced stones. Perfect for providing a cool, grounding physical touchstone during moments of high stress.")
         st.button("View Stones", key="btn_stones")
 
     with col2:
         st.header("📿")
         st.subheader("Crafted Beads")
-        st.write("Tactile wooden and seed beads strung together. A purely mechanical tool to help you keep rhythm during breathing exercises or meditation.")
+        st.write("Tactile wooden and seed beads. A purely mechanical tool to help you keep rhythm during breathing exercises or meditation.")
         st.button("View Beads", key="btn_beads")
 
     with col3:
         st.header("💠")
         st.subheader("Geometric Yantras")
-        st.write("Precision-crafted metalwork featuring complex geometric symmetry. Designed to provide a focal point for the eyes when practicing concentration.")
+        st.write("Precision-crafted metalwork featuring complex symmetry. Designed to provide a focal point for the eyes when practicing concentration.")
         st.button("View Yantras", key="btn_yantras")
+
+    st.write("---")
+
+    # ROW 2
+    col4, col5, col6 = st.columns(3)
+
+    with col4:
+        st.header("🏺")
+        st.subheader("Joyful Sculptures")
+        st.write("Traditional artistic figures representing contentment and abundance. Perfect as a cheerful, grounding desk ornament for your workspace.")
+        st.button("View Sculptures", key="btn_buddha")
+
+    with col5:
+        st.header("📐")
+        st.subheader("Spatial Decor")
+        st.write("Architectural decor pieces designed to inspire a sense of balance and spatial awareness in your living environment.")
+        st.button("View Decor", key="btn_vaastu")
+
+    with col6:
+        st.header("🖼️")
+        st.subheader("Heritage Art")
+        st.write("Intricately crafted photo frames and classical statues inspired by historical iconography, offering a serene, artistic focal point for any room.")
+        st.button("View Art", key="btn_deities")
