@@ -37,7 +37,7 @@ def save_journal(user_text, ai_response, hidden_mood):
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️"])
 
-MY_NUMBER = "919876543210" # Replace with your real number
+MY_NUMBER = "918882850790" # Replace with your real number
 
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
