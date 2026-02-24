@@ -55,21 +55,3 @@ st.markdown(f"""
     button[kind="secondaryFormSubmit"], .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid #444 !important; border-radius: 10px !important; }}
     hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
     div[data-testid="stColumn"] {{ transition: all 0.4s ease; padding: 15px; border-radius: 20px; border: 1px solid rgba(128,128,128,0.1); margin-bottom: 10px; }}
-    div[data-testid="stColumn"]:hover {{ transform: translateY(-8px); box-shadow: 0px 15px 30px {card_hover}; border: 1px solid {soft_blue}; }}
-    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg {{ display: none !important; }}
-</style>
-""", unsafe_allow_html=True)
-st.markdown("---")
-
-# --- PAGE: JOURNAL ---
-if st.session_state.current_page == "Journal":
-    st.markdown("<div style='text-align: center; padding: 20px;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
-    audio_type = st.radio("Ambient Sounds", ["Silent", "Library", "YouTube"], horizontal=True)
-    if audio_type == "Library":
-        choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-        files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-        target = files.get(choice)
-        if target and os.path.exists(target): st.audio(target)
-    elif audio_type == "YouTube":
-        v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-        v_links = {"Rain": "
