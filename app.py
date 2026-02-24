@@ -45,50 +45,34 @@ if theme_choice == "Peaceful":
     bg, txt, input_bg, btn_bg = "#F9FDF9", "#2E4032", "white", "transparent"
     card_hover = "rgba(74, 112, 85, 0.15)"
 else:
-    # MIDNIGHT COLORS
     bg, txt, input_bg, btn_bg = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A"
     card_hover = "rgba(255, 255, 255, 0.05)"
 
-# --- HEAVY DUTY CSS ---
-custom_style = f"""
+# --- CSS ---
+st.markdown(f"""
 <style>
     html, body, .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
-    h1, h2, h3, h4, label, p {{ color: {txt} !important; font-weight: 200 !important; }}
+    h1, h2, h3, h4, label, p, li {{ color: {txt} !important; font-weight: 200 !important; }}
     textarea {{ background-color: {input_bg} !important; color: {txt} !important; border: 1px solid #444 !important; }}
     
-    /* Target all buttons including the Form 'Consult' button */
     button[kind="secondaryFormSubmit"], .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid #444 !important; 
         border-radius: 10px !important;
     }}
-
-    /* Hover State for all buttons */
-    button[kind="secondaryFormSubmit"]:hover, .stButton>button:hover {{ 
-        background-color: #3D3D3D !important; 
-        border: 1px solid {txt} !important;
-        color: white !important;
-    }}
-
     hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
-    
-    /* Marketplace Grid Hover */
     div[data-testid="stColumn"] {{ transition: all 0.4s ease; padding: 10px; border-radius: 20px; }}
     div[data-testid="stColumn"]:hover {{ transform: translateY(-8px); box-shadow: 0px 15px 30px {card_hover}; }}
-    
     [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg {{ display: none !important; }}
 </style>
-"""
-st.markdown(custom_style, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 st.markdown("---")
 
 # --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
     st.markdown("<div style='text-align: center; padding: 20px;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
-    
-    st.markdown("#### 🎵 Ambient Sounds")
-    audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
+    audio_type = st.radio("Ambient Sounds", ["Silent", "Library", "YouTube"], horizontal=True)
     if audio_type == "Library":
         choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
@@ -100,7 +84,6 @@ if st.session_state.current_page == "Journal":
         st.video(v_links[v_choice])
     
     st.markdown("---")
-    # Using the form to group the input and button
     with st.form("diary_form", clear_on_submit=True):
         diary_entry = st.text_area("What is on your mind today?")
         if st.form_submit_button("Consult Guide"):
@@ -111,12 +94,7 @@ if st.session_state.current_page == "Journal":
                         st.success(resp)
                         st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
                     except Exception as e:
-                        if "429" in str(e):
-                            st.error("The Guide is at capacity for today. Please try again tomorrow.")
-                        else:
-                            st.error("The Guide is resting. Please try again shortly.")
-            elif not super_brain:
-                st.warning("Guide setup is incomplete. Check API Key.")
+                        st.error("The Guide is at capacity for today. Please try again tomorrow.")
 
     for entry in reversed(st.session_state.private_journal):
         st.write(f"🕒 {entry['time']} | {entry['diary']}")
@@ -125,14 +103,13 @@ if st.session_state.current_page == "Journal":
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
     st.markdown("## The Marketplace")
+    st.write("Curation of tools designed to ground your senses and focus your mind.")
     def display_product(label, img_file, desc):
         st.markdown(f"#### {label}")
-        if os.path.exists(img_file): 
-            st.image(img_file, use_container_width=True)
+        if os.path.exists(img_file): st.image(img_file, use_container_width=True)
         st.write(desc)
         wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote(f"Interest: {label}")
         st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:12px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 WhatsApp</button></a>', unsafe_allow_html=True)
-    
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding tools.")
     with c2: display_product("Crafted Beads", "beads.jpg", "Tactile focus.")
@@ -140,6 +117,23 @@ elif st.session_state.current_page == "Marketplace":
 
 # --- PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
-    st.markdown("## Our Vision")
-    st.write("Sukoon exists to provide peace in a loud world.")
-    st.markdown('<a href="https://wa.me/919876543210" target="_blank"><button style="border-radius:10px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">Message Founder</button></a>', unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("### Silence in a Loud World")
+    st.write("""
+    **Sukoon** was born from a simple realization: the world is getting louder, but our internal spaces are getting smaller. We believe that technology shouldn't just be a source of distraction—it should be a gateway to tranquility.
+    
+    Our vision is to provide a digital sanctuary where you can:
+    * **Reflect** without judgment through our AI-supported Journal.
+    * **Connect** with your senses using curated ambient sounds.
+    * **Ground** yourself with physical tools that bridge the gap between the digital and the tangible.
+    """)
+    st.write("---")
+    st.write("### The Journey")
+    st.write("""
+    Sukoon is more than an app; it is a commitment to mental clarity. We are constantly evolving, integrating affective computing to better understand human emotion and provide support when it's needed most.
+    """)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    wa_support = "https://wa.me/919876543210?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
+    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="width:100%; border-radius:12px; padding:15px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer; font-size:18px;">💬 Connect with the Founder</button></a>', unsafe_allow_html=True)
