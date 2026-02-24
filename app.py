@@ -5,10 +5,10 @@ import os
 import google.generativeai as genai
 
 # ==========================================
-# THE THEME ENGINE (Premium Colors)
+# THE THEME ENGINE (Now with Midnight Calm!)
 # ==========================================
 st.sidebar.title("🎨 Atmosphere")
-theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Glamorous ✨", "Psychedelic 🌀"])
+theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
 if theme == "Peaceful 🌿":
     css = """
@@ -20,15 +20,15 @@ if theme == "Peaceful 🌿":
     .stButton>button, .stFormSubmitButton>button { background-color: #4A7055 !important; color: white !important; border-radius: 10px; border: none; }
     </style>
     """
-elif theme == "Glamorous ✨":
+elif theme == "Midnight Calm 🌙":
     css = """
     <style>
     .stApp { background-color: #121212; color: #E0E0E0; }
-    /* Upgraded to a soft, expensive Antique Champagne Gold (#C5A059) */
-    h1, h2, h3 { color: #C5A059 !important; font-family: 'Georgia', serif; }
-    textarea { background-color: #1E1E1E !important; color: #C5A059 !important; border: 1px solid #C5A059 !important; }
+    /* Upgraded to a soft, peaceful Twilight Blue (#AEC6CF) */
+    h1, h2, h3 { color: #AEC6CF !important; font-family: 'Georgia', serif; }
+    textarea { background-color: #1E1E1E !important; color: #AEC6CF !important; border: 1px solid #AEC6CF !important; }
     div[data-baseweb="base-input"] { background-color: transparent !important; }
-    .stButton>button, .stFormSubmitButton>button { background-color: #C5A059 !important; color: black !important; border-radius: 20px; font-weight: bold; border: none; }
+    .stButton>button, .stFormSubmitButton>button { background-color: #AEC6CF !important; color: #121212 !important; border-radius: 20px; font-weight: bold; border: none; }
     </style>
     """
 else: # Psychedelic 🌀
