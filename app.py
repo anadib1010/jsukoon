@@ -6,12 +6,10 @@ import urllib.parse
 from google.api_core import exceptions
 
 # ==========================================
-# WAKE UP THE SUPER BRAIN (Updated Model Name)
+# WAKE UP THE SUPER BRAIN
 # ==========================================
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
-
-# We use gemini-1.5-flash which is the current most stable free model
 super_brain = genai.GenerativeModel('gemini-1.5-flash')
 
 if "private_journal" not in st.session_state:
@@ -21,7 +19,6 @@ if "emergency_lock" not in st.session_state:
 
 def get_daily_quote():
     try:
-        # Prompt for a fresh quote
         q_prompt = "Generate a unique 1-sentence mindfulness quote. No famous ones."
         q_response = super_brain.generate_content(q_prompt)
         return q_response.text
@@ -40,18 +37,27 @@ def save_journal(user_text, ai_response, hidden_mood):
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️", "Our Vision 🕊️"])
 
-MY_NUMBER = "919876543210" # Update to your number
+MY_NUMBER = "919876543210" # Update with your number
 
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
-# --- THIN ELEGANT FONTS ---
+# --- ADVANCED UI FIXES FOR FONTS AND OVERLAP ---
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif; }
 h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
+
+/* Fix for the overlapping arrow in dropdowns */
+div[data-baseweb="select"] {
+    font-size: 14px !important;
+}
+div[data-testid="stSelectbox"] label {
+    font-weight: 300 !important;
+}
+
 .stButton>button { font-weight: 300 !important; border-radius: 20px !important; }
 </style>
 """
@@ -62,11 +68,11 @@ if theme == "Peaceful 🌿":
 elif theme == "Midnight Calm 🌙":
     css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; } .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; }</style>"""
 else:
-    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 1px solid #00ffcc !important; }</style>"""
+    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }</style>"""
 
 st.markdown(css, unsafe_allow_html=True)
 
-st.sidebar.markdown("---")
+# Support Button
 feedback_msg = urllib.parse.quote("Hi! I have a question about the Sukoon app.")
 st.sidebar.markdown(f'''<a href="https://wa.me/{MY_NUMBER}?text={feedback_msg}" target="_blank"><button style="width:100%; border-radius:8px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">Send Feedback / Support</button></a>''', unsafe_allow_html=True)
 
@@ -78,21 +84,21 @@ if page == "My Private Journal 📖":
     
     if st.session_state.emergency_lock:
         st.error("🚨 **CRISIS ALERT** 🚨")
-        st.write("Emergency: 112 | Vandrevala Foundation: 9999 666 555")
     else:
         st.markdown(f"### *Today's Reflection*")
         st.info(f"“{get_daily_quote()}”")
         
         with st.expander("🎵 Play Peaceful Sounds"):
-            audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
-            if audio_source == "App Audio Library (Data Saver)":
-                local_choice = st.selectbox("Choose an audio track:", ["Forest 🌿", "Waves 🌊", "Birds 🌲", "Wind 🍃", "Flute 🎶"])
-                audio_files = {"Forest 🌿": "forest.mp3", "Waves 🌊": "waves.mp3", "Birds 🌲": "birds.mp3", "Wind 🍃": "wind.mp3", "Flute 🎶": "flute.mp3"}
+            audio_source = st.radio("Format:", ["App Library", "YouTube Streams"])
+            if audio_source == "App Library":
+                # Shortened labels to prevent the arrow overlap
+                local_choice = st.selectbox("Select Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"])
+                audio_files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
                 target_file = audio_files[local_choice]
                 if os.path.exists(target_file): st.audio(target_file)
-                else: st.warning(f"⚠️ Audio file missing.")
-            elif audio_source == "YouTube Video Streams":
-                stream_choice = st.selectbox("Choose a stream:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
+                else: st.warning(f"⚠️ Sound file missing.")
+            elif audio_source == "YouTube Streams":
+                stream_choice = st.selectbox("Stream:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
                 if stream_choice == "Forest Rain": st.video("https://www.youtube.com/watch?v=BIcl7DrBcjg")
                 elif stream_choice == "Ocean Sunset": st.video("https://www.youtube.com/watch?v=unvd_fjiiAQ")
                 elif stream_choice == "Soothing Flute": st.video("https://www.youtube.com/watch?v=UF5H3EfvXTk")
@@ -107,15 +113,10 @@ if page == "My Private Journal 📖":
                 else:
                     with st.spinner("Listening..."):
                         try:
-                            # The instructions for the AI
-                            instr = f"User says: '{diary_entry}'. Celebrate joy, offer soft empathy for grief, or provide 3 professional tips for toxic workplace stress. End with a breathing exercise."
+                            instr = f"User: '{diary_entry}'. Celebrate joy, soft empathy for grief, or 3 professional tips for office stress. End with a breathing exercise."
                             response = super_brain.generate_content(instr)
                             st.success(response.text)
                             save_journal(diary_entry, response.text, "Processed")
-                        except exceptions.NotFound:
-                            st.error("🏮 AI Connection Error: Please contact support to check the model settings.")
-                        except exceptions.ResourceExhausted:
-                            st.warning("🏮 The Guide is meditating. Please wait 60 seconds.")
                         except Exception as e:
                             st.error("The Guide is in silence. Try again shortly.")
 
@@ -134,7 +135,7 @@ elif page == "The Marketplace 🛍️":
         else: st.warning(f"📸 Image missing.")
         st.write(desc)
         wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer; font-family:Inter;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding stones.")
