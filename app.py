@@ -74,8 +74,9 @@ if page == "My Private Journal 📖":
         with st.expander("🎵 Play Peaceful Sounds"):
             st.write("Select a background soundscape to play while you journal:")
             
-            # The Toggle Switch
-           if audio_source == "App Audio Library (Data Saver)":
+            audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
+            
+            if audio_source == "App Audio Library (Data Saver)":
                 local_choice = st.selectbox("Choose an audio track:", [
                     "Founder's A Cappella 🎤", 
                     "Peaceful Rain 🌧️", 
@@ -85,8 +86,9 @@ if page == "My Private Journal 📖":
                     "Zen Flute 🎶"
                 ])
                 
+                # Check your exact file names here!
                 if local_choice == "Founder's A Cappella 🎤":
-                    st.audio("mysong.mp3") # <--- Your file names go here
+                    st.audio("mysong.mp3") 
                 elif local_choice == "Peaceful Rain 🌧️":
                     st.audio("rain.mp3")
                 elif local_choice == "Ocean Waves 🌊":
