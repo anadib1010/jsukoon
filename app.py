@@ -88,17 +88,17 @@ if page == "My Private Journal 📖":
                 
                 # Check your exact file names here!
                 if local_choice == "Founder's A Cappella 🎤":
-                    st.audio("mysong.mp3") 
-                elif local_choice == "Peaceful Rain 🌧️":
-                    st.audio("rain.mp3")
-                elif local_choice == "Ocean Waves 🌊":
-                    st.audio("ocean.mp3")
+                    st.audio("ehsaan Mera hoga.mp3") 
+                elif local_choice == "Birds and Waterfall 🌧️":
+                    st.audio("birds-and-waterfall-250309 (1).mp3")
+                elif local_choice == "Waves 🌊":
+                    st.audio("waterside-soft-lake-lite-waves-402561 (1).mp3")
                 elif local_choice == "Forest Birds 🌲":
-                    st.audio("birds.mp3")
+                    st.audio("birds39-forest-20772 (1).mp3")
                 elif local_choice == "Soft Wind 🍃":
-                    st.audio("wind.mp3")
+                    st.audio("soft-wind-sound-314943 (1).mp3")
                 elif local_choice == "Zen Flute 🎶":
-                    st.audio("flute.mp3")
+                    st.audio("missing-in-wind-japanese-ancient-flute-simulate-wind-sound-166932 (1).mp3")
                 
                 st.caption("*(Audio-only tracks use significantly less mobile data.)*")
                 
