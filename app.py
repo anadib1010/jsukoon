@@ -43,19 +43,42 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### 🎨 Atmosphere")
 theme = st.sidebar.selectbox("Vibe", ["Peaceful", "Midnight", "Psychedelic"], label_visibility="collapsed")
 
-# --- THE CLEANEST POSSIBLE CSS ---
+# --- THE FINAL CSS OVERRIDE ---
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif !important; }
 h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* Remove ALL default icons to prevent superimposing */
-span[data-baseweb="icon"], svg, [data-testid="stExpanderChevron"] {
+/* FIX: Hide the 'keyboard_double_arrow' text and all glitchy icons */
+span[class*="e1f1d6gn2"], 
+svg, 
+[data-testid="stSidebarCollapseIcon"],
+span:contains("keyboard_double_arrow_right"),
+span:contains("keyboard_double_arrow_left") {
+    font-size: 0 !important;
+    color: transparent !important;
     display: none !important;
 }
 
-/* Make dropdowns look like clean boxes without glitchy arrows */
+/* Force the Sidebar toggle button to look clean */
+button[kind="headerNoPadding"] {
+    background-color: rgba(0,0,0,0.05) !important;
+    border-radius: 50% !important;
+    width: 30px !important;
+    height: 30px !important;
+}
+
+/* Add a simple manual arrow back to the sidebar toggle */
+button[kind="headerNoPadding"]::after {
+    content: "☰";
+    font-size: 18px;
+    color: inherit;
+    position: absolute;
+    left: 8px;
+    top: 2px;
+}
+
 div[data-baseweb="select"] {
     border: 1px solid rgba(0,0,0,0.1) !important;
     border-radius: 4px !important;
@@ -75,7 +98,6 @@ else:
 
 st.markdown(css, unsafe_allow_html=True)
 
-# Support Link
 wa_support = f"https://wa.me/{MY_NUMBER}?text=Support"
 st.sidebar.markdown(f'<a href="{wa_support}" target="_blank"><button style="width:100%; border-radius:5px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer;">Contact Founder</button></a>', unsafe_allow_html=True)
 
@@ -89,12 +111,9 @@ if page == "Journal":
         st.error("🚨 CRISIS ALERT")
     else:
         st.markdown(f"### *{get_daily_quote()}*")
-        
-        # Changed from Expander to a simple Header to avoid glitchy arrows
         st.markdown("---")
         st.markdown("#### 🎵 Soundscape")
         
-        # Using a Button Group (radio horizontal) instead of Selectbox
         sound_type = st.radio("Type", ["Silent", "Local Audio", "YouTube"], horizontal=True, label_visibility="collapsed")
         
         if sound_type == "Local Audio":
