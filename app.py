@@ -104,20 +104,20 @@ elif page == "The Marketplace 🛍️":
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.header("🪨")
-        st.subheader("Natural Stones")
+        st.markdown("## 🪨")
+        st.markdown("#### Natural Stones")
         st.write("Unpolished, naturally sourced stones. Perfect for providing a cool, grounding physical touchstone during moments of high stress.")
         st.button("View Stones", key="btn_stones")
 
     with col2:
-        st.header("📿")
-        st.subheader("Crafted Beads")
+        st.markdown("## 📿")
+        st.markdown("#### Crafted Beads")
         st.write("Tactile wooden and seed beads. A purely mechanical tool to help you keep rhythm during breathing exercises or meditation.")
         st.button("View Beads", key="btn_beads")
 
     with col3:
-        st.header("💠")
-        st.subheader("Geometric Yantras")
+        st.markdown("## 💠")
+        st.markdown("#### Geometric Yantras")
         st.write("Precision-crafted metalwork featuring complex symmetry. Designed to provide a focal point for the eyes when practicing concentration.")
         st.button("View Yantras", key="btn_yantras")
 
@@ -127,19 +127,19 @@ elif page == "The Marketplace 🛍️":
     col4, col5, col6 = st.columns(3)
 
     with col4:
-        st.header("🏺")
-        st.subheader("Joyful Sculptures")
+        st.markdown("## 🏺")
+        st.markdown("#### Joyful Sculptures")
         st.write("Traditional artistic figures representing contentment and abundance. Perfect as a cheerful, grounding desk ornament for your workspace.")
         st.button("View Sculptures", key="btn_buddha")
 
     with col5:
-        st.header("📐")
-        st.subheader("Spatial Decor")
+        st.markdown("## 📐")
+        st.markdown("#### Spatial Decor")
         st.write("Architectural decor pieces designed to inspire a sense of balance and spatial awareness in your living environment.")
         st.button("View Decor", key="btn_vaastu")
 
     with col6:
-        st.header("🖼️")
-        st.subheader("Heritage Art")
-        st.write("Intricately crafted photo frames and classical statues inspired by historical iconography, offering a serene, artistic focal point for any room.")
+        st.markdown("## 🖼️")
+        st.markdown("#### Heritage Art")
+        st.write("Intricately crafted photo frames and classical statues inspired by historical iconography, offering a serene, artistic focal point.")
         st.button("View Art", key="btn_deities")
