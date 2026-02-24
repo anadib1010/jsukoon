@@ -5,7 +5,7 @@ import os
 import google.generativeai as genai
 
 # ==========================================
-# THE THEME ENGINE (CSS Injection)
+# THE THEME ENGINE (Upgraded for Eye Comfort!)
 # ==========================================
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Glamorous ✨", "Psychedelic 🌀"])
@@ -14,8 +14,11 @@ if theme == "Peaceful 🌿":
     css = """
     <style>
     .stApp { background-color: #F9FDF9; color: #2E4032; }
-    h1, h2, h3 { color: #4A7055; font-family: 'Helvetica Neue', sans-serif; }
-    .stButton>button { background-color: #4A7055; color: white; border-radius: 10px; border: none; }
+    h1, h2, h3 { color: #4A7055 !important; font-family: 'Helvetica Neue', sans-serif; }
+    /* Soften the input box */
+    textarea { background-color: #FFFFFF !important; color: #2E4032 !important; border: 1px solid #4A7055 !important; }
+    div[data-baseweb="base-input"] { background-color: transparent !important; }
+    .stButton>button, .stFormSubmitButton>button { background-color: #4A7055 !important; color: white !important; border-radius: 10px; border: none; }
     </style>
     """
 elif theme == "Glamorous ✨":
@@ -23,19 +26,24 @@ elif theme == "Glamorous ✨":
     <style>
     .stApp { background-color: #121212; color: #E0E0E0; }
     h1, h2, h3 { color: #D4AF37 !important; font-family: 'Georgia', serif; }
-    .stButton>button { background-color: #D4AF37; color: black; border-radius: 20px; font-weight: bold; border: none; }
+    /* Classy dark charcoal box with gold text */
+    textarea { background-color: #1E1E1E !important; color: #D4AF37 !important; border: 1px solid #D4AF37 !important; }
+    div[data-baseweb="base-input"] { background-color: transparent !important; }
+    .stButton>button, .stFormSubmitButton>button { background-color: #D4AF37 !important; color: black !important; border-radius: 20px; font-weight: bold; border: none; }
     </style>
     """
 else: # Psychedelic 🌀
     css = """
     <style>
     .stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; }
-    h1, h2, h3 { color: #FFFFFF; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; }
-    .stButton>button { background-color: #000000; color: #00ffcc; border: 2px solid #00ffcc; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}
+    h1, h2, h3 { color: #FFFFFF !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; }
+    /* Semi-transparent dark glass box with neon text */
+    textarea { background-color: rgba(0, 0, 0, 0.6) !important; color: #00ffcc !important; border: 2px solid #ff00cc !important; }
+    div[data-baseweb="base-input"] { background-color: transparent !important; }
+    .stButton>button, .stFormSubmitButton>button { background-color: #000000 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}
     </style>
     """
 
-# Apply the paint to the walls!
 st.markdown(css, unsafe_allow_html=True)
 
 
