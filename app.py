@@ -30,17 +30,15 @@ st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
+# Theme CSS
 if theme == "Peaceful 🌿":
-    css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; font-family: 'Helvetica Neue', sans-serif; } textarea { background-color: #FFFFFF !important; color: #2E4032 !important; border: 1px solid #4A7055 !important; } div[data-baseweb="base-input"] { background-color: transparent !important; } .stButton>button, .stFormSubmitButton>button { background-color: #4A7055 !important; color: white !important; border-radius: 10px; border: none; }</style>"""
+    css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; font-family: 'Helvetica Neue', sans-serif; } textarea { background-color: #FFFFFF !important; color: #2E4032 !important; border: 1px solid #4A7055 !important; } .stButton>button { background-color: #4A7055 !important; color: white !important; }</style>"""
 elif theme == "Midnight Calm 🌙":
-    css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; font-family: 'Georgia', serif; } textarea { background-color: #1E1E1E !important; color: #AEC6CF !important; border: 1px solid #AEC6CF !important; } div[data-baseweb="base-input"] { background-color: transparent !important; } .stButton>button, .stFormSubmitButton>button { background-color: #AEC6CF !important; color: #121212 !important; border-radius: 20px; font-weight: bold; border: none; }</style>"""
+    css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; font-family: 'Georgia', serif; } textarea { background-color: #1E1E1E !important; color: #AEC6CF !important; border: 1px solid #AEC6CF !important; } .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; }</style>"""
 else:
-    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; } textarea { background-color: rgba(15, 10, 60, 0.8) !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; } div[data-baseweb="base-input"] { background-color: transparent !important; } .stButton>button, .stFormSubmitButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}</style>"""
+    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; } textarea { background-color: rgba(15, 10, 60, 0.8) !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }</style>"""
 
 st.markdown(css, unsafe_allow_html=True)
-st.sidebar.markdown("---")
-st.sidebar.caption("⚖️ **LEGAL & MEDICAL DISCLAIMER:**")
-st.sidebar.caption("*Sukoon is designed solely for personal mindfulness and aesthetic exploration. It is NOT a medical or psychological tool.*")
 
 # ==========================================
 # ROOM 1: THE JOURNAL
@@ -50,8 +48,7 @@ if page == "My Private Journal 📖":
     
     if st.session_state.emergency_lock:
         st.error("🚨 **CRISIS ALERT: PLEASE GET HELP IMMEDIATELY** 🚨")
-        st.markdown("""### 📞 Resources:
-        * Emergency: 112 | Vandrevala Foundation: 9999 666 555""")
+        st.markdown("*Emergency: 112 | Vandrevala Foundation: 9999 666 555*")
     else:
         st.write("Welcome. Your thoughts here are completely private.")
 
@@ -61,16 +58,22 @@ if page == "My Private Journal 📖":
             if audio_source == "App Audio Library (Data Saver)":
                 local_choice = st.selectbox("Choose an audio track:", ["Forest 🌿", "Waves 🌊", "Birds 🌲", "Wind 🍃", "Flute 🎶"])
                 
-                if local_choice == "Forest 🌿":
-                    st.audio("forest.mp3") 
-                elif local_choice == "Waves 🌊":
-                    st.audio("waves.mp3")
-                elif local_choice == "Birds 🌲":
-                    st.audio("birds.mp3")
-                elif local_choice == "Wind 🍃":
-                    st.audio("wind.mp3")
-                elif local_choice == "Flute 🎶":
-                    st.audio("flute.mp3")
+                # Dictionary to map names to files
+                audio_files = {
+                    "Forest 🌿": "forest.mp3",
+                    "Waves 🌊": "waves.mp3",
+                    "Birds 🌲": "birds.mp3",
+                    "Wind 🍃": "wind.mp3",
+                    "Flute 🎶": "flute.mp3"
+                }
+                
+                target_file = audio_files[local_choice]
+                
+                # SAFETY CHECK: Only play if file exists
+                if os.path.exists(target_file):
+                    st.audio(target_file)
+                else:
+                    st.warning(f"⚠️ Audio file '{target_file}' not found in vault. Please upload it to GitHub.")
                 
             elif audio_source == "YouTube Video Streams":
                 stream_choice = st.selectbox("Choose a stream:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
@@ -81,7 +84,6 @@ if page == "My Private Journal 📖":
         with st.form("diary_form"):
             diary_entry = st.text_area("Dear Diary...")
             submitted = st.form_submit_button("Share my thoughts")
-            st.caption("⚠️ *Disclaimer: Not a medical tool. Seek professional help if in distress.*")
             
             if submitted:
                 if diary_entry:
