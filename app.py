@@ -52,9 +52,6 @@ st.sidebar.caption("*Sukoon is designed solely for personal mindfulness, journal
 if page == "My Private Journal 📖":
     st.title("🌿 Sukoon: Your Peaceful Space")
     
-    # ---------------------------------------------------------
-    # CRISIS INTERVENTION SYSTEM
-    # ---------------------------------------------------------
     if st.session_state.emergency_lock:
         st.error("🚨 **CRISIS ALERT: PLEASE GET HELP IMMEDIATELY** 🚨")
         st.write("Your safety is the absolute priority right now. We have detected phrases indicating you may be in immediate danger.")
@@ -68,24 +65,34 @@ if page == "My Private Journal 📖":
         """)
         st.info("To ensure your safety, the AI journal has been temporarily locked. Please call one of the numbers above or go to the nearest hospital.")
     
-    # NORMAL JOURNAL VIEW (If no crisis detected)
     else:
         st.write("Welcome. Your thoughts here are completely private and will vanish when you close the page.")
 
         # ---------------------------------------------------------
-        # PEACEFUL SOUNDSCAPES
+        # THE DUAL AUDIO ENGINE
         # ---------------------------------------------------------
         with st.expander("🎵 Play Peaceful Sounds"):
-            st.write("Select a soundscape to play in the background while you journal:")
-            sound_choice = st.selectbox("Choose your ambiance:", 
-                ["Gentle Rain 🌧️", "Ocean Waves 🌊", "Soothing Flute 🎶"])
+            st.write("Select a background soundscape to play while you journal:")
+            
+            # The Toggle Switch
+            audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
+            
+            if audio_source == "App Audio Library (Data Saver)":
+                local_choice = st.selectbox("Choose an audio track:", ["Soft Rain 🌧️", "Gentle Waves 🌊"])
+                if local_choice == "Soft Rain 🌧️":
+                    st.audio("https://www.soundjay.com/nature/sounds/rain-01.mp3")
+                elif local_choice == "Gentle Waves 🌊":
+                    st.audio("https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3")
+                st.caption("*(Audio-only tracks use significantly less mobile data.)*")
                 
-            if sound_choice == "Gentle Rain 🌧️":
-                st.video("https://www.youtube.com/watch?v=BIcl7DrBcjg")
-            elif sound_choice == "Ocean Waves 🌊":
-                st.video("https://www.youtube.com/watch?v=unvd_fjiiAQ")
-            elif sound_choice == "Soothing Flute 🎶":
-                st.video("https://www.youtube.com/watch?v=UF5H3EfvXTk")
+            elif audio_source == "YouTube Video Streams":
+                stream_choice = st.selectbox("Choose a video stream:", ["Forest Rain 🌧️", "Ocean Sunset 🌊", "Soothing Flute 🎶"])
+                if stream_choice == "Forest Rain 🌧️":
+                    st.video("https://www.youtube.com/watch?v=BIcl7DrBcjg")
+                elif stream_choice == "Ocean Sunset 🌊":
+                    st.video("https://www.youtube.com/watch?v=unvd_fjiiAQ")
+                elif stream_choice == "Soothing Flute 🎶":
+                    st.video("https://www.youtube.com/watch?v=UF5H3EfvXTk")
 
         with st.form("diary_form"):
             diary_entry = st.text_area("Dear Diary...")
