@@ -1,11 +1,10 @@
 import streamlit as st
-import json
 from datetime import datetime
 import os
 import google.generativeai as genai
 
 # ==========================================
-# THE THEME ENGINE (Perfected Colors!)
+# THE THEME ENGINE 
 # ==========================================
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
@@ -35,7 +34,6 @@ else: # Psychedelic 🌀
     <style>
     .stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; }
     h1, h2, h3 { color: #FFFFFF !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Courier New', monospace; }
-    /* Upgraded to a deep, dark Psychedelic Indigo-Blue glass box */
     textarea { background-color: rgba(15, 10, 60, 0.8) !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; }
     div[data-baseweb="base-input"] { background-color: transparent !important; }
     .stButton>button, .stFormSubmitButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; font-weight: bold; box-shadow: 0 0 10px #00ffcc;}
@@ -44,7 +42,6 @@ else: # Psychedelic 🌀
 
 st.markdown(css, unsafe_allow_html=True)
 
-
 # ==========================================
 # WAKE UP THE SUPER BRAIN
 # ==========================================
@@ -52,25 +49,26 @@ api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 super_brain = genai.GenerativeModel('gemini-2.5-flash')
 
+# ==========================================
+# THE PRIVATE SANDBOX (Session State Memory)
+# ==========================================
+# Check if this user has a temporary journal yet. If not, make one!
+if "private_journal" not in st.session_state:
+    st.session_state.private_journal = []
+
 def save_journal(user_text, ai_response, hidden_mood):
     now = datetime.now()
-    today = now.strftime("%Y-%m-%d %H:%M")
-    entry = {"date": today, "diary": user_text, "ai_advice": ai_response, "mood": hidden_mood}
-    try:
-        with open("super_journal.json", "r") as f:
-            history = json.load(f)
-    except:
-        history = []
-    history.append(entry)
-    with open("super_journal.json", "w") as f:
-        json.dump(history, f)
-
+    today = now.strftime("%H:%M") # Just showing time since it's a daily sandbox
+    entry = {"time": today, "diary": user_text, "ai_advice": ai_response, "mood": hidden_mood}
+    
+    # Save it directly into the user's temporary browser memory
+    st.session_state.private_journal.append(entry)
 
 # ==========================================
 # THE FACE
 # ==========================================
 st.title("🌿 Sukoon: Your Peaceful Space")
-st.write("Welcome. Write your thoughts below, and your AI guide will respond.")
+st.write("Welcome. Your thoughts here are completely private and will vanish when you close the page.")
 
 with st.form("diary_form"):
     diary_entry = st.text_area("Dear Diary...")
@@ -104,24 +102,23 @@ with st.form("diary_form"):
                 st.success("Your guide has replied:")
                 st.write(comforting_message)
                 st.caption(f"*(Silent detection: The AI sensed you are feeling {detected_mood})*")
+                
+                # Save to the private sandbox!
                 save_journal(diary_entry, comforting_message, detected_mood)
-
 
 # ==========================================
 # THE MANAGER
 # ==========================================
 st.write("---")
-st.subheader("📖 My AI Journal History")
+st.subheader("📖 Today's Private Thoughts")
 
-try:
-    with open("super_journal.json", "r") as f:
-        history = json.load(f)
-        
-    for entry in reversed(history):
-        st.write("🕒", entry["date"])
+# Read backwards from the sandbox memory
+if len(st.session_state.private_journal) == 0:
+    st.write("Your sand garden is empty. Write your first entry above!")
+else:
+    for entry in reversed(st.session_state.private_journal):
+        st.write("🕒", entry["time"])
         st.write(f"**Detected Mood:** {entry.get('mood', 'Unknown')}") 
         st.write("**You:**", entry["diary"])
         st.write("**AI Guide:**", entry["ai_advice"])
         st.write("-")
-except:
-    st.write("Your journal is empty. Write your first entry above!")
