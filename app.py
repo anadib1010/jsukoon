@@ -43,10 +43,21 @@ font_css = """
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif !important; }
 h1, h2, h3, h4 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* Hide Sidebar elements to kill the keyboard_double_arrow glitch */
+/* Hide Sidebar glitches */
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], 
 svg, span[data-baseweb="icon"], [data-testid="stExpanderChevron"] {
     display: none !important;
+}
+
+/* FIX: Top Navigation Button Styling */
+div[data-testid="stHorizontalBlock"] button {
+    height: 40px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    min-width: 120px !important;
+    white-space: nowrap !important;
+    font-size: 15px !important;
+    border-radius: 10px !important;
 }
 
 /* Marketplace Hover Effect */
@@ -55,15 +66,8 @@ div[data-testid="stColumn"] {
     transition: all 0.4s ease;
     border-radius: 20px;
 }
-
 div[data-testid="stColumn"]:hover {
     transform: translateY(-8px);
-}
-
-.stButton>button { 
-    font-weight: 300 !important; 
-    border-radius: 12px !important; 
-    border: 1px solid rgba(0,0,0,0.1);
 }
 </style>
 """
@@ -75,24 +79,22 @@ if "current_page" not in st.session_state:
 # ==========================================
 # THE TOP NAVIGATION BAR
 # ==========================================
-nav_left, nav_mid, nav_right = st.columns([1, 2, 1])
+# Brand Title
+st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
 
-with nav_left:
-    st.markdown("<h2 style='margin-top: -10px;'>Sukoon</h2>", unsafe_allow_html=True)
+# Navigation Buttons in a single clean row
+nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([1, 1, 1, 1])
 
-with nav_mid:
-    btn_col1, btn_col2, btn_col3 = st.columns(3)
-    with btn_col1:
-        if st.button("Journal", use_container_width=True): st.session_state.current_page = "Journal"
-    with btn_col2:
-        if st.button("Market", use_container_width=True): st.session_state.current_page = "Marketplace"
-    with btn_col3:
-        if st.button("Vision", use_container_width=True): st.session_state.current_page = "Vision"
-
-with nav_right:
+with nav_col1:
+    if st.button("Journal", use_container_width=True): st.session_state.current_page = "Journal"
+with nav_col2:
+    if st.button("Marketplace", use_container_width=True): st.session_state.current_page = "Marketplace"
+with nav_col3:
+    if st.button("Our Vision", use_container_width=True): st.session_state.current_page = "Vision"
+with nav_col4:
     theme_choice = st.radio("Vibe", ["Peaceful", "Midnight"], horizontal=True, label_visibility="collapsed")
 
-# Apply Theme Colors with Fixed Quotes
+# Apply Theme Colors
 if theme_choice == "Peaceful":
     css = """<style>
     .stApp { background-color: #F9FDF9; color: #2E4032; } 
@@ -118,7 +120,7 @@ if st.session_state.current_page == "Journal":
     if st.session_state.emergency_lock:
         st.error("🚨 CRISIS ALERT")
     else:
-        st.markdown(f"<div style='text-align: center; padding: 20px;'><h3><i>{get_daily_quote()}</i></h3></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: center; padding: 10px;'><h3><i>{get_daily_quote()}</i></h3></div>", unsafe_allow_html=True)
         
         st.markdown("#### 🎵 Ambient Sounds")
         audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True, label_visibility="collapsed")
@@ -157,7 +159,7 @@ elif st.session_state.current_page == "Marketplace":
         if os.path.exists(img_file): st.image(img_file, use_container_width=True)
         st.write(desc)
         wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:12px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer; font-family:Inter;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:12px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding stones.")
@@ -168,4 +170,4 @@ elif st.session_state.current_page == "Vision":
     st.markdown("## Our Vision")
     st.write("Sukoon exists to provide peace in a loud world.")
     wa_support = f"https://wa.me/919876543210?text=Support"
-    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="border-radius:10px; padding:12px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold; font-family:Inter;">Message on WhatsApp</button></a>', unsafe_allow_html=True)
+    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="border-radius:10px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">Message on WhatsApp</button></a>', unsafe_allow_html=True)
