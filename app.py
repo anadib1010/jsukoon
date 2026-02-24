@@ -5,6 +5,10 @@ import google.generativeai as genai
 import urllib.parse
 from google.api_core import exceptions
 
+# --- CRITICAL: SIDEBAR CONFIGURATION ---
+# This line tells the app to stay in 'expanded' mode to avoid the glitchy toggle button
+st.set_page_config(page_title="Sukoon", initial_sidebar_state="expanded")
+
 # ==========================================
 # WAKE UP THE SUPER BRAIN
 # ==========================================
@@ -43,45 +47,29 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### 🎨 Atmosphere")
 theme = st.sidebar.selectbox("Vibe", ["Peaceful", "Midnight", "Psychedelic"], label_visibility="collapsed")
 
-# --- THE FINAL CSS OVERRIDE ---
+# --- THE FINAL "GLITCH-KILLER" CSS ---
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif !important; }
 h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* FIX: Hide the 'keyboard_double_arrow' text and all glitchy icons */
-span[class*="e1f1d6gn2"], 
-svg, 
-[data-testid="stSidebarCollapseIcon"],
-span:contains("keyboard_double_arrow_right"),
-span:contains("keyboard_double_arrow_left") {
-    font-size: 0 !important;
-    color: transparent !important;
+/* HIDE THE SIDEBAR TOGGLE BUTTON ENTIRELY */
+button[kind="headerNoPadding"] {
     display: none !important;
 }
 
-/* Force the Sidebar toggle button to look clean */
-button[kind="headerNoPadding"] {
-    background-color: rgba(0,0,0,0.05) !important;
-    border-radius: 50% !important;
-    width: 30px !important;
-    height: 30px !important;
+/* HIDE ALL MATERIAL ICON TEXT STRINGS */
+span, div, button {
+    font-family: 'Inter', sans-serif !important;
 }
 
-/* Add a simple manual arrow back to the sidebar toggle */
-button[kind="headerNoPadding"]::after {
-    content: "☰";
-    font-size: 18px;
-    color: inherit;
-    position: absolute;
-    left: 8px;
-    top: 2px;
-}
-
-div[data-baseweb="select"] {
-    border: 1px solid rgba(0,0,0,0.1) !important;
-    border-radius: 4px !important;
+/* Specific text-string eraser */
+[data-testid="stSidebarCollapseIcon"], 
+:contains("keyboard_double_arrow") {
+    display: none !important;
+    visibility: hidden !important;
+    font-size: 0 !important;
 }
 
 .stButton>button { font-weight: 300 !important; border-radius: 10px !important; }
