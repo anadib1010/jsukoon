@@ -6,10 +6,12 @@ import urllib.parse
 from google.api_core import exceptions
 
 # ==========================================
-# WAKE UP THE SUPER BRAIN
+# WAKE UP THE SUPER BRAIN (Updated Model Name)
 # ==========================================
 api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
+
+# We use gemini-1.5-flash which is the current most stable free model
 super_brain = genai.GenerativeModel('gemini-1.5-flash')
 
 if "private_journal" not in st.session_state:
@@ -19,9 +21,10 @@ if "emergency_lock" not in st.session_state:
 
 def get_daily_quote():
     try:
-        prompt = "Create a unique, 1-sentence mindfulness quote."
-        response = super_brain.generate_content(prompt)
-        return response.text
+        # Prompt for a fresh quote
+        q_prompt = "Generate a unique 1-sentence mindfulness quote. No famous ones."
+        q_response = super_brain.generate_content(q_prompt)
+        return q_response.text
     except:
         return "Peace begins with a single, conscious breath."
 
@@ -37,39 +40,35 @@ def save_journal(user_text, ai_response, hidden_mood):
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️", "Our Vision 🕊️"])
 
-MY_NUMBER = "919876543210" # Your number
+MY_NUMBER = "919876543210" # Update to your number
 
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
-# --- UPDATED CLEAN TYPOGRAPHY CSS ---
+# --- THIN ELEGANT FONTS ---
+font_css = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
+html, body, [class*="st-"] { font-family: 'Inter', sans-serif; }
+h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
+.stButton>button { font-weight: 300 !important; border-radius: 20px !important; }
+</style>
+"""
+st.markdown(font_css, unsafe_allow_html=True)
+
 if theme == "Peaceful 🌿":
-    css = """<style>
-    .stApp { background-color: #F9FDF9; color: #2E4032; } 
-    h1, h2, h3 { font-weight: 300 !important; color: #4A7055 !important; font-family: 'Inter', 'Helvetica Neue', sans-serif !important; letter-spacing: -0.5px; } 
-    .stButton>button { background-color: #4A7055 !important; color: white !important; border-radius: 20px; border: none; }
-    </style>"""
+    css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; } .stButton>button { background-color: #4A7055 !important; color: white !important; }</style>"""
 elif theme == "Midnight Calm 🌙":
-    css = """<style>
-    .stApp { background-color: #121212; color: #E0E0E0; } 
-    h1, h2, h3 { font-weight: 300 !important; color: #AEC6CF !important; font-family: 'Inter', 'Georgia', serif !important; letter-spacing: 0.5px; } 
-    .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; border-radius: 20px; border: none; }
-    </style>"""
+    css = """<style>.stApp { background-color: #121212; color: #E0E0E0; } h1, h2, h3 { color: #AEC6CF !important; } .stButton>button { background-color: #AEC6CF !important; color: #121212 !important; }</style>"""
 else:
-    css = """<style>
-    .stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } 
-    h1, h2, h3 { font-weight: 300 !important; color: #FFFFFF !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif !important; } 
-    .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 2px solid #00ffcc !important; border-radius: 20px; }
-    </style>"""
+    css = """<style>.stApp { background-image: linear-gradient(120deg, #ff00cc, #3333ff, #00ffcc); background-size: 400% 400%; color: white; } h1, h2, h3 { color: #FFFFFF !important; } .stButton>button { background-color: #0A0520 !important; color: #00ffcc !important; border: 1px solid #00ffcc !important; }</style>"""
 
 st.markdown(css, unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
-feedback_msg = urllib.parse.quote("Hi! I have some feedback or a question about the Sukoon app.")
+feedback_msg = urllib.parse.quote("Hi! I have a question about the Sukoon app.")
 st.sidebar.markdown(f'''<a href="https://wa.me/{MY_NUMBER}?text={feedback_msg}" target="_blank"><button style="width:100%; border-radius:8px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">Send Feedback / Support</button></a>''', unsafe_allow_html=True)
-st.sidebar.caption("⚖️ **LEGAL & MEDICAL DISCLAIMER:**")
-st.sidebar.caption("*Sukoon is designed solely for personal mindfulness exploration. It is NOT a medical tool.*")
 
 # ==========================================
 # ROOM 1: THE JOURNAL
@@ -79,7 +78,7 @@ if page == "My Private Journal 📖":
     
     if st.session_state.emergency_lock:
         st.error("🚨 **CRISIS ALERT** 🚨")
-        st.markdown("*Emergency: 112 | Vandrevala Foundation: 9999 666 555*")
+        st.write("Emergency: 112 | Vandrevala Foundation: 9999 666 555")
     else:
         st.markdown(f"### *Today's Reflection*")
         st.info(f"“{get_daily_quote()}”")
@@ -106,14 +105,19 @@ if page == "My Private Journal 📖":
                     st.session_state.emergency_lock = True
                     st.rerun()
                 else:
-                    with st.spinner("Your guide is listening..."):
+                    with st.spinner("Listening..."):
                         try:
-                            prompt = f"User: '{diary_entry}'. Celebration if happy, soft empathy if sad, career mentorship for office stress, end with breathing exercise."
-                            response = super_brain.generate_content(prompt)
+                            # The instructions for the AI
+                            instr = f"User says: '{diary_entry}'. Celebrate joy, offer soft empathy for grief, or provide 3 professional tips for toxic workplace stress. End with a breathing exercise."
+                            response = super_brain.generate_content(instr)
                             st.success(response.text)
                             save_journal(diary_entry, response.text, "Processed")
+                        except exceptions.NotFound:
+                            st.error("🏮 AI Connection Error: Please contact support to check the model settings.")
                         except exceptions.ResourceExhausted:
-                            st.warning("🏮 The Guide is currently meditating. Please wait 60 seconds.")
+                            st.warning("🏮 The Guide is meditating. Please wait 60 seconds.")
+                        except Exception as e:
+                            st.error("The Guide is in silence. Try again shortly.")
 
         st.write("---")
         for entry in reversed(st.session_state.private_journal):
@@ -130,7 +134,7 @@ elif page == "The Marketplace 🛍️":
         else: st.warning(f"📸 Image missing.")
         st.write(desc)
         wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer; font-family:Inter;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding stones.")
@@ -143,22 +147,9 @@ elif page == "The Marketplace 🛍️":
     with c6: display_product("Heritage Art", "art.jpg", "Serene art.")
 
 # ==========================================
-# ROOM 3: OUR VISION (ABOUT FOUNDER)
+# ROOM 3: OUR VISION
 # ==========================================
 elif page == "Our Vision 🕊️":
     st.title("The Story of Sukoon")
-    
-    col_a, col_b = st.columns([1, 2])
-    with col_a:
-        if os.path.exists("founder.jpg"): st.image("founder.jpg", caption="Your Founder")
-        else: st.markdown("## 🧘‍♂️")
-    
-    with col_b:
-        st.subheader("Welcome to our sanctuary.")
-        st.write("""
-        **Sukoon** was born out of a simple realization: in an increasingly loud world, 
-        true luxury is silence and mental clarity. 
-        
-        Our founder envisioned a space where technology doesn't distract you, 
-        लेकिन (but) actually helps you return to yourself. 
-        """)
+    st.subheader("Welcome to our sanctuary.")
+    st.write("Sukoon was born out of a realization: in an increasingly loud world, true luxury is silence and mental clarity.")
