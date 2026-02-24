@@ -19,7 +19,7 @@ if "emergency_lock" not in st.session_state:
 
 def get_daily_quote():
     try:
-        q_prompt = "Generate a unique 1-sentence mindfulness quote. No famous ones."
+        q_prompt = "Generate a unique 1-sentence mindfulness quote."
         q_response = super_brain.generate_content(q_prompt)
         return q_response.text
     except:
@@ -37,28 +37,54 @@ def save_journal(user_text, ai_response, hidden_mood):
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️", "Our Vision 🕊️"])
 
-MY_NUMBER = "919876543210" # Update with your number
+MY_NUMBER = "919876543210" # Your number
 
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
-theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
+theme = st.sidebar.selectbox("Vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
-# --- ADVANCED UI FIXES FOR FONTS AND OVERLAP ---
+# --- ADVANCED UI FIXES FOR OVERLAPPING ARROWS ---
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap');
-html, body, [class*="st-"] { font-family: 'Inter', sans-serif; }
-h1, h2, h3 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* Fix for the overlapping arrow in dropdowns */
-div[data-baseweb="select"] {
-    font-size: 14px !important;
-}
-div[data-testid="stSelectbox"] label {
-    font-weight: 300 !important;
+/* Global Font */
+html, body, [class*="st-"] { 
+    font-family: 'Inter', sans-serif !important; 
 }
 
-.stButton>button { font-weight: 300 !important; border-radius: 20px !important; }
+/* Thin Headers */
+h1, h2, h3 { 
+    font-weight: 200 !important; 
+    letter-spacing: -1px !important; 
+}
+
+/* FIX: Prevent arrow_down from superimposing */
+div[data-baseweb="select"] > div {
+    padding-right: 40px !important;
+}
+
+/* Hides the glitchy 'arrow_drop_down' text some browsers show */
+span[data-baseweb="icon"] {
+    display: none !important;
+}
+
+/* Custom dropdown arrow for a clean look */
+div[data-baseweb="select"]::after {
+    content: "▼";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.stButton>button { 
+    font-weight: 300 !important; 
+    border-radius: 20px !important; 
+}
 </style>
 """
 st.markdown(font_css, unsafe_allow_html=True)
@@ -89,16 +115,15 @@ if page == "My Private Journal 📖":
         st.info(f"“{get_daily_quote()}”")
         
         with st.expander("🎵 Play Peaceful Sounds"):
-            audio_source = st.radio("Format:", ["App Library", "YouTube Streams"])
+            audio_source = st.radio("Source:", ["App Library", "YouTube Streams"])
             if audio_source == "App Library":
-                # Shortened labels to prevent the arrow overlap
-                local_choice = st.selectbox("Select Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"])
+                local_choice = st.selectbox("Choose Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"])
                 audio_files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
                 target_file = audio_files[local_choice]
                 if os.path.exists(target_file): st.audio(target_file)
-                else: st.warning(f"⚠️ Sound file missing.")
+                else: st.warning(f"⚠️ Missing file.")
             elif audio_source == "YouTube Streams":
-                stream_choice = st.selectbox("Stream:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
+                stream_choice = st.selectbox("Choose Video:", ["Forest Rain", "Ocean Sunset", "Soothing Flute"])
                 if stream_choice == "Forest Rain": st.video("https://www.youtube.com/watch?v=BIcl7DrBcjg")
                 elif stream_choice == "Ocean Sunset": st.video("https://www.youtube.com/watch?v=unvd_fjiiAQ")
                 elif stream_choice == "Soothing Flute": st.video("https://www.youtube.com/watch?v=UF5H3EfvXTk")
@@ -132,7 +157,7 @@ elif page == "The Marketplace 🛍️":
     def display_product(label, img_file, desc):
         st.markdown(f"#### {label}")
         if os.path.exists(img_file): st.image(img_file, use_container_width=True)
-        else: st.warning(f"📸 Image missing.")
+        else: st.warning(f"📸 Missing image.")
         st.write(desc)
         wa_url = f"https://wa.me/{MY_NUMBER}?text=" + urllib.parse.quote(f"Interest: {label}")
         st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 Buy via WhatsApp</button></a>', unsafe_allow_html=True)
