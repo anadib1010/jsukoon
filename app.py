@@ -59,9 +59,10 @@ if page == "My Private Journal 📖":
             audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
             
             if audio_source == "App Audio Library (Data Saver)":
-                local_choice = st.selectbox("Choose an audio track:", ["Forest", "Waves 🌊", "Birds 🌲", "Wind 🍃", "Flute 🎶"])
-                if local_choice == "Forest 🌧️":
-                    st.audio("forest.mp3")
+                local_choice = st.selectbox("Choose an audio track:", ["Forest 🌿", "Waves 🌊", "Birds 🌲", "Wind 🍃", "Flute 🎶"])
+                
+                if local_choice == "Forest 🌿":
+                    st.audio("forest.mp3") 
                 elif local_choice == "Waves 🌊":
                     st.audio("waves.mp3")
                 elif local_choice == "Birds 🌲":
