@@ -13,7 +13,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
     try:
-        # Discovery Logic to find the best available model
+        # Discovery Logic
         models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         target_model = next((m for m in models if 'flash' in m), models[0])
         super_brain = genai.GenerativeModel(target_model)
@@ -61,7 +61,8 @@ st.markdown("---")
 
 # --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
-    st.markdown("<div style='text-align: center;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
+    # Replaced the quote function with a static greeting
+    st.markdown("<div style='text-align: center; padding: 20px;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
     
     st.markdown("#### 🎵 Ambient Sounds")
     audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
@@ -101,7 +102,6 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Marketplace":
     st.markdown("## The Marketplace")
     st.write("Grounding items for your journey.")
-    # Product display logic omitted for clean MVP but can be added back easily
 
 elif st.session_state.current_page == "Vision":
     st.markdown("## Our Vision")
