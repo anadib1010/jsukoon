@@ -46,7 +46,7 @@ if theme_choice == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (STRATEGY: NO F-STRINGS TO AVOID ERRORS) ---
+# --- CSS ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -59,7 +59,6 @@ css_template = """
     [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg { display: none !important; }
 </style>
 """
-# Manually replacing values to avoid f-string curly bracket conflicts
 clean_css = css_template.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_HOV", card_hover).replace("V_BLUE", soft_blue)
 st.markdown(clean_css, unsafe_allow_html=True)
 st.markdown("---")
@@ -68,7 +67,6 @@ st.markdown("---")
 if st.session_state.current_page == "Journal":
     st.markdown("<div style='text-align: center; padding: 20px;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
     audio_type = st.radio("Ambient Sounds", ["Silent", "Library", "YouTube"], horizontal=True)
-    
     if audio_type == "Library":
         choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
@@ -76,10 +74,7 @@ if st.session_state.current_page == "Journal":
         if target and os.path.exists(target): st.audio(target)
     elif audio_type == "YouTube":
         v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-        rain_url = "https://www.youtube.com/watch?v=BIcl7DrBcjg"
-        ocean_url = "https://www.youtube.com/watch?v=unvd_fjiiAQ"
-        zen_url = "https://www.youtube.com/watch?v=UF5H3EfvXTk"
-        v_links = {"Rain": rain_url, "Ocean": ocean_url, "Zen": zen_url}
+        v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
         st.video(v_links[v_choice])
     
     st.markdown("---")
@@ -107,4 +102,11 @@ elif st.session_state.current_page == "Marketplace":
         if os.path.exists(img_file): st.image(img_file, use_container_width=True)
         st.write(desc)
         wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote("Interest: " + label)
-        st.markdown('<a href="' + wa_url + '" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:' + soft_blue + '; color:#0A0E0B; border:none; font-weight:bold
+        # BROKEN LINE FIX: Separated into smaller chunks
+        btn_style = "width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer;"
+        btn_html = f'<a href="{wa_url}" target="_blank">'
+        btn_html += f'<button style="{btn_style} background-color:{soft_blue}; color:#0A0E0B;">'
+        btn_html += '💬 WhatsApp</button></a>'
+        st.markdown(btn_html, unsafe_allow_html=True)
+
+    c1, c2,
