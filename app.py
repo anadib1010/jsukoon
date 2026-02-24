@@ -49,7 +49,7 @@ svg, span[data-baseweb="icon"], [data-testid="stExpanderChevron"] {
     display: none !important;
 }
 
-/* FIX: Top Navigation Button Styling */
+/* Navigation Button Styling */
 div[data-testid="stHorizontalBlock"] button {
     height: 40px !important;
     padding-left: 20px !important;
@@ -79,10 +79,8 @@ if "current_page" not in st.session_state:
 # ==========================================
 # THE TOP NAVIGATION BAR
 # ==========================================
-# Brand Title
 st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
 
-# Navigation Buttons in a single clean row
 nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([1, 1, 1, 1])
 
 with nav_col1:
@@ -103,9 +101,21 @@ if theme_choice == "Peaceful":
     div[data-testid="stColumn"]:hover { box-shadow: 0px 15px 30px rgba(74, 112, 85, 0.15); background-color: rgba(255,255,255,0.5); }
     </style>"""
 else:
+    # MIDNIGHT THEME FIXES
     css = """<style>
     .stApp { background-color: #0A0E0B; color: #E0E0E0; } 
-    h1, h2, h3, h4 { color: #AEC6CF !important; } 
+    h1, h2, h3, h4, label, .stMarkdown p { color: #AEC6CF !important; } 
+    
+    /* Fix for radio labels like 'Silent', 'Library', 'Peaceful' etc */
+    div[data-testid="stWidgetLabel"] p, div[data-testid="stRadio"] label { color: #AEC6CF !important; }
+    
+    /* Text Box Styling (Dark Grey) */
+    textarea { background-color: #1E1E1E !important; color: #E0E0E0 !important; border: 1px solid #333 !important; }
+    
+    /* Consult Guide Button (Grey) */
+    div.stForm button { background-color: #333333 !important; color: #AEC6CF !important; border: 1px solid #444 !important; }
+    div.stForm button:hover { background-color: #444444 !important; }
+
     .stButton>button { background-color: transparent; color: #AEC6CF; border: 1px solid #AEC6CF; } 
     div[data-testid="stColumn"]:hover { box-shadow: 0px 15px 30px rgba(255, 255, 255, 0.05); background-color: rgba(255,255,255,0.02); }
     </style>"""
@@ -123,7 +133,7 @@ if st.session_state.current_page == "Journal":
         st.markdown(f"<div style='text-align: center; padding: 10px;'><h3><i>{get_daily_quote()}</i></h3></div>", unsafe_allow_html=True)
         
         st.markdown("#### 🎵 Ambient Sounds")
-        audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True, label_visibility="collapsed")
+        audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
         
         if audio_type == "Library":
             choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
@@ -170,4 +180,4 @@ elif st.session_state.current_page == "Vision":
     st.markdown("## Our Vision")
     st.write("Sukoon exists to provide peace in a loud world.")
     wa_support = f"https://wa.me/919876543210?text=Support"
-    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="border-radius:10px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">Message on WhatsApp</button></a>', unsafe_allow_html=True)
+    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="border-radius:10px; padding:12px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold; font-family:Inter;">Message on WhatsApp</button></a>', unsafe_allow_html=True)
