@@ -46,7 +46,7 @@ if theme_choice == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (Replacement Strategy) ---
+# --- CSS ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -69,25 +69,3 @@ if st.session_state.current_page == "Journal":
     audio_type = st.radio("Ambient Sounds", ["Silent", "Library", "YouTube"], horizontal=True)
     if audio_type == "Library":
         choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-        files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-        target = files.get(choice)
-        if target and os.path.exists(target): st.audio(target)
-    elif audio_type == "YouTube":
-        v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-        v_links = {
-            "Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", 
-            "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", 
-            "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"
-        }
-        st.video(v_links[v_choice])
-    
-    st.markdown("---")
-    with st.form("diary_form", clear_on_submit=True):
-        diary_entry = st.text_area("What is on your mind today?")
-        if st.form_submit_button("Consult Guide"):
-            if super_brain and diary_entry:
-                with st.spinner("Listening..."):
-                    try:
-                        resp = super_brain.generate_content("Respond to: " + diary_entry).text
-                        st.success(resp)
-                        st.session_state.private_journal.append({"time": datetime
