@@ -75,14 +75,29 @@ if page == "My Private Journal 📖":
             st.write("Select a background soundscape to play while you journal:")
             
             # The Toggle Switch
-            audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
-            
-            if audio_source == "App Audio Library (Data Saver)":
-                local_choice = st.selectbox("Choose an audio track:", ["Soft Rain 🌧️", "Gentle Waves 🌊"])
-                if local_choice == "Soft Rain 🌧️":
-                    st.audio("https://upload.wikimedia.org/wikipedia/commons/b/b5/Rain_on_a_Window.ogg")
-                elif local_choice == "Gentle Waves 🌊":
-                    st.audio("https://upload.wikimedia.org/wikipedia/commons/1/1a/Waves_at_the_beach.ogg")
+           if audio_source == "App Audio Library (Data Saver)":
+                local_choice = st.selectbox("Choose an audio track:", [
+                    "Founder's A Cappella 🎤", 
+                    "Peaceful Rain 🌧️", 
+                    "Ocean Waves 🌊", 
+                    "Forest Birds 🌲", 
+                    "Soft Wind 🍃", 
+                    "Zen Flute 🎶"
+                ])
+                
+                if local_choice == "Founder's A Cappella 🎤":
+                    st.audio("mysong.mp3") # <--- Your file names go here
+                elif local_choice == "Peaceful Rain 🌧️":
+                    st.audio("rain.mp3")
+                elif local_choice == "Ocean Waves 🌊":
+                    st.audio("ocean.mp3")
+                elif local_choice == "Forest Birds 🌲":
+                    st.audio("birds.mp3")
+                elif local_choice == "Soft Wind 🍃":
+                    st.audio("wind.mp3")
+                elif local_choice == "Zen Flute 🎶":
+                    st.audio("flute.mp3")
+                
                 st.caption("*(Audio-only tracks use significantly less mobile data.)*")
                 
             elif audio_source == "YouTube Video Streams":
