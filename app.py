@@ -16,6 +16,15 @@ if "private_journal" not in st.session_state:
 if "emergency_lock" not in st.session_state:
     st.session_state.emergency_lock = False
 
+# This function asks the AI for a unique quote
+def get_daily_quote():
+    try:
+        prompt = "Generate one short, powerful, and unique mindfulness quote. Do not use famous quotes; create a new one. Max 15 words."
+        response = super_brain.generate_content(prompt)
+        return response.text
+    except:
+        return "Peace begins with a single breath."
+
 def save_journal(user_text, ai_response, hidden_mood):
     now = datetime.now()
     today = now.strftime("%H:%M")
@@ -28,14 +37,12 @@ def save_journal(user_text, ai_response, hidden_mood):
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️"])
 
-# SET YOUR WHATSAPP NUMBER HERE
-MY_NUMBER = "918882850790" # Replace with your real number
+MY_NUMBER = "919876543210" # Replace with your real number
 
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
 theme = st.sidebar.selectbox("Choose your vibe:", ["Peaceful 🌿", "Midnight Calm 🌙", "Psychedelic 🌀"])
 
-# Theme CSS
 if theme == "Peaceful 🌿":
     css = """<style>.stApp { background-color: #F9FDF9; color: #2E4032; } h1, h2, h3 { color: #4A7055 !important; } .stButton>button { background-color: #4A7055 !important; color: white !important; }</style>"""
 elif theme == "Midnight Calm 🌙":
@@ -45,17 +52,10 @@ else:
 
 st.markdown(css, unsafe_allow_html=True)
 
-# --- FEEDBACK BUTTON IN SIDEBAR ---
 st.sidebar.markdown("---")
 st.sidebar.subheader("💬 Help & Community")
 feedback_msg = urllib.parse.quote("Hi! I have some feedback or a question about the Sukoon app.")
-st.sidebar.markdown(f'''
-    <a href="https://wa.me/{MY_NUMBER}?text={feedback_msg}" target="_blank">
-        <button style="width:100%; border-radius:8px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">
-            Send Feedback / Support
-        </button>
-    </a>
-    ''', unsafe_allow_html=True)
+st.sidebar.markdown(f'''<a href="https://wa.me/{MY_NUMBER}?text={feedback_msg}" target="_blank"><button style="width:100%; border-radius:8px; padding:8px; background-color:#25D366; color:white; border:none; cursor:pointer; font-weight:bold;">Send Feedback / Support</button></a>''', unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
 st.sidebar.caption("⚖️ **LEGAL & MEDICAL DISCLAIMER:**")
@@ -65,12 +65,16 @@ st.sidebar.caption("*Sukoon is designed solely for personal mindfulness and aest
 # ROOM 1: THE JOURNAL
 # ==========================================
 if page == "My Private Journal 📖":
-    st.title("🌿 Sukoon: Your Peaceful Space")
+    st.title("🌿 Sukoon")
     
     if st.session_state.emergency_lock:
-        st.error("🚨 **CRISIS ALERT: PLEASE GET HELP IMMEDIATELY** 🚨")
+        st.error("🚨 **CRISIS ALERT** 🚨")
         st.markdown("*Emergency: 112 | Vandrevala Foundation: 9999 666 555*")
     else:
+        # --- NEW DAILY QUOTE SECTION ---
+        st.markdown(f"### *Today's Reflection:*")
+        st.info(f"“{get_daily_quote()}”")
+        
         with st.expander("🎵 Play Peaceful Sounds"):
             audio_source = st.radio("Choose format:", ["App Audio Library (Data Saver)", "YouTube Video Streams"])
             if audio_source == "App Audio Library (Data Saver)":
@@ -108,7 +112,6 @@ if page == "My Private Journal 📖":
 # ==========================================
 elif page == "The Marketplace 🛍️":
     st.title("The Marketplace")
-    st.write("Connect via WhatsApp to purchase these grounding items.")
     st.write("---")
 
     def display_product(label, img_file, desc):
