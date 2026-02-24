@@ -13,7 +13,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
     try:
-        # Discovery Logic
+        # Discovery Logic to find the best available model
         models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
         target_model = next((m for m in models if 'flash' in m), models[0])
         super_brain = genai.GenerativeModel(target_model)
@@ -22,19 +22,11 @@ if api_key:
 else:
     super_brain = None
 
+# --- UI STATE ---
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Journal"
-
-def get_daily_quote():
-    # Only call AI if we have a brain, otherwise use a default to save quota
-    if super_brain:
-        try:
-            return super_brain.generate_content("Give a 1-sentence mindfulness quote.").text
-        except:
-            pass
-    return "Peace begins with a single, conscious breath."
 
 # --- NAVIGATION ---
 st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
@@ -62,22 +54,26 @@ st.markdown(f"""
     textarea {{ background-color: {input_bg} !important; color: {txt} !important; border: 1px solid #444 !important; }}
     .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {txt} !important; border-radius: 10px; }}
     hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
+    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg {{ display: none !important; }}
 </style>
 """, unsafe_allow_html=True)
 st.markdown("---")
 
 # --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
-    st.markdown(f"<div style='text-align: center;'><h3><i>{get_daily_quote()}</i></h3></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
     
     st.markdown("#### 🎵 Ambient Sounds")
     audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
     if audio_type == "Library":
         choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-        # Corrected dictionary format
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
         target = files.get(choice)
         if target and os.path.exists(target): st.audio(target)
+    elif audio_type == "YouTube":
+        v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
+        v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
+        st.video(v_links[v_choice])
     
     st.markdown("---")
     with st.form("diary_form", clear_on_submit=True):
@@ -86,13 +82,16 @@ if st.session_state.current_page == "Journal":
             if super_brain and diary_entry:
                 with st.spinner("Listening..."):
                     try:
-                        resp = super_brain.generate_content(diary_entry).text
+                        resp = super_brain.generate_content(f"Respond to: {diary_entry}").text
                         st.success(resp)
                         st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
                     except Exception as e:
-                        st.error("The Guide is at capacity for today. Please try again tomorrow.")
-            else:
-                st.warning("The Guide is resting.")
+                        if "429" in str(e):
+                            st.error("The Guide is at capacity for today. Please try again tomorrow.")
+                        else:
+                            st.error("The Guide is resting. Please try again shortly.")
+            elif not super_brain:
+                st.warning("Guide setup is incomplete. Check API Key.")
 
     for entry in reversed(st.session_state.private_journal):
         st.write(f"🕒 {entry['time']} | {entry['diary']}")
@@ -102,6 +101,7 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Marketplace":
     st.markdown("## The Marketplace")
     st.write("Grounding items for your journey.")
+    # Product display logic omitted for clean MVP but can be added back easily
 
 elif st.session_state.current_page == "Vision":
     st.markdown("## Our Vision")
