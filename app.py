@@ -43,13 +43,13 @@ font_css = """
 html, body, [class*="st-"] { font-family: 'Inter', sans-serif !important; }
 h1, h2, h3, h4 { font-weight: 200 !important; letter-spacing: -1px !important; }
 
-/* Hide Sidebar elements */
+/* Hide Sidebar and Glitches */
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], 
 svg, span[data-baseweb="icon"], [data-testid="stExpanderChevron"] {
     display: none !important;
 }
 
-/* Nav Buttons */
+/* Navigation Buttons */
 div[data-testid="stHorizontalBlock"] button {
     height: 40px !important;
     padding-left: 15px !important;
@@ -60,7 +60,7 @@ div[data-testid="stHorizontalBlock"] button {
     border-radius: 10px !important;
 }
 
-/* Marketplace Hover */
+/* Marketplace Hover Effect */
 div[data-testid="stColumn"] {
     padding: 10px;
     transition: all 0.4s ease;
@@ -84,11 +84,14 @@ st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", 
 nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([1, 1, 1, 1])
 
 with nav_col1:
-    if st.button("Journal", use_container_width=True): st.session_state.current_page = "Journal"
+    if st.button("Journal", use_container_width=True): 
+        st.session_state.current_page = "Journal"
 with nav_col2:
-    if st.button("Marketplace", use_container_width=True): st.session_state.current_page = "Marketplace"
+    if st.button("Marketplace", use_container_width=True): 
+        st.session_state.current_page = "Marketplace"
 with nav_col3:
-    if st.button("Our Vision", use_container_width=True): st.session_state.current_page = "Vision"
+    if st.button("Our Vision", use_container_width=True): 
+        st.session_state.current_page = "Vision"
 with nav_col4:
     theme_choice = st.radio("Vibe", ["Peaceful", "Midnight"], horizontal=True, label_visibility="collapsed")
 
@@ -104,52 +107,4 @@ if theme_choice == "Peaceful":
 else:
     css = """<style>
     .stApp { background-color: #0A0E0B; color: #E0E0E0; } 
-    h1, h2, h3, h4, label, .stMarkdown p { color: #AEC6CF !important; } 
-    
-    /* FIX: The Horizontal Rule (the line) for Midnight */
-    hr { border-top: 1px solid #AEC6CF !important; opacity: 0.3; }
-
-    div[data-testid="stRadio"] label p { color: #AEC6CF !important; }
-    div[data-testid="stRadio"] div[role="radiogroup"] label { color: #AEC6CF !important; }
-    textarea { background-color: #1E1E1E !important; color: #E0E0E0 !important; border: 1px solid #333 !important; }
-    div.stForm button { background-color: #333333 !important; color: #AEC6CF !important; border: 1px solid #444 !important; }
-    div.stForm button:hover { background-color: #444444 !important; }
-    .stButton>button { background-color: transparent; color: #AEC6CF; border: 1px solid #AEC6CF; } 
-    div[data-testid="stColumn"]:hover { box-shadow: 0px 15px 30px rgba(255, 255, 255, 0.05); background-color: rgba(255,255,255,0.02); }
-    </style>"""
-st.markdown(css, unsafe_allow_html=True)
-
-st.markdown("---")
-
-# ==========================================
-# PAGE LOGIC
-# ==========================================
-if st.session_state.current_page == "Journal":
-    if st.session_state.emergency_lock:
-        st.error("🚨 CRISIS ALERT")
-    else:
-        st.markdown(f"<div style='text-align: center; padding: 10px;'><h3><i>{get_daily_quote()}</i></h3></div>", unsafe_allow_html=True)
-        st.markdown("#### 🎵 Ambient Sounds")
-        audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
-        if audio_type == "Library":
-            choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-            files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-            if os.path.exists(files[choice]): st.audio(files[choice])
-        elif audio_type == "YouTube":
-            v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-            v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
-            st.video(v_links[v_choice])
-        st.markdown("---")
-        with st.form("diary_form"):
-            diary_entry = st.text_area("What is on your mind today?")
-            if st.form_submit_button("Consult Guide"):
-                if diary_entry:
-                    with st.spinner("Listening..."):
-                        try:
-                            instr = f"User: '{diary_entry}'. Empathy for grief, celebrate joy, or office stress tips. End with a breathing exercise."
-                            response = super_brain.generate_content(instr)
-                            st.success(response.text)
-                            save_journal(diary_entry, response.text, "Processed")
-                        except Exception as e:
-                            st.error("The Guide is resting. Try again soon.")
-        for entry in reversed(st.session_state.private_
+    h1, h2, h3, h4, label, .stMarkdown p { color: #AEC6CF !
