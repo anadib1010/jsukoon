@@ -41,8 +41,7 @@ with nav4:
     theme_choice = st.radio("Vibe", ["Peaceful", "Midnight"], horizontal=True, label_visibility="collapsed")
 
 # --- THEME COLORS ---
-# Soft Blue Color Variable
-soft_blue = "#AEC6CF" # A calming, muted blue
+soft_blue = "#AEC6CF" 
 
 if theme_choice == "Peaceful":
     bg, txt, input_bg, btn_bg = "#F9FDF9", "#2E4032", "white", "transparent"
@@ -65,8 +64,20 @@ st.markdown(f"""
         border-radius: 10px !important;
     }}
     hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
-    div[data-testid="stColumn"] {{ transition: all 0.4s ease; padding: 10px; border-radius: 20px; }}
-    div[data-testid="stColumn"]:hover {{ transform: translateY(-8px); box-shadow: 0px 15px 30px {card_hover}; }}
+    
+    /* Product Card Styling */
+    div[data-testid="stColumn"] {{ 
+        transition: all 0.4s ease; 
+        padding: 15px; 
+        border-radius: 20px; 
+        border: 1px solid rgba(128,128,128,0.1);
+        margin-bottom: 10px;
+    }}
+    div[data-testid="stColumn"]:hover {{ 
+        transform: translateY(-8px); 
+        box-shadow: 0px 15px 30px {card_hover}; 
+        border: 1px solid {soft_blue};
+    }}
     [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg {{ display: none !important; }}
 </style>
 """, unsafe_allow_html=True)
@@ -83,56 +94,4 @@ if st.session_state.current_page == "Journal":
         if target and os.path.exists(target): st.audio(target)
     elif audio_type == "YouTube":
         v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-        v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
-        st.video(v_links[v_choice])
-    
-    st.markdown("---")
-    with st.form("diary_form", clear_on_submit=True):
-        diary_entry = st.text_area("What is on your mind today?")
-        if st.form_submit_button("Consult Guide"):
-            if super_brain and diary_entry:
-                with st.spinner("Listening..."):
-                    try:
-                        resp = super_brain.generate_content(f"Respond to: {diary_entry}").text
-                        st.success(resp)
-                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
-                    except Exception as e:
-                        st.error("The Guide is at capacity for today. Please try again tomorrow.")
-
-    for entry in reversed(st.session_state.private_journal):
-        st.write(f"🕒 {entry['time']} | {entry['diary']}")
-        st.info(entry['ai'])
-
-# --- PAGE: MARKETPLACE ---
-elif st.session_state.current_page == "Marketplace":
-    st.markdown("## The Marketplace")
-    st.write("Curation of tools designed to ground your senses.")
-    def display_product(label, img_file, desc):
-        st.markdown(f"#### {label}")
-        if os.path.exists(img_file): st.image(img_file, use_container_width=True)
-        st.write(desc)
-        wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote(f"Interest: {label}")
-        # Updated to Soft Blue
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer;">💬 WhatsApp</button></a>', unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    with c1: display_product("Natural Stones", "stones.jpg", "Grounding tools.")
-    with c2: display_product("Crafted Beads", "beads.jpg", "Tactile focus.")
-    with c3: display_product("Geometric Yantras", "yantras.jpg", "Visual focus.")
-
-# --- PAGE: VISION ---
-elif st.session_state.current_page == "Vision":
-    st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
-    st.write("### Silence in a Loud World")
-    st.write("""
-    **Sukoon** was born from a simple realization: the world is getting louder, but our internal spaces are getting smaller. We believe that technology shouldn't just be a source of distraction—it should be a gateway to tranquility.
-    """)
-    st.write("---")
-    st.write("### The Journey")
-    st.write("""
-    Sukoon is more than an app; it is a commitment to mental clarity. We are constantly evolving, integrating affective computing to better understand human emotion and provide support when it's needed most.
-    """)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    # Smaller, centered blue button
-    wa_support = "https://wa.me/919876543210?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
-    st.markdown(f'<div style="text-align: center;"><a href="{wa_support}" target="_blank"><button style="padding:10px 25px; border-radius:10px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer; font-size:16px;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
+        v_links = {"
