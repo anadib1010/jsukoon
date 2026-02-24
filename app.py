@@ -41,6 +41,9 @@ with nav4:
     theme_choice = st.radio("Vibe", ["Peaceful", "Midnight"], horizontal=True, label_visibility="collapsed")
 
 # --- THEME COLORS ---
+# Soft Blue Color Variable
+soft_blue = "#AEC6CF" # A calming, muted blue
+
 if theme_choice == "Peaceful":
     bg, txt, input_bg, btn_bg = "#F9FDF9", "#2E4032", "white", "transparent"
     card_hover = "rgba(74, 112, 85, 0.15)"
@@ -103,30 +106,25 @@ if st.session_state.current_page == "Journal":
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
     st.markdown("## The Marketplace")
-    st.write("Curation of tools designed to ground your senses and focus your mind.")
+    st.write("Curation of tools designed to ground your senses.")
     def display_product(label, img_file, desc):
         st.markdown(f"#### {label}")
         if os.path.exists(img_file): st.image(img_file, use_container_width=True)
         st.write(desc)
         wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote(f"Interest: {label}")
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:12px; padding:12px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer;">💬 WhatsApp</button></a>', unsafe_allow_html=True)
+        # Updated to Soft Blue
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer;">💬 WhatsApp</button></a>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1: display_product("Natural Stones", "stones.jpg", "Grounding tools.")
     with c2: display_product("Crafted Beads", "beads.jpg", "Tactile focus.")
-    with c3: display_product("Geometric Yantras", "yantras.jpg", "Visual focal points.")
+    with c3: display_product("Geometric Yantras", "yantras.jpg", "Visual focus.")
 
 # --- PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
     st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
     st.write("### Silence in a Loud World")
     st.write("""
     **Sukoon** was born from a simple realization: the world is getting louder, but our internal spaces are getting smaller. We believe that technology shouldn't just be a source of distraction—it should be a gateway to tranquility.
-    
-    Our vision is to provide a digital sanctuary where you can:
-    * **Reflect** without judgment through our AI-supported Journal.
-    * **Connect** with your senses using curated ambient sounds.
-    * **Ground** yourself with physical tools that bridge the gap between the digital and the tangible.
     """)
     st.write("---")
     st.write("### The Journey")
@@ -135,5 +133,6 @@ elif st.session_state.current_page == "Vision":
     """)
     
     st.markdown("<br>", unsafe_allow_html=True)
+    # Smaller, centered blue button
     wa_support = "https://wa.me/919876543210?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
-    st.markdown(f'<a href="{wa_support}" target="_blank"><button style="width:100%; border-radius:12px; padding:15px; background-color:#25D366; color:white; border:none; font-weight:bold; cursor:pointer; font-size:18px;">💬 Connect with the Founder</button></a>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align: center;"><a href="{wa_support}" target="_blank"><button style="padding:10px 25px; border-radius:10px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer; font-size:16px;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
