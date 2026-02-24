@@ -7,16 +7,25 @@ import urllib.parse
 # --- CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
 
-# --- AI SETUP ---
+# --- AI SETUP (Self-Correcting Model Selection) ---
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
     st.error("⚠️ API Key is missing in Streamlit Secrets!")
 else:
     genai.configure(api_key=api_key)
-    # Using 'gemini-pro' as it has the highest compatibility
-    super_brain = genai.GenerativeModel('gemini-pro')
+    
+    # Discovery Logic: Find a model that works for your specific API version
+    try:
+        models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        # We try to find 'flash' first, then 'pro', otherwise take the first available
+        target_model = next((m for m in models if 'flash' in m), 
+                            next((m for m in models if 'pro' in m), models[0]))
+        super_brain = genai.GenerativeModel(target_model)
+    except Exception as e:
+        st.error(f"Discovery Error: {str(e)}")
 
+# --- UI STATE ---
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
 if "current_page" not in st.session_state:
@@ -24,12 +33,11 @@ if "current_page" not in st.session_state:
 
 def get_daily_quote():
     try:
-        q_prompt = "Create a unique 1-sentence mindfulness quote."
-        return super_brain.generate_content(q_prompt).text
+        return super_brain.generate_content("Give a 1-sentence mindfulness quote.").text
     except:
         return "Peace begins with a single, conscious breath."
 
-# --- NAVIGATION & THEME ---
+# --- NAVIGATION ---
 st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
 nav1, nav2, nav3, nav4 = st.columns([1, 1, 1, 1])
 
@@ -44,61 +52,54 @@ with nav4:
 
 # --- THEME COLORS ---
 if theme_choice == "Peaceful":
-    bg, txt, accent, card_hover = "#F9FDF9", "#2E4032", "#4A7055", "rgba(74, 112, 85, 0.15)"
-    input_bg, btn_bg = "white", "transparent"
+    bg, txt, input_bg, btn_bg = "#F9FDF9", "#2E4032", "white", "transparent"
 else:
-    bg, txt, accent, card_hover = "#0A0E0B", "#AEC6CF", "#AEC6CF", "rgba(255, 255, 255, 0.05)"
-    input_bg, btn_bg = "#1E1E1E", "#333333"
+    bg, txt, input_bg, btn_bg = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#333333"
 
-custom_style = f"""
+st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400&display=swap');
-    html, body, .stApp {{ background-color: {bg} !important; color: {txt} !important; font-family: 'Inter', sans-serif !important; }}
-    h1, h2, h3, h4, label, p, span {{ color: {txt} !important; font-weight: 200 !important; }}
-    hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
+    html, body, .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
+    h1, h2, h3, h4, label, p {{ color: {txt} !important; }}
     textarea {{ background-color: {input_bg} !important; color: {txt} !important; border: 1px solid #444 !important; }}
-    .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {txt} !important; border-radius: 10px; }}
-    div[data-testid="stColumn"] {{ transition: all 0.4s ease; padding: 10px; border-radius: 20px; }}
-    div[data-testid="stColumn"]:hover {{ transform: translateY(-8px); box-shadow: 0px 15px 30px {card_hover}; }}
-    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg {{ display: none !important; }}
+    .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {txt} !important; }}
+    hr {{ border-top: 1px solid {txt} !important; opacity: 0.3; }}
 </style>
-"""
-st.markdown(custom_style, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 st.markdown("---")
 
-# --- PAGES ---
+# --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
     st.markdown(f"<div style='text-align: center;'><h3><i>{get_daily_quote()}</i></h3></div>", unsafe_allow_html=True)
+    
     st.markdown("#### 🎵 Ambient Sounds")
     audio_type = st.radio("Format", ["Silent", "Library", "YouTube"], horizontal=True)
-    
     if audio_type == "Library":
         choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
         if os.path.exists(files.get(choice, "")): st.audio(files[choice])
-    elif audio_type == "YouTube":
-        v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-        v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
-        st.video(v_links[v_choice])
-        
+    
     st.markdown("---")
     with st.form("diary_form", clear_on_submit=True):
         diary_entry = st.text_area("What is on your mind today?")
-        submitted = st.form_submit_button("Consult Guide")
-        if submitted and diary_entry:
-            with st.spinner("Listening..."):
-                try:
-                    response = super_brain.generate_content(f"Be a kind mindfulness coach. Respond to: {diary_entry}")
-                    ai_text = response.text
-                    st.success(ai_text)
-                    st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": ai_text})
-                except Exception as e:
-                    st.error(f"The Guide is resting. (Error: {str(e)})")
-    
+        if st.form_submit_button("Consult Guide"):
+            if diary_entry:
+                with st.spinner("Listening..."):
+                    try:
+                        resp = super_brain.generate_content(diary_entry).text
+                        st.success(resp)
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
+                    except Exception as e:
+                        st.error(f"The Guide is resting. Error: {str(e)}")
+
     for entry in reversed(st.session_state.private_journal):
         st.write(f"🕒 {entry['time']} | {entry['diary']}")
         st.info(entry['ai'])
 
+# --- OTHER PAGES ---
 elif st.session_state.current_page == "Marketplace":
     st.markdown("## The Marketplace")
-    # Content remains the same
+    st.write("Grounding items for your journey.")
+
+elif st.session_state.current_page == "Vision":
+    st.markdown("## Our Vision")
+    st.write("Sukoon exists to provide peace in a loud world.")
