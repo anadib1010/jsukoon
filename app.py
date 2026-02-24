@@ -107,7 +107,7 @@ elif st.session_state.current_page == "Marketplace":
     def display_product(label, desc):
         st.markdown("#### " + label)
         st.write(desc)
-        wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote("Interest: " + label)
+        wa_url = "https://wa.me/918882850790?text=" + urllib.parse.quote("Interest: " + label)
         btn_html = f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:{soft_blue}; color:#0A0E0B;">💬 WhatsApp</button></a>'
         st.markdown(btn_html, unsafe_allow_html=True)
 
