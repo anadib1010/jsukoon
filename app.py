@@ -119,20 +119,14 @@ elif st.session_state.current_page == "Marketplace":
 # --- PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
     st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
     st.write("### Silence in a Loud World")
-    st.write("""
-    **Sukoon** was born from a simple realization: the world is getting louder, but our internal spaces are getting smaller. We believe that technology shouldn't just be a source of distraction—it should be a gateway to tranquility.
-    
-    Our vision is to provide a digital sanctuary where you can:
-    * **Reflect** without judgment through our AI-supported Journal.
-    * **Connect** with your senses using curated ambient sounds.
-    * **Ground** yourself with physical tools that bridge the gap between the digital and the tangible.
-    """)
+    st.write("Sukoon was born from a simple realization: the world is getting louder, but our internal spaces are getting smaller. We believe that technology should be a gateway to tranquility, not a source of distraction.")
     st.write("---")
     st.write("### The Journey")
-    st.write("""
-    Sukoon is more than an app; it is a commitment to mental clarity. We are constantly evolving, integrating affective computing to better understand human emotion and provide support when it's needed most.
-    """)
-    
-    st
+    st.write("Sukoon is more than an app; it is a commitment to mental clarity. We are constantly evolving, integrating affective computing to better understand human emotion and provide support when it is needed most.")
+    st.markdown("<br>", unsafe_allow_html=True)
+    wa_support = "https://wa.me/919876543210?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
+    v_btn = f'<div style="text-align: center;"><a href="{wa_support}" target="_blank">'
+    v_btn += f'<button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; font-size:16px; background-color:{soft_blue}; color:#0A0E0B;">'
+    v_btn += '💬 Connect with Founder</button></a></div>'
+    st.markdown(v_btn, unsafe_allow_html=True)
