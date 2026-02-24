@@ -80,9 +80,9 @@ if page == "My Private Journal 📖":
             if audio_source == "App Audio Library (Data Saver)":
                 local_choice = st.selectbox("Choose an audio track:", ["Soft Rain 🌧️", "Gentle Waves 🌊"])
                 if local_choice == "Soft Rain 🌧️":
-                    st.audio("https://www.soundjay.com/nature/sounds/rain-01.mp3")
+                    st.audio("https://upload.wikimedia.org/wikipedia/commons/b/b5/Rain_on_a_Window.ogg")
                 elif local_choice == "Gentle Waves 🌊":
-                    st.audio("https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3")
+                    st.audio("https://upload.wikimedia.org/wikipedia/commons/1/1a/Waves_at_the_beach.ogg")
                 st.caption("*(Audio-only tracks use significantly less mobile data.)*")
                 
             elif audio_source == "YouTube Video Streams":
