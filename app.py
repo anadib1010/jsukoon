@@ -29,7 +29,7 @@ st.sidebar.title("🧭 Navigation")
 page = st.sidebar.radio("Go to:", ["My Private Journal 📖", "The Marketplace 🛍️"])
 
 # SET YOUR WHATSAPP NUMBER HERE
-MY_NUMBER = "919876543210" # Replace with your real number
+MY_NUMBER = "918882850790" # Replace with your real number
 
 st.sidebar.markdown("---")
 st.sidebar.title("🎨 Atmosphere")
