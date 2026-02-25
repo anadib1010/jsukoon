@@ -38,14 +38,13 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (Updated for Energy Gradient) ---
+# --- CSS ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
     h1, h2, h3, h4, label, p, li { color: V_TXT !important; font-weight: 200 !important; }
     textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; }
     button[kind="secondaryFormSubmit"], .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; }
-    
     @keyframes breathe {
         0% { transform: scale(1); opacity: 0.4; }
         40% { transform: scale(1.4); opacity: 1; }
@@ -61,7 +60,6 @@ css_template = """
         padding: 20px; border: 1px solid V_BLUE; border-radius: 15px;
         background: rgba(174, 198, 207, 0.1); margin: 20px 0;
     }
-    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg { display: none !important; }
 </style>
 """
 clean_css = css_template.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
@@ -83,28 +81,21 @@ st.markdown("---")
 
 # --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
-    # 1. RITUAL OF THE WEEK
     st.markdown("<div class='ritual-box'><b>✨ Ritual of the Week:</b> Hold your Natural Stone in your left hand while listening to 'Waves' for 3 minutes to ground your center.</div>", unsafe_allow_html=True)
 
-    # 2. SILENT CHECK-IN (Energy Gradient)
     st.write("#### How is your energy?")
     mood_cols = st.columns(5)
-    mood_colors = ["#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF"] # Soft pastel gradient
     mood_labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
-    
     for i in range(5):
         with mood_cols[i]:
-            if st.button(mood_labels[i], key=f"mood_{i}", use_container_width=True):
+            if st.button(mood_labels[i], key=f"m_{i}", use_container_width=True):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
-                mood_msg = f"I see you're in a {mood_labels[i].lower()} energy space. Let’s just breathe for a moment."
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": f"[Energy Check-in: {mood_labels[i]}]", "ai": mood_msg})
+                msg = f"I see you're in a {mood_labels[i].lower()} energy space. Let’s just breathe for a moment."
+                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": f"[Energy Check-in: {mood_labels[i]}]", "ai": msg})
                 st.rerun()
 
-    # 3. BREATHWORK
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; opacity: 0.7;'>INHALE • HOLD • EXHALE</p>", unsafe_allow_html=True)
     
-    # AUDIO
     st.markdown("#### 🎵 Ambient Sounds")
     choice = st.radio("Vibe:", ["Silent", "Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
     if choice != "Silent":
@@ -113,26 +104,24 @@ if st.session_state.current_page == "Journal":
         if target and os.path.exists(target): st.audio(target)
 
     st.markdown("---")
-
-    # 4. VOICE-TO-PEACE
-    st.write("#### Speak or Type your thoughts")
-    voice_data = st.audio_input("Record a voice note")
+    st.write("#### Journal & Voice")
     
-    with st.form(key="j_form", clear_on_submit=True):
-        diary_in = st.text_area("Or write here...")
+    # Check if audio_input is available in this version of streamlit
+    if hasattr(st, "audio_input"):
+        voice_note = st.audio_input("Tap to Record Voice Note")
+    else:
+        st.info("Note: Voice recording requires a modern browser. Use the text area below if the mic doesn't appear.")
+
+    with st.form(key="journal_form", clear_on_submit=True):
+        diary_in = st.text_area("Share your heart...")
         if st.form_submit_button("Consult Guide"):
-            final_input = "User sent a voice note." if voice_data else diary_in
-            if super_brain and final_input:
+            if super_brain and diary_in:
                 stressors = ["sad", "anxious", "stress", "tired", "dark", "heavy", "pain"]
-                if not voice_data:
-                    st.session_state.theme = "Midnight" if any(w in diary_in.lower() for w in stressors) else "Peaceful"
-                
+                st.session_state.theme = "Midnight" if any(w in diary_in.lower() for w in stressors) else "Peaceful"
                 with st.spinner("Listening..."):
                     try:
-                        # Note: Audio-to-text requires processing; for now, we "hold" the audio
-                        prompt = "Respond as a mindfulness mentor to: " + final_input
-                        resp = super_brain.generate_content(prompt).text
-                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": final_input, "ai": resp})
+                        resp = super_brain.generate_content("Respond as a mindfulness mentor: " + diary_in).text
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
                         st.rerun()
                     except:
                         st.error("The Guide is resting.")
@@ -141,10 +130,43 @@ if st.session_state.current_page == "Journal":
         st.write("🕒 " + entry['time'] + " | " + entry['diary'])
         st.info(entry['ai'])
 
-    st.markdown("---")
-    st.markdown("<div style='opacity: 0.5; font-size: 10px; text-align: center;'><b>DISCLAIMER:</b> Not a medical substitute.</div>", unsafe_allow_html=True)
-
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
     st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
-    b1, b2 = st.columns
+    
+    st.markdown("### ✨ Grounding Bundles")
+    b1, b2 = st.columns(2)
+    with b1:
+        st.markdown("#### The Starter Ritual (3 Items)")
+        st.write("Stones, Buddha, & Beads. ₹2,499")
+        u1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
+        st.markdown('<a href="'+u1+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
+    with b2:
+        st.markdown("#### The Master Sanctuary (5 Items)")
+        st.write("Stones, Buddha, Art, Vaastu, & Journal. ₹4,999")
+        u2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
+        st.markdown('<a href="'+u2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("### 🏺 Individual Objects")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("#### Natural Stones")
+        st.markdown('<a href="https://wa.me/'+MY_PHONE+'?text=Stones" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; background-color:'+soft_blue+';">Inquire</button></a>', unsafe_allow_html=True)
+    with c2:
+        st.markdown("#### Sacred Buddha")
+        st.markdown('<a href="https://wa.me/'+MY_PHONE+'?text=Buddha" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; background-color:'+soft_blue+';">Inquire</button></a>', unsafe_allow_html=True)
+    with c3:
+        st.markdown("#### Artic Art")
+        st.markdown('<a href="https://wa.me/'+MY_PHONE+'?text=Art" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; background-color:'+soft_blue+';">Inquire</button></a>', unsafe_allow_html=True)
+
+# --- PAGE: VISION ---
+elif st.session_state.current_page == "Vision":
+    st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
+    st.write("### Silence in a Loud World")
+    st.write("Sukoon is an ecosystem designed to bridge the gap between digital AI guidance and tangible physical grounding.")
+    st.write("---")
+    st.write("### The Journey")
+    st.write("We are integrating affective computing to understand human emotion and provide support when it is needed most.")
+    wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
+    st.markdown('<div style="text-align: center;"><br><a href="' + wa_v + '" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
