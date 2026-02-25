@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. REFINED CSS ---
+# --- 5. COMPREHENSIVE CSS (Including Breather) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -33,12 +33,11 @@ st.markdown(f"""
     .block-container {{
         max-width: 550px !important;
         margin: auto;
-        padding-top: 4rem !important; 
-        padding-bottom: 2rem !important;
+        padding-top: 3.5rem !important; 
     }}
 
     @media (max-width: 640px) {{
-        .block-container {{ max-width: 98% !important; padding-top: 3.5rem !important; }}
+        .block-container {{ max-width: 98% !important; padding-top: 3rem !important; }}
     }}
 
     .main-title {{
@@ -50,6 +49,24 @@ st.markdown(f"""
         font-size: 17px !important; font-weight: 300 !important; letter-spacing: 4px !important;
         text-transform: uppercase; margin-top: 25px !important; margin-bottom: 12px !important;
         text-align: center; width: 100%; color: {soft_blue} !important;
+    }}
+
+    /* BREATHE ANIMATION */
+    .breather-container {{
+        display: flex; justify-content: center; align-items: center;
+        height: 120px; width: 100%; margin: 10px 0;
+    }}
+    .breather-circle {{
+        width: 50px; height: 50px;
+        background: {soft_blue};
+        border-radius: 50%;
+        animation: breathe 8s infinite ease-in-out;
+        opacity: 0.7;
+        filter: blur(8px);
+    }}
+    @keyframes breathe {{
+        0%, 100% {{ transform: scale(1); opacity: 0.3; }}
+        50% {{ transform: scale(1.8); opacity: 0.8; }}
     }}
 
     /* Minimalist Word Buttons */
@@ -92,8 +109,11 @@ for i, (label, target) in enumerate(nav_list):
 
 st.markdown("---")
 
-# --- 7. JOURNAL PAGE ---
+# --- 7. PAGES ---
+
+# JOURNAL PAGE
 if st.session_state.current_page == "Journal":
+    # 1. Energy
     st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
@@ -102,17 +122,19 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
+    # 2. THE BREATHER (Restored)
+    st.markdown("<div class='breather-container'><div class='breather-circle'></div></div>", unsafe_allow_html=True)
+
+    # 3. Ambience
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
-    
     aud_cols = st.columns(3)
     sound_list = list(sounds.keys())
     for i, name in enumerate(sound_list):
         with aud_cols[i % 3]:
             if st.button(name, key=f"aud_{name}"):
-                st.session_state.active_audio = sounds[name]
-                st.session_state.audio_label = name
+                st.session_state.active_audio = sounds[name]; st.session_state.audio_label = name
 
     if st.session_state.active_audio:
         st.write(f"~ {st.session_state.audio_label} ~")
@@ -138,43 +160,31 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# --- 8. MARKET RESTORED ---
+# MARKET PAGE (Locked & Restored)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     m1, m2 = st.columns(2)
-    with m1: 
-        st.write("**Starter Ritual**")
-        st.write("₹2,499")
-    with m2: 
-        st.write("**Master Sanctuary**")
-        st.write("₹4,999")
+    with m1: st.write("**Starter Ritual**"); st.write("₹2,499")
+    with m2: st.write("**Master Sanctuary**"); st.write("₹4,999")
     st.markdown("---")
     st.write("Authentic beads, yantras, and grounding stones.")
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue}; text-decoration:underline;'>Connect to Order</a>", unsafe_allow_html=True)
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Connect to Order</a>", unsafe_allow_html=True)
 
-# --- 9. VISION RESTORED ---
+# VISION PAGE (Locked & Restored)
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### The Sukoon Ritual")
-    st.markdown("""
-    **Ground:** Settle your focus with natural frequencies.  
-    **Release:** Clear mental noise through honest reflection.  
-    **Reflect:** Receive supportive guidance to stay present.
-    """)
-    st.write("Our vision is a bridge between AI and stillness.")
+    st.markdown("**Ground:** Frequencies. | **Release:** Reflection. | **Reflect:** Presence.")
+    st.write("A bridge between technology and stillness.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Talk to the Founder</a>", unsafe_allow_html=True)
 
-# --- 10. FAQ RESTORED ---
+# FAQ & INFO (Locked & Restored)
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("**Privacy:** Data is session-only and never stored.")
-    st.write("**Sounds:** Frequencies curated for calm focus.")
-    st.write("**Items:** Physical tools designed for sensory grounding.")
-
-# --- 11. INFO (DISCLAIMER) RESTORED ---
+    st.write("Data is session-only. Frequencies for focus.")
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
-    st.write("Sukoon is an AI-supported companion for mindfulness and relaxation. It does not provide medical, psychological, or psychiatric advice. It is not intended to treat or manage any health condition. By using this tool, you acknowledge it is for self-help purposes only.")
+    st.write("Wellness companion. No medical, psychological, or psychiatric advice provided.")
 
-st.markdown("<div class='footer-text'>Sukoon is a wellness tool. Not a medical substitute.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Wellness tool. Not medical substitute.</div>", unsafe_allow_html=True)
