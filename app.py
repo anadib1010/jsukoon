@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE FORCED GRID CSS ---
+# --- 5. THE SPACIOUS GRID CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -34,43 +34,56 @@ st.markdown(f"""
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 8px !important;
+        gap: 10px !important; /* Increased gap for breathing room */
         width: 100% !important;
     }}
 
-    /* Make buttons slim but sturdy */
+    /* Spacious Button Styling */
     .stButton>button {{ 
-        background-color: {btn_bg} !important; color: {txt} !important; 
-        border: 1px solid {soft_blue} !important; border-radius: 10px !important; 
-        padding: 6px 2px !important; min-height: 40px !important;
-        font-size: 11px !important; font-weight: 500 !important;
+        background-color: {btn_bg} !important; 
+        color: {txt} !important; 
+        border: 1px solid {soft_blue} !important; 
+        border-radius: 12px !important; 
+        
+        /* Increased Length/Height and Padding */
+        padding: 10px 4px !important; 
+        min-height: 48px !important; 
+        
+        /* Text Spacing */
+        font-size: 11px !important; 
+        font-weight: 500 !important;
+        letter-spacing: 0.3px !important;
+        
         width: 100% !important;
         margin: 0px !important;
+        transition: all 0.2s ease;
+    }}
+    
+    .stButton>button:active {{
+        transform: scale(0.98);
+        border-color: {txt} !important;
     }}
 
-    /* Center text and elements */
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 1rem !important; }}
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 1.2rem !important; }}
     
     .footer-text {{ font-size: 9px; opacity: 0.6; margin-top: 20px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. TOP NAVIGATION (3-Column Grid) ---
-st.markdown("<h2 style='margin-bottom:0px;'>Sukoon</h2>", unsafe_allow_html=True)
-# This will now show 3 buttons on row 1, 2 buttons on row 2
+# --- 6. TOP NAVIGATION ---
+st.markdown("<h1 style='text-align: center; margin-bottom: 5px;'>Sukoon</h1>", unsafe_allow_html=True)
 nav_row = st.columns(3)
 nav_list = [("Journal", "Journal"), ("Market", "Marketplace"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Disclaimer")]
 
 for i, (label, target) in enumerate(nav_list):
-    with nav_row[i % 3]: # The %3 forces the wrap into 3 columns
+    with nav_row[i % 3]:
         if st.button(label, key=f"n_{label}"):
             st.session_state.current_page = target; st.rerun()
 
 st.markdown("---")
 
-# --- 7. PAGES ---
+# --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    # Energy Section (3-Column Grid)
     st.write("Energy Check")
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
@@ -79,7 +92,6 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
-    # Nature Ambience (3-Column Grid)
     st.write("Nature Ambience")
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -97,9 +109,8 @@ if st.session_state.current_page == "Journal":
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("---")
-    # Voice Note and Box - Now much higher up the screen!
     audio_rec = st.audio_input("Voice Note")
-    text_msg = st.text_area("Reflection...", height=80)
+    text_msg = st.text_area("Reflection...", height=90)
     
     if st.button("Consult Guide", use_container_width=True):
         if model:
@@ -117,6 +128,7 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
+# --- 8. OTHER PAGES ---
 elif st.session_state.current_page == "Marketplace":
     st.write("### Grounding Objects")
     m_row = st.columns(2)
