@@ -25,13 +25,13 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. UPDATED CSS (Increased Horizontal Padding) ---
+# --- 5. THE SYMMETRICAL SLAB CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
     .block-container {{
-        max-width: 580px !important; /* Slightly wider container to support the padding increase */
+        max-width: 580px !important;
         margin: auto;
         padding-top: 3.5rem !important; 
     }}
@@ -48,49 +48,37 @@ st.markdown(f"""
 
     .section-header {{
         font-size: 13px !important; font-weight: 300 !important; letter-spacing: 3px !important;
-        text-transform: uppercase; margin-top: 20px !important; margin-bottom: 5px !important;
+        text-transform: uppercase; margin-top: 20px !important; margin-bottom: 8px !important;
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* THE SYMMETRICAL GRID */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 2px !important; 
         width: 100% !important;
-        padding: 0 4px !important; /* Extra 4px padding on the grid edges */
     }}
 
-    /* FIXED SIZE BUTTONS WITH ADDED WIDTH PADDING */
+    /* THE SLAB (BUTTON BOX) */
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid #2A2A2A !important; 
         border-radius: 2px !important; 
-        
-        /* THE FIX: Increased sideways room and maintained height */
-        padding-left: 10px !important;  /* Added horizontal room inside */
-        padding-right: 10px !important; 
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
-        
+        padding-left: 10px !important;
+        padding-right: 10px !important;
         min-height: 34px !important;
         height: 34px !important;
         width: 100% !important;
-        
         font-size: 11px !important; 
-        font-weight: 400 !important;
         white-space: nowrap !important;
-        margin: 0px !important;
         transition: all 0.2s ease;
     }}
 
     .stButton>button:hover {{
         border-color: {soft_blue} !important;
-        background-color: #252525 !important;
     }}
 
-    /* BREATHER RING */
     .breather-wrapper {{ text-align: center; margin: 20px 0; }}
     .breather-circle {{
         width: 40px; height: 40px;
@@ -99,7 +87,6 @@ st.markdown(f"""
         margin: 0 auto 10px auto;
         animation: breathe-426 12s infinite ease-in-out;
     }}
-    .breather-text {{ font-size: 8px; letter-spacing: 2px; color: {txt}; opacity: 0.5; }}
     
     @keyframes breathe-426 {{
         0% {{ transform: scale(0.95); opacity: 0.4; }}
@@ -108,15 +95,7 @@ st.markdown(f"""
         100% {{ transform: scale(0.95); opacity: 0.4; }}    
     }}
 
-    textarea {{ 
-        background: {btn_bg} !important; 
-        color: {soft_blue} !important; 
-        border: 1px solid #2A2A2A !important; 
-        text-align: center !important;
-        border-radius: 4px !important;
-    }}
-    
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.1rem !important; }}
+    textarea {{ background: {btn_bg} !important; color: {soft_blue} !important; border: 1px solid #2A2A2A !important; text-align: center !important; }}
     .footer-text {{ font-size: 9px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #2A2A2A; padding: 15px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
@@ -131,8 +110,6 @@ for i, (label, target) in enumerate(nav_list):
         if st.button(label, key=f"n_{label}"):
             st.session_state.current_page = target; st.rerun()
 
-st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
-
 # --- 7. PAGES ---
 if st.session_state.current_page == "Journal":
     st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
@@ -143,7 +120,7 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight"; st.rerun()
 
-    st.markdown(f"""<div class='breather-wrapper'><div class='breather-circle'></div><div class='breather-text'>4-2-6 RHYTHM</div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class='breather-wrapper'><div class='breather-circle'></div><div class='breather-text' style='font-size:8px; opacity:0.5;'>4-2-6 RHYTHM</div></div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
@@ -160,7 +137,7 @@ if st.session_state.current_page == "Journal":
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    audio_rec = st.audio_input("Voice")
+    audio_rec = st.audio_input("Voice Note")
     text_msg = st.text_area("Record reflection...", height=80)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
@@ -179,24 +156,25 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# MARKET, VISION, FAQ, INFO (All locked and restored)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
-    m_cols = st.columns(3)
-    with m_cols[0]: st.button("Starter", key="mkt1")
-    with m_cols[1]: st.button("Master", key="mkt2")
-    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a>", unsafe_allow_html=True)
+    st.write("### Grounding Objects")
+    st.write("**Starter Ritual:** ₹2,499  \n**Master Sanctuary:** ₹4,999")
+    st.write("Hand-selected beads, yantras, and grounding stones for physical focus.")
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
-    st.write("Ground | Release | Reflect")
+    st.write("### Ground | Release | Reflect")
+    st.write("Sukoon is designed to be a bridge between the noise of daily technology and the silence of inner presence. We use AI not to distract, but to hold space for your reflection.")
 
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("Privacy focus.")
+    st.write("**Privacy:** No data is stored between sessions.  \n**Sounds:** Professionally curated for high-fidelity focus.")
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
-    st.write("Wellness companion.")
+    st.write("### Disclaimer")
+    st.write("Wellness companion only. No medical, psychological, or psychiatric advice provided. Not a substitute for professional health services.")
 
-st.markdown("<div class='footer-text'>Sukoon is a wellness tool. Not a medical substitute.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
