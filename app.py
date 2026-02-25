@@ -36,54 +36,65 @@ else: model = None
 # --- 5. CENTERED CSS ---
 st.markdown(f"""
     <style>
-    /* Global Centering */
+    /* Full Page Centering */
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
-    .main .block-container {{ display: flex; flex-direction: column; align-items: center !important; text-align: center !important; }}
+    .main .block-container {{ 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center !important; 
+        text-align: center !important; 
+        padding-top: 2rem !important;
+    }}
     
-    /* Button Centering & Styling */
+    /* Navigation & Audio Buttons */
     .stButton {{ display: flex; justify-content: center; width: 100%; }}
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid {soft_blue} !important; 
         border-radius: 12px !important; 
-        width: 90% !important; 
+        width: 100% !important; 
         margin: 5px auto !important;
+        font-size: 14px !important;
     }}
     
-    /* Audio Widget Centering */
-    div[data-testid="stAudio"] {{ display: flex; justify-content: center; width: 100%; }}
+    /* Center the Audio Player */
+    div[data-testid="stAudio"] {{ display: flex; justify-content: center; width: 100%; margin-top: 10px; }}
     
+    /* Visuals */
     .breather-circle {{ width: 65px; height: 65px; background: {soft_blue}; border-radius: 50%; margin: 20px auto; animation: breathe 8s infinite ease-in-out; }}
     @keyframes breathe {{ 0%, 100% {{ transform: scale(1); opacity: 0.4; }} 50% {{ transform: scale(1.3); opacity: 1; }} }}
-    .mkt-box {{ border: 1px solid {soft_blue}; padding: 15px; border-radius: 12px; margin-bottom: 10px; background: rgba(174, 198, 207, 0.05); width: 100%; }}
+    .mkt-box {{ border: 1px solid {soft_blue}; padding: 20px; border-radius: 15px; margin-bottom: 15px; background: rgba(174, 198, 207, 0.05); width: 100%; max-width: 400px; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. NAVIGATION (Centered Columns) ---
-st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
+# --- 6. NAVIGATION (3-Column Center) ---
+st.markdown("<h1 style='text-align: center; margin-bottom: 10px;'>Sukoon</h1>", unsafe_allow_html=True)
 n1, n2, n3 = st.columns(3)
 with n1: 
-    if st.button("Journal", key="nj"): st.session_state.current_page = "Journal"; st.rerun()
+    if st.button("Journal", key="nav_j"): st.session_state.current_page = "Journal"; st.rerun()
 with n2: 
-    if st.button("Market", key="nm"): st.session_state.current_page = "Marketplace"; st.rerun()
+    if st.button("Market", key="nav_m"): st.session_state.current_page = "Marketplace"; st.rerun()
 with n3: 
-    if st.button("Vision", key="nv"): st.session_state.current_page = "Vision"; st.rerun()
+    if st.button("Vision", key="nav_v"): st.session_state.current_page = "Vision"; st.rerun()
 st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    # Mood Buttons
+    # Energy Selection
+    st.write("#### How is your energy?")
     m_cols = st.columns(5)
-    for i, lab in enumerate(["Low", "Drained", "Neutral", "Steady", "Vibrant"]):
+    labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
+    for i, lab in enumerate(labels):
         with m_cols[i]:
-            if st.button(lab, key=f"md_{lab}"):
-                st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
+            if st.button(lab, key=f"mood_{lab}"):
+                st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
+                st.rerun()
 
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
 
     # --- CENTERED AUDIO BUTTONS ---
-    st.markdown("<p style='font-weight: bold;'>Nature Ambience</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-weight: bold; margin-top: 20px;'>Nature Ambience</p>", unsafe_allow_html=True)
     cdn_base = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     
@@ -101,24 +112,27 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("---")
     
-    # AI INPUT (Centered)
-    audio_data = st.audio_input("Record")
+    # AI INPUT
+    audio_data = st.audio_input("Record a note")
     text_in = st.text_area("Share your heart...", placeholder="Type here...")
     
     if st.button("Consult Guide", use_container_width=True, key="submit_brain"):
         if brain_online:
             with st.spinner("Reflecting..."):
                 try:
-                    parts = ["You are a mindfulness mentor. Respond in 1 paragraph."]
+                    parts = ["You are a mindfulness mentor. Respond in 1 paragraph with warmth."]
                     if audio_data: parts.append({"mime_type": "audio/wav", "data": audio_data.read()})
                     else: parts.append(text_in)
+                    
                     response = model.generate_content(parts).text
                     st.session_state.private_journal.append({
-                        "id": datetime.now().strftime("%H%M%S"), "time": datetime.now().strftime("%H:%M"), 
-                        "diary": text_in if text_in else "🎙️ Voice Entry", "ai": response
+                        "id": datetime.now().strftime("%H%M%S"), 
+                        "time": datetime.now().strftime("%H:%M"), 
+                        "diary": text_in if text_in else "🎙️ Voice Entry", 
+                        "ai": response
                     })
                     st.rerun()
-                except: st.error("The Brain is resting.")
+                except: st.error("The Brain is pausing. Please try in a moment.")
         else: st.warning("Guide Status: Resting.")
 
     # HISTORY
@@ -130,9 +144,12 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Marketplace":
     st.markdown("<h3>✨ Grounding Objects</h3>", unsafe_allow_html=True)
     m1, m2 = st.columns(2)
-    with m1: st.markdown(f"<div class='mkt-box'>Starter Ritual<br>₹2,499<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a></div>", unsafe_allow_html=True)
-    with m2: st.markdown(f"<div class='mkt-box'>Master Sanctuary<br>₹4,999<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a></div>", unsafe_allow_html=True)
+    with m1: st.markdown(f"<div class='mkt-box'>Starter Ritual<br>₹2,499<br><a href='https://wa.me/{MY_PHONE}?text=Starter' style='color:{soft_blue}; font-weight:bold; text-decoration:none;'>Order</a></div>", unsafe_allow_html=True)
+    with m2: st.markdown(f"<div class='mkt-box'>Master Sanctuary<br>₹4,999<br><a href='https://wa.me/{MY_PHONE}?text=Master' style='color:{soft_blue}; font-weight:bold; text-decoration:none;'>Order</a></div>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.markdown("<h3>Silence in a Loud World</h3>", unsafe_allow_html=True)
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' class='mkt-box' style='display:block; text-decoration:none; color:{soft_blue};'>Connect with Founder</a>", unsafe_allow_html=True)
+    st.write("Sukoon bridges digital AI and physical grounding.")
+    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}?text=Vision' class='mkt-box' style='display:block; text-decoration:none; color:{soft_blue}; font-weight:bold; margin: 0 auto;'>Connect with Founder</a>", unsafe_allow_html=True)
+
+st.markdown("<hr><div style='opacity:0.6; font-size:10px; text-align:center;'>Mindfulness Support. Not Medical Advice.</div>", unsafe_allow_html=True)
