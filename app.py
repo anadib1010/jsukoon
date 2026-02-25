@@ -99,10 +99,26 @@ if st.session_state.current_page == "Journal":
         diary_in = st.text_area("Share your heart...")
         if st.form_submit_button("Consult Guide"):
             if super_brain and diary_in:
-                st.session_state.theme = "Midnight" if "sad" in diary_in.lower() else "Peaceful"
-                resp = super_brain.generate_content("Mentor response: " + diary_in).text
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
-                st.rerun()
+                # Automatic Theme Shift
+                stress_words = ["sad", "tired", "anxious", "heavy", "dark", "pain", "exhausted", "low"]
+                st.session_state.theme = "Midnight" if any(w in diary_in.lower() for w in stress_words) else "Peaceful"
+                
+                # REFINED PERSONA PROMPT
+                system_prompt = (
+                    "You are a calm, empathetic mindfulness mentor for the app 'Sukoon'. "
+                    "A user is sharing their feelings with you. Respond directly with warmth and "
+                    "wisdom. Do not offer options or ask how to respond. Keep it under 3 paragraphs. "
+                    "If they are sad or tired, acknowledge their weight and suggest a gentle breath."
+                )
+                
+                with st.spinner("Listening..."):
+                    try:
+                        full_prompt = f"{system_prompt}\n\nUser says: {diary_in}"
+                        resp = super_brain.generate_content(full_prompt).text
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
+                        st.rerun()
+                    except:
+                        st.error("The Guide is resting.")
     for entry in reversed(st.session_state.private_journal):
         st.write("🕒 " + entry['time'] + " | " + entry['diary'])
         st.info(entry['ai'])
@@ -115,37 +131,34 @@ elif st.session_state.current_page == "Marketplace":
     with b1:
         st.markdown("#### The Starter Ritual")
         st.write("3 Items: ₹2,499")
-        link1 = "https://wa.me/" + MY_PHONE + "?text=StarterRitual"
+        link1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
         st.markdown('<a href="' + link1 + '" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
     with b2:
         st.markdown("#### Master Sanctuary")
         st.write("5 Items: ₹4,999")
-        link2 = "https://wa.me/" + MY_PHONE + "?text=MasterSanctuary"
+        link2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
         st.markdown('<a href="' + link2 + '" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("### 🏺 Individual Objects")
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("#### Stones")
-        link_s = "https://wa.me/" + MY_PHONE + "?text=Stones"
-        st.markdown('<a href="' + link_s + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+        l_s = "https://wa.me/" + MY_PHONE + "?text=Stones"
+        st.markdown('<a href="' + l_s + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
     with c2:
         st.markdown("#### Buddha")
-        link_b = "https://wa.me/" + MY_PHONE + "?text=Buddha"
-        st.markdown('<a href="' + link_b + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+        l_b = "https://wa.me/" + MY_PHONE + "?text=Buddha"
+        st.markdown('<a href="' + l_b + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
     with c3:
         st.markdown("#### Art")
-        link_a = "https://wa.me/" + MY_PHONE + "?text=Art"
-        st.markdown('<a href="' + link_a + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+        l_a = "https://wa.me/" + MY_PHONE + "?text=Art"
+        st.markdown('<a href="' + l_a + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
 
 # --- 9. PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
     st.markdown("<h2 style='text-align: center;'>Vision</h2>", unsafe_allow_html=True)
     st.write("### Silence in a Loud World")
     st.write("Sukoon bridges digital AI guidance and tangible physical grounding.")
-    st.write("---")
-    st.write("### The Journey")
-    st.write("We are integrating affective computing to understand human emotion.")
     wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
     st.markdown('<div style="text-align:center;"><a href="' + wa_v + '" class="mkt-btn">Connect</a></div>', unsafe_allow_html=True)
 
