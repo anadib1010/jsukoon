@@ -113,7 +113,6 @@ if st.session_state.current_page == "Journal":
         st.write("🕒 " + entry['time'] + " | " + entry['diary'])
         st.info(entry['ai'])
 
-    # --- LEGAL DISCLAIMER ---
     st.markdown("---")
     st.markdown("""
     <div style='opacity: 0.5; font-size: 10px; text-align: center; padding: 20px;'>
@@ -126,7 +125,6 @@ if st.session_state.current_page == "Journal":
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
     st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
-    
     st.markdown("### ✨ Grounding Bundles")
     b1, b2 = st.columns(2)
     with b1:
@@ -139,7 +137,6 @@ elif st.session_state.current_page == "Marketplace":
         st.write("Stones, Buddha, Art, Vaastu, & Journal. ₹4,999")
         u2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
         st.markdown('<a href="'+u2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
-
     st.markdown("---")
     st.markdown("### 🏺 Individual Objects")
     c1, c2, c3 = st.columns(3)
@@ -158,7 +155,6 @@ elif st.session_state.current_page == "Marketplace":
         st.write("Visual tranquility.")
         l3 = "https://wa.me/" + MY_PHONE + "?text=Interest:ArticArt"
         st.markdown('<a href="'+l3+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
-
     c4, c5, c6 = st.columns(3)
     with c4:
         st.markdown("#### Vaastu Objects")
@@ -184,6 +180,5 @@ elif st.session_state.current_page == "Vision":
     st.write("---")
     st.write("### The Journey")
     st.write("We are integrating affective computing to understand human emotion and provide support when it is needed most. This app is the first step toward a personalized, responsive sanctuary.")
-    
     wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
     st.markdown('<div style="text-align: center;"><br><a href="' + wa_v + '" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
