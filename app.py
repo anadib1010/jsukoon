@@ -149,6 +149,11 @@ elif st.session_state.current_page == "Vision":
     wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
     st.markdown('<div style="text-align:center;"><a href="' + wa_v + '" class="mkt-btn">Connect</a></div>', unsafe_allow_html=True)
 
-# --- 10. FOOTER ---
+# --- 10. GLOBAL FOOTER ---
 st.markdown("---")
-st.markdown("<div style='opacity:0.5; font-size:10px; text-align:center;'><b>DISCLAIMER:</b> Not medical advice.</div>", unsafe_allow_html=True)
+st.markdown("""
+<div style='opacity: 0.6; font-size: 11px; text-align: center; padding: 10px; line-height: 1.6;'>
+“This app offers a quiet digital space.<br>
+It does not provide therapy, counseling, medical advice, or emergency support.”
+</div>
+""", unsafe_allow_html=True)
