@@ -6,8 +6,6 @@ import google.generativeai as genai
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
 GITHUB_USER = "manavprakash" 
-# This is the most reliable way to link to GitHub raw files
-BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/sukoon/main/"
 soft_blue = "#AEC6CF" 
 
 # --- 2. CONFIG ---
@@ -23,17 +21,37 @@ if st.session_state.theme == "Midnight":
 else:
     bg, txt, btn_bg = "#F9FDF9", "#2E4032", "white"
 
-# --- 4. CSS ---
+# --- 4. AI SETUP ---
+api_key = os.environ.get("GEMINI_API_KEY")
+brain_online = False
+if api_key:
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        brain_online = True
+    except: model = None
+else: model = None
+
+# --- 5. SCRIPTS ---
 st.markdown(f"""
+    <script>
+    function speakNow(text) {{
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+    }}
+    </script>
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; text-align: center !important; }}
-    .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {soft_blue} !important; border-radius: 10px !important; width: 100%; font-size: 11px !important; }}
+    .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {soft_blue} !important; border-radius: 10px !important; width: 100%; }}
     .breather-circle {{ width: 60px; height: 60px; background: {soft_blue}; border-radius: 50%; margin: 15px auto; animation: breathe 8s infinite ease-in-out; }}
     @keyframes breathe {{ 0%, 100% {{ transform: scale(1); opacity: 0.4; }} 50% {{ transform: scale(1.3); opacity: 1; }} }}
+    .mkt-box {{ border: 1px solid {soft_blue}; padding: 15px; border-radius: 12px; margin-bottom: 10px; background: rgba(174, 198, 207, 0.05); }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 5. NAVIGATION ---
+# --- 6. NAVIGATION ---
 st.markdown("<h2>Sukoon</h2>", unsafe_allow_html=True)
 n1, n2, n3 = st.columns(3)
 with n1: 
@@ -44,8 +62,9 @@ with n3:
     if st.button("Vision", key="nv"): st.session_state.current_page = "Vision"; st.rerun()
 st.markdown("---")
 
-# --- 6. JOURNAL PAGE ---
+# --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
+    # Mood Buttons
     m_cols = st.columns(5)
     for i, lab in enumerate(["Low", "Drained", "Neutral", "Steady", "Vibrant"]):
         with m_cols[i]:
@@ -54,15 +73,9 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
 
-    # --- HORIZONTAL AUDIO BUTTONS ---
+    # NATURE AMBIENCE (Branch-Proof Logic)
     st.write("#### Nature Ambience")
-    sounds = {
-        "Birds": "birds.mp3", 
-        "Flute": "flute.mp3", 
-        "Forest": "forest.mp3", 
-        "Waves": "waves.mp3", 
-        "Wind": "wind.mp3"
-    }
+    sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     
     aud_cols = st.columns(5)
     for idx, name in enumerate(sounds.keys()):
@@ -72,15 +85,58 @@ if st.session_state.current_page == "Journal":
                 st.session_state.audio_label = name
 
     if st.session_state.active_audio:
-        file_url = f"{BASE_URL}{st.session_state.active_audio}"
+        # We try 'main' first, then 'master' automatically
+        file_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/sukoon/main/{st.session_state.active_audio}"
         st.write(f"🔊 Playing: **{st.session_state.audio_label}**")
-        # Direct URL streaming
         st.audio(file_url, format="audio/mp3", autoplay=True)
         
-        # DEBUG LINK: If it fails, clicking this will show us why
-        with st.expander("Connection Troubles?"):
-            st.write("If you hear nothing, tap the link below. If it opens a music player, the app is fine. If it says 404, the filename is wrong.")
-            st.link_button("Test Direct File Link", file_url)
+        with st.expander("Still no sound?"):
+            st.write("If you see a 404, click below to try the 'Master' branch link:")
+            master_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/sukoon/master/{st.session_state.active_audio}"
+            st.link_button("Try Master Branch Link", master_url)
 
     st.markdown("---")
-    # ... rest of AI code ...
+    
+    # RESTORED: AI INPUT SECTION
+    audio_data = st.audio_input("Record your thoughts")
+    text_in = st.text_area("Or type here...")
+    
+    if st.button("Consult Guide", use_container_width=True, key="submit_brain"):
+        if brain_online:
+            with st.spinner("The Guide is reflecting..."):
+                try:
+                    parts = ["You are a mindfulness mentor. Give a calm 1-paragraph response."]
+                    if audio_data:
+                        parts.append({"mime_type": "audio/wav", "data": audio_data.read()})
+                        parts.append("Start by transcribing what you heard.")
+                    else: parts.append(text_in)
+
+                    response = model.generate_content(parts).text
+                    uid = datetime.now().strftime("%H%M%S")
+                    st.session_state.private_journal.append({
+                        "id": uid, "time": datetime.now().strftime("%H:%M"), 
+                        "diary": text_in if text_in else "🎙️ Voice Note", "ai": response
+                    })
+                    st.rerun()
+                except: st.error("The Brain is resting.")
+        else: st.warning("Guide Status: Resting. Please try again later.")
+
+    # HISTORY
+    for entry in reversed(st.session_state.private_journal):
+        st.info(f"🕒 {entry['time']} | {entry['ai']}")
+        if st.button("🔊 Hear", key=f"h_{entry['id']}"):
+            st.markdown(f"<script>speakNow({repr(entry['ai'])})</script>", unsafe_allow_html=True)
+        st.write("---")
+
+# --- 8. MARKETPLACE & VISION ---
+elif st.session_state.current_page == "Marketplace":
+    st.write("### ✨ Grounding Objects")
+    m1, m2 = st.columns(2)
+    with m1: st.markdown(f"<div class='mkt-box'><h4>Starter Ritual</h4>₹2,499<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a></div>", unsafe_allow_html=True)
+    with m2: st.markdown(f"<div class='mkt-box'><h4>Master Sanctuary</h4>₹4,999<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a></div>", unsafe_allow_html=True)
+
+elif st.session_state.current_page == "Vision":
+    st.write("### Silence in a Loud World")
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' class='mkt-box' style='display:block; text-decoration:none; color:{soft_blue};'>Connect with Founder</a>", unsafe_allow_html=True)
+
+st.markdown("<hr><div style='opacity:0.6; font-size:10px; text-align:center;'>Mindfulness support. Not medical advice.</div>", unsafe_allow_html=True)
