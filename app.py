@@ -25,13 +25,13 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE GLASSY SHINE CSS ---
+# --- 5. WIDE GLASSY CSS (Increased Padding) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
     .block-container {{
-        max-width: 580px !important;
+        max-width: 600px !important; /* Slightly wider for the wide-padding buttons */
         margin: auto;
         padding-top: 3.5rem !important; 
     }}
@@ -46,20 +46,13 @@ st.markdown(f"""
         text-transform: uppercase;
     }}
 
-    /* INCREASED HEADER SIZE */
     .section-header {{
-        font-size: 16px !important; 
-        font-weight: 400 !important; 
-        letter-spacing: 4px !important;
-        text-transform: uppercase; 
-        margin-top: 25px !important; 
-        margin-bottom: 12px !important;
-        text-align: center; 
-        width: 100%; 
-        color: {soft_blue} !important;
+        font-size: 16px !important; font-weight: 400 !important; letter-spacing: 4px !important;
+        text-transform: uppercase; margin-top: 25px !important; margin-bottom: 12px !important;
+        text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* GRID: Forced 2px Precision Gap */
+    /* GRID: 2px Precision Gap */
     [data-testid="stHorizontalBlock"] {{
         gap: 2px !important; 
         display: flex !important;
@@ -72,13 +65,17 @@ st.markdown(f"""
         flex: 1 1 0% !important; min-width: 0px !important;
     }}
 
-    /* THE GLASSY SHINE BUTTONS */
+    /* THE WIDE GLASSY BUTTONS */
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(45,45,45,1) 0%, rgba(30,30,30,1) 100%) !important; 
         color: {txt} !important; 
         border: 1px solid #333 !important; 
         border-radius: 4px !important; 
-        padding: 6px 3px !important;
+        
+        /* THE FIX: Increased horizontal padding to 12px */
+        padding-left: 12px !important; 
+        padding-right: 12px !important;
+        
         min-height: 38px !important; 
         height: 38px !important;
         width: 100% !important; 
@@ -93,7 +90,6 @@ st.markdown(f"""
         background: linear-gradient(180deg, rgba(55,55,55,1) 0%, rgba(35,35,35,1) 100%) !important;
     }}
 
-    /* RHYTHM TEXT SIZE MATCH */
     .breather-wrapper {{ text-align: center; margin: 25px 0; }}
     .breather-circle {{
         width: 45px; height: 45px; border: 2px solid {soft_blue};
@@ -102,11 +98,7 @@ st.markdown(f"""
         box-shadow: 0 0 15px rgba(91, 150, 178, 0.2);
     }}
     .breather-text {{ 
-        font-size: 14px !important; 
-        letter-spacing: 2px; 
-        color: #FFFFFF; 
-        font-weight: 300;
-        opacity: 0.9;
+        font-size: 14px !important; letter-spacing: 2px; color: #FFFFFF; font-weight: 300; opacity: 0.9;
     }}
     
     @keyframes breathe-426 {{
@@ -141,7 +133,6 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight"; st.rerun()
 
-    # BREATHER
     st.markdown(f"""
         <div class='breather-wrapper'>
             <div class='breather-circle'></div>
