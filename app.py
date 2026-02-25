@@ -4,7 +4,7 @@ import os
 import google.generativeai as genai
 import urllib.parse
 
-# --- 1. CORE VARIABLES (Defined first to prevent NameError) ---
+# --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
 soft_blue = "#AEC6CF" 
 
@@ -115,28 +115,40 @@ elif st.session_state.current_page == "Marketplace":
     with b1:
         st.markdown("#### The Starter Ritual")
         st.write("3 Items: ₹2,499")
-        l1 = "https://wa.me/" + MY_PHONE + "?text=StarterRitual"
-        st.markdown('<a href="' + l1 + '" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
+        link1 = "https://wa.me/" + MY_PHONE + "?text=StarterRitual"
+        st.markdown('<a href="' + link1 + '" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
     with b2:
         st.markdown("#### Master Sanctuary")
         st.write("5 Items: ₹4,999")
-        l2 = "https://wa.me/" + MY_PHONE + "?text=MasterSanctuary"
-        st.markdown('<a href="' + l2 + '" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
+        link2 = "https://wa.me/" + MY_PHONE + "?text=MasterSanctuary"
+        st.markdown('<a href="' + link2 + '" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("### 🏺 Individual Objects")
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("#### Stones")
-        st.markdown('<a href="https://wa.me/'+MY_PHONE+'?text=Stones" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+        link_s = "https://wa.me/" + MY_PHONE + "?text=Stones"
+        st.markdown('<a href="' + link_s + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
     with c2:
         st.markdown("#### Buddha")
-        st.markdown('<a href="https://wa.me/'+MY_PHONE+'?text=Buddha" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+        link_b = "https://wa.me/" + MY_PHONE + "?text=Buddha"
+        st.markdown('<a href="' + link_b + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
     with c3:
         st.markdown("#### Art")
-        st.markdown('<a href="https://wa.me/'+MY_PHONE+'?text=Art" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+        link_a = "https://wa.me/" + MY_PHONE + "?text=Art"
+        st.markdown('<a href="' + link_a + '" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
 
 # --- 9. PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
     st.markdown("<h2 style='text-align: center;'>Vision</h2>", unsafe_allow_html=True)
-    st.write("Sukoon bridges digital AI and tangible grounding.")
-    wa_v = "https://wa.me/" + MY
+    st.write("### Silence in a Loud World")
+    st.write("Sukoon bridges digital AI guidance and tangible physical grounding.")
+    st.write("---")
+    st.write("### The Journey")
+    st.write("We are integrating affective computing to understand human emotion.")
+    wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
+    st.markdown('<div style="text-align:center;"><a href="' + wa_v + '" class="mkt-btn">Connect</a></div>', unsafe_allow_html=True)
+
+# --- 10. FOOTER ---
+st.markdown("---")
+st.markdown("<div style='opacity:0.5; font-size:10px; text-align:center;'><b>DISCLAIMER:</b> Not medical advice.</div>", unsafe_allow_html=True)
