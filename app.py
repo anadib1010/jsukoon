@@ -93,14 +93,32 @@ if st.session_state.current_page == "Journal":
     audio_in = st.audio_input("Voice Note")
     text_in = st.text_area("Release your thoughts...", height=100)
     
-    # 3. THE MENTOR RESPONSE
+    # 3.UPDATED CONSULT GUIDE LOGIC (Surgical Change)
+
     if st.button("CONSULT GUIDE", use_container_width=True):
         if model:
-            with st.spinner("Refining..."):
-                context = "You are a Sukoon Mentor. Use secular mindfulness language. Acknowledge grounding objects (beads/stones) if relevant. Max 3 sentences."
-                response = model.generate_content([context, text_in if text_in else "Silence."])
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": response.text})
-                st.rerun()
+            with st.spinner("Holding space..."):
+                # Check for the "Heavier" pattern
+                recent_energy = st.session_state.energy_history[-3:]
+                is_persistent_heavy = len(recent_energy) >= 3 and all(e == "Heavier" for e in recent_energy)
+            
+                # Dynamic Context based on user's journey
+                if is_persistent_heavy:
+                    context = ("The user has been feeling 'Heavier' for several sessions. "
+                               "Adopt a deeply compassionate, gentle tone. Acknowledge their persistence. "
+                               "Suggest a very simple physical grounding task with their stone or beads. "
+                               "Remind them that release takes time. Max 3 sentences.")
+                else:
+                    context = ("You are a Sukoon Mentor. Use secular mindfulness language. "
+                               "Acknowledge grounding objects (beads/stones) if relevant. Max 3 sentences.")
+
+                try:
+                    user_input = text_in if text_in else "I am here."
+                    response = model.generate_content([context, user_input])
+                    st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": response.text})
+                    st.rerun()
+                except Exception as e:
+                    st.error("The sanctuary is quiet right now. Please try again.")
 
     # 4. ENERGY CHECK & TRACKING
     st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
