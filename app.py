@@ -3,10 +3,10 @@ from datetime import datetime
 import os
 import google.generativeai as genai
 
-# --- 1. CORE VARIABLES ---
+# --- 1. CORE VARIABLES (CORRECTED) ---
 MY_PHONE = "918882850790"
-GITHUB_USER = "manavprakash" 
-REPO_NAME = "jsukoon" # Ensure this matches your repo name exactly
+GITHUB_USER = "anadib1010" 
+REPO_NAME = "jsukoon"
 soft_blue = "#AEC6CF" 
 
 # --- 2. CONFIG ---
@@ -33,13 +33,22 @@ if api_key:
     except: model = None
 else: model = None
 
-# --- 5. CSS ---
+# --- 5. SCRIPTS & CSS ---
 st.markdown(f"""
+    <script>
+    function speakNow(text) {{
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+    }}
+    </script>
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; text-align: center !important; }}
     .stButton>button {{ background-color: {btn_bg} !important; color: {txt} !important; border: 1px solid {soft_blue} !important; border-radius: 10px !important; width: 100%; }}
     .breather-circle {{ width: 60px; height: 60px; background: {soft_blue}; border-radius: 50%; margin: 15px auto; animation: breathe 8s infinite ease-in-out; }}
     @keyframes breathe {{ 0%, 100% {{ transform: scale(1); opacity: 0.4; }} 50% {{ transform: scale(1.3); opacity: 1; }} }}
+    .mkt-box {{ border: 1px solid {soft_blue}; padding: 15px; border-radius: 12px; margin-bottom: 10px; background: rgba(174, 198, 207, 0.05); }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -56,7 +65,6 @@ st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    # Energy Buttons
     m_cols = st.columns(5)
     for i, lab in enumerate(["Low", "Drained", "Neutral", "Steady", "Vibrant"]):
         with m_cols[i]:
@@ -65,9 +73,9 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
 
-    # --- UPDATED AUDIO SECTION ---
+    # --- HORIZONTAL AUDIO BUTTONS ---
     st.write("#### Nature Ambience")
-    # Using the CDN link which is more reliable than raw links
+    # Using JSDelivr CDN with your CORRECT GitHub username
     cdn_base = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     
@@ -82,13 +90,6 @@ if st.session_state.current_page == "Journal":
         file_url = f"{cdn_base}{st.session_state.active_audio}"
         st.write(f"🔊 Playing: **{st.session_state.audio_label}**")
         st.audio(file_url, format="audio/mp3", autoplay=True)
-        
-        with st.expander("Diagnostic Tool"):
-            st.code(f"Current Path: {file_url}")
-            if st.button("Try Master Branch"):
-                alt_url = file_url.replace("@main/", "@master/")
-                st.audio(alt_url, format="audio/mp3", autoplay=True)
-                st.write(f"Trying: {alt_url}")
 
     st.markdown("---")
     
@@ -115,6 +116,8 @@ if st.session_state.current_page == "Journal":
     # HISTORY
     for entry in reversed(st.session_state.private_journal):
         st.info(f"🕒 {entry['time']} | {entry['ai']}")
+        if st.button("🔊 Hear", key=f"h_{entry['id']}"):
+            st.markdown(f"<script>speakNow({repr(entry['ai'])})</script>", unsafe_allow_html=True)
         st.write("---")
 
 # --- 8. OTHER PAGES ---
