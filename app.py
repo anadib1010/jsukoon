@@ -25,33 +25,46 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. CENTERED TYPOGRAPHY CSS ---
+# --- 5. REFINED CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
+    /* THE FIX: Added significant top padding to prevent the title from being cut */
     .block-container {{
         max-width: 550px !important;
         margin: auto;
-        padding-top: 1.5rem !important;
+        padding-top: 4rem !important; 
+        padding-bottom: 2rem !important;
     }}
 
     @media (max-width: 640px) {{
-        .block-container {{ max-width: 98% !important; }}
+        .block-container {{ max-width: 98% !important; padding-top: 3rem !important; }}
     }}
 
-    /* Section Header Styling */
+    /* Title Styling with extra top margin */
+    .main-title {{
+        text-align: center; 
+        letter-spacing: 7px; 
+        font-weight: 200; 
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 2.5rem;
+        color: {txt};
+    }}
+
+    /* Section Header Styling - Now in Soft Blue */
     .section-header {{
-        font-size: 20px !important;
+        font-size: 18px !important;
         font-weight: 300 !important;
         letter-spacing: 4px !important;
         text-transform: uppercase;
-        margin-top: 25px !important;
+        margin-top: 30px !important;
         margin-bottom: 10px !important;
         text-align: center;
         width: 100%;
-        color: {txt};
-        opacity: 0.9;
+        color: {soft_blue} !important;
+        opacity: 1;
     }}
 
     /* Word-Only Buttons */
@@ -62,15 +75,13 @@ st.markdown(f"""
         box-shadow: none !important;
         width: 100% !important;
         padding: 8px 0px !important;
-        font-size: clamp(10px, 3vw, 13px) !important; 
+        font-size: clamp(10.5px, 3.2vw, 13px) !important; 
         font-weight: 400 !important;
         white-space: nowrap !important;
         text-decoration: underline;
         text-decoration-color: {soft_blue};
         transition: all 0.3s ease;
     }}
-
-    .stButton>button:hover {{ color: {soft_blue} !important; }}
 
     /* Grid Layout */
     [data-testid="stHorizontalBlock"] {{
@@ -81,22 +92,22 @@ st.markdown(f"""
         align-items: center;
     }}
 
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.2rem !important; }}
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.3rem !important; }}
     
     textarea {{ 
         background: transparent !important; 
         color: {txt} !important; 
         border: 0.5px solid {soft_blue} !important; 
-        text-align: center !important; 
-        margin-top: 15px !important;
+        text-align: center !important;
+        border-radius: 0px !important;
     }}
 
-    .footer-text {{ font-size: 9px; opacity: 0.5; margin-top: 35px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
+    .footer-text {{ font-size: 9px; opacity: 0.5; margin-top: 40px; border-top: 0.5px solid {soft_blue}; padding: 15px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 6. NAVIGATION ---
-st.markdown("<h1 style='text-align: center; letter-spacing: 6px; font-weight: 200; margin-bottom: 0px;'>SUKOON</h1>", unsafe_allow_html=True)
+st.markdown(f"<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 nav_row = st.columns(3)
 nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Info")]
 
@@ -109,7 +120,6 @@ st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    # CENTERED LARGE HEADER: ENERGY
     st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
@@ -118,7 +128,6 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
-    # CENTERED LARGE HEADER: AMBIENCE
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -137,7 +146,7 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("---")
     audio_rec = st.audio_input("Voice")
-    text_msg = st.text_area("Record reflection...", height=100)
+    text_msg = st.text_area("Reflection...", height=100)
     
     if st.button("CONSULT GUIDE", key="brain_btn"):
         if model:
@@ -155,7 +164,7 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# (Pages handled minimally)
+# (Brief handling of other pages)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
@@ -167,4 +176,4 @@ elif st.session_state.current_page == "FAQ":
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
 
-st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Wellness tool. Not medical substitute.</div>", unsafe_allow_html=True)
