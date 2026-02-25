@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. HIGH-DENSITY CSS (3px Padding) ---
+# --- 5. ZERO-GAP PRECISION CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -52,26 +52,34 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* GRID: 2px gap between boxes */
+    /* THE ZERO-GAP GRID: This eliminates the space between columns */
     [data-testid="stHorizontalBlock"] {{
-        display: grid !important; grid-template-columns: repeat(3, 1fr) !important;
-        gap: 2px !important; width: 100% !important;
+        gap: 0px !important; 
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+    }}
+    
+    [data-testid="column"] {{
+        padding: 0px !important;
+        margin: 0px !important;
+        width: 33.33% !important;
+        flex: 1 1 0% !important;
+        min-width: 0px !important;
     }}
 
-    /* THE SLAB: 3px Horizontal Padding */
+    /* THE SLAB: Borders now meet at 0px */
     .stButton>button {{ 
         background-color: {btn_bg} !important; color: {txt} !important; 
-        border: 1px solid #2A2A2A !important; border-radius: 2px !important; 
-        
-        /* THE FIX: Padding reduced to 3px */
+        border: 0.5px solid #2A2A2A !important; /* Slightly thinner border for overlap */
+        border-radius: 0px !important; /* Total square for seamless joining */
         padding-left: 3px !important; padding-right: 3px !important;
-        
         min-height: 34px !important; height: 34px !important;
         width: 100% !important; font-size: 11px !important; 
         white-space: nowrap !important; transition: all 0.2s ease;
     }}
 
-    .stButton>button:hover {{ border-color: {soft_blue} !important; }}
+    .stButton>button:hover {{ border-color: {soft_blue} !important; z-index: 1; position: relative; }}
 
     .breather-wrapper {{ text-align: center; margin: 20px 0; }}
     .breather-circle {{
@@ -88,7 +96,6 @@ st.markdown(f"""
     }}
 
     textarea {{ background: {btn_bg} !important; color: {soft_blue} !important; border: 1px solid #2A2A2A !important; text-align: center !important; border-radius: 4px !important; }}
-    
     .footer-text {{ font-size: 9px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #2A2A2A; padding: 15px; width: 100%; }}
     
     div[data-testid="stNotification"] {{
@@ -164,15 +171,15 @@ elif st.session_state.current_page == "Market":
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### Ground | Release | Reflect")
-    st.write("Sukoon is designed to be a bridge between the noise of daily technology and the silence of inner presence. We use AI not to distract, but to hold space for your reflection.")
+    st.write("Sukoon is designed to be a bridge between noise and stillness.")
 
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("**Privacy:** No data is stored between sessions.  \n**Sounds:** Professionally curated for high-fidelity focus.")
+    st.write("**Privacy:** Data is session-only.")
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
-    st.write("Wellness companion only. No medical, psychological, or psychiatric advice provided. Not a substitute for professional health services.")
+    st.write("Wellness companion only.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
