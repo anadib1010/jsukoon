@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import google.generativeai as genai
 import urllib.parse
+import time
 
 # --- CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
@@ -20,49 +21,42 @@ if api_key:
 else:
     super_brain = None
 
-# --- UI STATE & SESSION PERSISTENCE ---
+# --- UI STATE ---
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Journal"
-
-# --- THEME COLORS ---
-# Moved up so navigation buttons can use these colors
-soft_blue = "#AEC6CF" 
 if "theme" not in st.session_state:
     st.session_state.theme = "Peaceful"
 
-# --- NAVIGATION LOGIC ---
-st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
-nav1, nav2, nav3, nav4 = st.columns([1, 1, 1, 1])
-
-with nav1:
-    if st.button("Journal", use_container_width=True, key="nav_journal"):
-        st.session_state.current_page = "Journal"
-with nav2:
-    if st.button("Market", use_container_width=True, key="nav_market"):
-        st.session_state.current_page = "Marketplace"
-with nav3:
-    if st.button("Vision", use_container_width=True, key="nav_vision"):
-        st.session_state.current_page = "Vision"
-with nav4:
-    theme_choice = st.radio("Vibe", ["Peaceful", "Midnight"], horizontal=True, label_visibility="collapsed")
-    st.session_state.theme = theme_choice
-
-# Define colors based on the current theme choice
+# --- THEME COLORS ---
+soft_blue = "#AEC6CF" 
 if st.session_state.theme == "Peaceful":
     bg, txt, input_bg, btn_bg, card_hover = "#F9FDF9", "#2E4032", "white", "transparent", "rgba(74, 112, 85, 0.15)"
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS ---
+# --- CSS (With Breath Animation) ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
     h1, h2, h3, h4, label, p, li { color: V_TXT !important; font-weight: 200 !important; }
     textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; }
     button[kind="secondaryFormSubmit"], .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; }
-    hr { border-top: 1px solid V_TXT !important; opacity: 0.3; }
+    
+    /* Breathing Animation */
+    @keyframes breathe {
+        0% { transform: scale(1); opacity: 0.4; }
+        40% { transform: scale(1.5); opacity: 1; } /* Inhale */
+        60% { transform: scale(1.5); opacity: 1; } /* Hold */
+        100% { transform: scale(1); opacity: 0.4; } /* Exhale */
+    }
+    .breather-circle {
+        width: 100px; height: 100px; background: V_BLUE; border-radius: 50%;
+        margin: 40px auto; animation: breathe 10s infinite ease-in-out;
+        box-shadow: 0 0 20px V_BLUE;
+    }
+    
     div[data-testid="stColumn"] { transition: all 0.4s ease; padding: 15px; border-radius: 20px; border: 1px solid rgba(128,128,128,0.1); margin-bottom: 10px; }
     div[data-testid="stColumn"]:hover { transform: translateY(-8px); box-shadow: 0px 15px 30px V_HOV; border: 1px solid V_BLUE; }
     [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg { display: none !important; }
@@ -70,65 +64,70 @@ css_template = """
 """
 clean_css = css_template.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_HOV", card_hover).replace("V_BLUE", soft_blue)
 st.markdown(clean_css, unsafe_allow_html=True)
+
+# --- NAVIGATION ---
+st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
+n1, n2, n3 = st.columns([1,1,1])
+with n1: 
+    if st.button("Journal", use_container_width=True): st.session_state.current_page = "Journal"
+with n2: 
+    if st.button("Market", use_container_width=True): st.session_state.current_page = "Marketplace"
+with n3: 
+    if st.button("Vision", use_container_width=True): st.session_state.current_page = "Vision"
 st.markdown("---")
 
-# --- PAGE ROUTING ---
+# --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
-    st.markdown("<div style='text-align: center; padding: 20px;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
-    audio_type = st.radio("Ambient Sounds", ["Silent", "Library", "YouTube"], horizontal=True)
-    if audio_type == "Library":
-        choice = st.radio("Sound:", ["Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-        files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-        target = files.get(choice)
-        if target and os.path.exists(target): st.audio(target)
-    elif audio_type == "YouTube":
-        v_choice = st.radio("Video:", ["Rain", "Ocean", "Zen"], horizontal=True)
-        v_links = {"Rain": "https://www.youtube.com/watch?v=BIcl7DrBcjg", "Ocean": "https://www.youtube.com/watch?v=unvd_fjiiAQ", "Zen": "https://www.youtube.com/watch?v=UF5H3EfvXTk"}
-        st.video(v_links[v_choice])
+    st.markdown("<div style='text-align: center;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
     
-    st.markdown("---")
+    # BREATHWORK TIMER
+    st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; opacity: 0.6;'>Inhale • Hold • Exhale</p>", unsafe_allow_html=True)
+    
     with st.form("diary_form", clear_on_submit=True):
         diary_entry = st.text_area("What is on your mind today?")
         if st.form_submit_button("Consult Guide"):
             if super_brain and diary_entry:
+                # SIMPLE AFFECTIVE LOGIC
+                stress_words = ["sad", "anxious", "stress", "tired", "dark", "exhausted", "heavy", "pain"]
+                if any(word in diary_entry.lower() for word in stress_words):
+                    st.session_state.theme = "Midnight"
+                else:
+                    st.session_state.theme = "Peaceful"
+                
                 with st.spinner("Listening..."):
                     try:
-                        resp = super_brain.generate_content("Respond to: " + diary_entry).text
-                        st.success(resp)
+                        resp = super_brain.generate_content("Respond as a mindfulness guide: " + diary_entry).text
                         st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
+                        st.rerun() # Refresh to apply theme change
                     except:
-                        st.error("The Guide is at capacity for today.")
+                        st.error("The Guide is resting.")
+
     for entry in reversed(st.session_state.private_journal):
         st.write("🕒 " + entry['time'] + " | " + entry['diary'])
         st.info(entry['ai'])
 
+# --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
-    st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
-    def display_product(label, desc):
-        st.markdown("#### " + label)
-        st.write(desc)
-        wa_url = "https://wa.me/918882850790?text=" + urllib.parse.quote("Interest: " + label)
-        btn_html = f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:{soft_blue}; color:#0A0E0B;">💬 WhatsApp</button></a>'
-        st.markdown(btn_html, unsafe_allow_html=True)
-
-    r1c1, r1c2, r1c3 = st.columns(3)
-    with r1c1: display_product("Natural Stones", "Tactile grounding tools.")
-    with r1c2: display_product("Sacred Buddha", "A focal point for stillness.")
-    with r1c3: display_product("Artic Art", "Minimalist visual tranquility.")
+    st.markdown("<h2 style='text-align: center;'>Grounding Bundles</h2>", unsafe_allow_html=True)
     
-    r2c1, r2c2, r2c3 = st.columns(3)
-    with r2c1: display_product("Vaastu Objects", "Harmonizing your space.")
-    with r2c2: display_product("Crafted Beads", "Focus through touch.")
-    with r2c3: display_product("Insight Journals", "Pathways to inner clarity.")
+    def display_bundle(title, items, price):
+        st.markdown(f"### {title}")
+        st.write(f"**Includes:** {items}")
+        st.write(f"**Investment:** {price}")
+        wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote(f"I'm interested in the {title}")
+        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:12px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer;">Order Ritual Box</button></a>', unsafe_allow_html=True)
 
+    col1, col2 = st.columns(2)
+    with col1:
+        display_bundle("The Starter Ritual", "Natural Stones, Sacred Buddha, & Crafted Beads.", "₹2,499")
+    with col2:
+        display_bundle("The Master Sanctuary", "Stones, Buddha, Art, Vaastu Object, & Insight Journal.", "₹4,999")
+
+# --- PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
     st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
     st.write("### Silence in a Loud World")
-    st.write("Sukoon was born from a simple realization: the world is getting louder, but our internal spaces are getting smaller.")
-    st.write("---")
-    st.write("### The Journey")
-    st.write("Sukoon is more than an app; it is a commitment to mental clarity.")
-    st.markdown("<br>", unsafe_allow_html=True)
-    wa_support = "https://wa.me/918882850790?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
-    v_btn = f'<div style="text-align: center;"><a href="{wa_support}" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; font-size:16px; background-color:{soft_blue}; color:#0A0E0B;">💬 Connect with Founder</button></a></div>'
-    st.markdown(v_btn, unsafe_allow_html=True)
+    st.write("Sukoon is an ecosystem designed to bridge the gap between digital AI guidance and tangible physical grounding.")
+    wa_support = "https://wa.me/919876543210?text=" + urllib.parse.quote("Hi, I'd like to support the Sukoon vision.")
+    st.markdown(f'<div style="text-align: center;"><br><a href="{wa_support}" target="_blank"><button style="padding:10px 25px; border-radius:10px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
