@@ -12,10 +12,10 @@ soft_blue = "#AEC6CF"
 # --- 2. CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
 
-# Session States
-for key in ["private_journal", "current_page", "theme", "active_audio"]:
-    if key not in st.session_state:
-        st.session_state[key] = [] if key == "private_journal" else "Journal" if key == "current_page" else "Peaceful" if key == "theme" else None
+if "private_journal" not in st.session_state: st.session_state.private_journal = []
+if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
+if "theme" not in st.session_state: st.session_state.theme = "Peaceful"
+if "active_audio" not in st.session_state: st.session_state.active_audio = None
 
 # --- 3. THEME ---
 if st.session_state.theme == "Midnight":
@@ -28,51 +28,44 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. CSS (Symmetry & Mobile Optimization) ---
+# --- 5. UI STYLING ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     [data-testid="stVerticalBlock"] {{ display: flex; flex-direction: column; align-items: center !important; text-align: center !important; }}
-    
-    .stButton {{ display: flex; justify-content: center; width: 100%; }}
     .stButton>button {{ 
         background-color: {btn_bg} !important; color: {txt} !important; 
         border: 1px solid {soft_blue} !important; border-radius: 14px !important; 
         width: 100% !important; padding: 10px 15px !important; min-height: 45px !important;
         margin: 5px auto !important; font-size: 13px !important; font-weight: 500 !important;
-        white-space: nowrap !important;
     }}
-    
-    .mkt-box {{ border: 1px solid {soft_blue}; padding: 20px; border-radius: 15px; background: {btn_bg}; width: 100%; margin-bottom: 15px; }}
-    .disclaimer-bar {{ font-size: 10px; opacity: 0.6; text-align: center; margin-top: 40px; padding: 10px; border-top: 0.5px solid {soft_blue}; width: 100%; }}
+    .footer-text {{ font-size: 10px; opacity: 0.7; text-align: center; margin-top: 50px; padding: 15px; border-top: 0.5px solid {soft_blue}; width: 100%; }}
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. NEW NAVIGATION GRID ---
+# --- 6. NAVIGATION ---
 st.markdown("<h1 style='text-align: center;'>Sukoon</h1>", unsafe_allow_html=True)
-row1_1, row1_2, row1_3 = st.columns(3)
-with row1_1: 
+r1_1, r1_2, r1_3 = st.columns(3)
+with r1_1: 
     if st.button("Journal", key="n1"): st.session_state.current_page = "Journal"; st.rerun()
-with row1_2: 
+with r1_2: 
     if st.button("Market", key="n2"): st.session_state.current_page = "Marketplace"; st.rerun()
-with row1_3: 
+with r1_3: 
     if st.button("Vision", key="n3"): st.session_state.current_page = "Vision"; st.rerun()
 
-row2_1, row2_2 = st.columns(2)
-with row2_1: 
+r2_1, r2_2 = st.columns(2)
+with r2_1: 
     if st.button("FAQ", key="n4"): st.session_state.current_page = "FAQ"; st.rerun()
-with row2_2: 
+with r2_2: 
     if st.button("Disclaimer", key="n5"): st.session_state.current_page = "Disclaimer"; st.rerun()
 st.markdown("---")
 
-# --- 7. PAGES ---
-
-# --- JOURNAL ---
+# --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
     st.write("#### Energy Check")
     m_cols = st.columns(5)
-    for i, lab in enumerate(["Low", "Drained", "Neutral", "Steady", "Vibrant"]):
+    for i, lab in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
         with m_cols[i]:
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
@@ -92,51 +85,53 @@ if st.session_state.current_page == "Journal":
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("---")
-    audio_rec = st.audio_input("Record")
-    text_msg = st.text_area("Share your heart...")
+    audio_rec = st.audio_input("Voice Note")
+    text_msg = st.text_area("Record your reflection...")
     if st.button("Consult Guide", use_container_width=True):
         if model:
             with st.spinner("Reflecting..."):
                 try:
-                    parts = ["You are a mindfulness mentor. Respond in 1 calm paragraph."]
+                    # System Instruction modified to be legally safe
+                    prompt = "You are a mindfulness mentor. Provide a calm, supportive reflection. Avoid medical advice or clinical terms."
+                    parts = [prompt]
                     if audio_rec: parts.append({"mime_type": "audio/wav", "data": audio_rec.read()})
                     else: parts.append(text_msg)
                     resp = model.generate_content(parts).text
                     st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp})
                     st.rerun()
-                except: st.error("Brain is resting.")
+                except: st.error("The Guide is pausing.")
 
     for entry in reversed(st.session_state.private_journal):
         st.info(f"🕒 {entry['time']} | {entry['ai']}")
 
-# --- VISION ---
+# --- 8. VISION ---
 elif st.session_state.current_page == "Vision":
     st.write("### The Sukoon Ritual")
-    st.write("Sukoon is designed as a bridge between high-tech AI and the quiet human soul.")
+    st.write("Sukoon is a digital sanctuary designed to cultivate inner stillness and balance.")
     st.markdown("""
-    **1. Ground:** Select a nature sound to settle your nervous system.  
-    **2. Release:** Speak or type your honest thoughts without judgment.  
-    **3. Reflect:** Receive guidance that acts as a mirror to your inner peace.
+    **1. Ground:** Select a nature frequency to settle your focus.  
+    **2. Release:** Share your current reflections to clear mental noise.  
+    **3. Reflect:** Receive a supportive mirror to help maintain presence.
     """)
-    st.write("Questions? I am here to help.")
+    st.write("For inquiries regarding the philosophy or grounding tools:")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='display:block; border:1px solid {soft_blue}; padding:15px; border-radius:12px; text-decoration:none; color:{soft_blue}; font-weight:bold;'>Talk to the Founder</a>", unsafe_allow_html=True)
 
-# --- FAQ ---
+# --- 9. FAQ ---
 elif st.session_state.current_page == "FAQ":
     st.write("### Common Inquiries")
     faqs = {
-        "Is my data private?": "Your journal entries are stored only in your current session and are not saved permanently on our servers.",
-        "How do the nature sounds help?": "Binaural and nature frequencies are scientifically proven to lower cortisol (stress) levels.",
-        "How often should I use the Guide?": "Even 3 minutes a day can build significant mental resilience over time.",
-        "Can I purchase physical items?": "Yes, our Marketplace connects you directly to the founder for authentic grounding tools."
+        "Is my data private?": "Your reflections stay in your current session. We do not store personal journal history on our servers.",
+        "How do the nature sounds help?": "Natural frequencies are used to encourage a state of calm focus and relaxation.",
+        "Is this a therapy tool?": "No. Sukoon is a lifestyle companion for mindfulness and general well-being.",
+        "What are the grounding objects?": "We offer physical items like beads and stones designed for sensory focus and ritual."
     }
     for q, a in faqs.items():
         st.markdown(f"<div class='faq-q'>{q}</div><div>{a}</div>", unsafe_allow_html=True)
 
-# --- DISCLAIMER PAGE ---
+# --- 10. DISCLAIMER ---
 elif st.session_state.current_page == "Disclaimer":
-    st.write("### Official Disclaimer")
-    st.write("Sukoon is a wellness tool designed for mindfulness and self-reflection. It is not a medical device, nor does it provide clinical therapy or psychiatric diagnosis. If you are in a crisis, please contact professional emergency services immediately.")
+    st.write("### Information & Use")
+    st.write("Sukoon is an AI-supported companion for mindfulness and relaxation. It does not provide medical, psychological, or psychiatric advice. It is not intended to treat or manage any health condition. By using this app, you acknowledge that it is a self-help tool used at your own discretion.")
 
 # --- UNIVERSAL FOOTER ---
-st.markdown("<div class='disclaimer-bar'>Sukoon is a mindfulness tool, not a medical substitute.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Sukoon is a wellness tool for mindfulness and is not a medical substitute.</div>", unsafe_allow_html=True)
