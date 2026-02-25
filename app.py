@@ -36,7 +36,7 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (With Breath Animation) ---
+# --- CSS ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -87,35 +87,7 @@ if st.session_state.current_page == "Journal":
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
         target = files.get(choice)
         if target and os.path.exists(target): st.audio(target)
-        else: st.info(f"Playing {choice}...")
+        else: st.info("Playing " + choice + "...")
 
     st.markdown("---")
-    with st.form("diary_form", clear_on_submit=True):
-        diary_entry = st.text_area("What is on your mind today?")
-        if st.form_submit_button("Consult Guide"):
-            if super_brain and diary_entry:
-                stress_words = ["sad", "anxious", "stress", "tired", "dark", "exhausted", "heavy", "pain", "angry", "lonely"]
-                st.session_state.theme = "Midnight" if any(word in diary_entry.lower() for word in stress_words) else "Peaceful"
-                
-                with st.spinner("Listening..."):
-                    try:
-                        resp = super_brain.generate_content("Respond as a mindfulness mentor: " + diary_entry).text
-                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_entry, "ai": resp})
-                        st.rerun()
-                    except:
-                        st.error("The Guide is resting.")
-
-    for entry in reversed(st.session_state.private_journal):
-        st.write("🕒 " + entry['time'] + " | " + entry['diary'])
-        st.info(entry['ai'])
-
-# --- PAGE: MARKETPLACE ---
-elif st.session_state.current_page == "Marketplace":
-    st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
-    
-    def display_item(label, desc, is_bundle=False):
-        st.markdown(f"#### {label}")
-        st.write(desc)
-        wa_url = "https://wa.me/919876543210?text=" + urllib.parse.quote(f"Interest: {label}")
-        btn_txt = "Order Ritual Box" if is_bundle else "Inquire via WhatsApp"
-        st.markdown(f'<a href="{wa_url}" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; background-color:{soft_blue}; color:#0A0E0B; border:none; font-weight:bold; cursor:pointer;">{btn_txt}</button>
+    with st.
