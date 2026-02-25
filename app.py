@@ -20,20 +20,22 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME & STYLING ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- 4. DIAGNOSTIC AI SETUP ---
-# This looks in both Secrets (Streamlit Cloud) and Environment (Local)
-api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+# --- THE "WAKE UP" TEST CODE ---
+api_key = st.secrets.get("GEMINI_API_KEY")
 
-if not api_key:
-    st.warning("⚠️ API Key not detected. Please check your Secrets settings.")
-    model = None
-else:
+if api_key:
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel("gemini-1.5-flash")
+        # The Ping Test
+        model.generate_content("Ping") 
+        st.toast("✅ Brain is Active", icon="🧠")
     except Exception as e:
-        st.error(f"AI Configuration Error: {e}")
+        st.error(f"❌ Connection Failed: {e}")
         model = None
+else:
+    st.warning("⚠️ Waiting for API Key in Secrets...")
+    model = None
 
 # --- 5. CSS ---
 st.markdown(f"""
