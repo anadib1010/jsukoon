@@ -20,29 +20,36 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME & STYLING ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- 4. ROBUST AI SETUP ---
+# --- 4. THE MODERN BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        # We use the 'latest' suffix to bypass the 404 error
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
         
-        # Test the connection silently
-        model.generate_content("Ping") 
-        st.toast("✅ Sanctuary Brain is Active", icon="🧘")
-    except Exception as e:
-        # If 'flash' fails, try 'pro' as a fallback
-        try:
-            model = genai.GenerativeModel("gemini-pro")
-            model.generate_content("Ping")
-            st.toast("✅ Sanctuary Brain is Active (Pro Mode)", icon="🧘")
-        except:
-            st.error(f"❌ Model Access Error: {e}")
+        # We try the newest models first (Gemini 3 and 2.5)
+        # These are the current standards as of early 2026
+        model_found = False
+        for model_name in ["gemini-3-flash", "gemini-2.5-flash", "gemini-2.0-flash"]:
+            try:
+                model = genai.GenerativeModel(model_name)
+                # Quick test to confirm access
+                model.generate_content("Ping")
+                st.toast(f"✅ Sanctuary Brain Active ({model_name})", icon="🧘")
+                model_found = True
+                break
+            except:
+                continue
+        
+        if not model_found:
+            st.error("❌ Model Access Error: Your API key doesn't seem to have access to the latest Flash models.")
             model = None
+            
+    except Exception as e:
+        st.error(f"❌ Connection Failed: {e}")
+        model = None
 else:
-    st.warning("⚠️ API Key not detected in Secrets.")
+    st.warning("⚠️ Waiting for API Key in Secrets...")
     model = None
 
 # --- 5. CSS ---
