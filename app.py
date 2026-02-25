@@ -30,7 +30,6 @@ st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
-    /* THE FIX: Added significant top padding to prevent the title from being cut */
     .block-container {{
         max-width: 550px !important;
         margin: auto;
@@ -39,66 +38,41 @@ st.markdown(f"""
     }}
 
     @media (max-width: 640px) {{
-        .block-container {{ max-width: 98% !important; padding-top: 3rem !important; }}
+        .block-container {{ max-width: 98% !important; padding-top: 3.5rem !important; }}
     }}
 
-    /* Title Styling with extra top margin */
     .main-title {{
-        text-align: center; 
-        letter-spacing: 7px; 
-        font-weight: 200; 
-        margin-top: 20px;
-        margin-bottom: 10px;
-        font-size: 2.5rem;
-        color: {txt};
+        text-align: center; letter-spacing: 7px; font-weight: 200; 
+        margin-top: 10px; margin-bottom: 5px; font-size: 2.2rem; color: {txt};
     }}
 
-    /* Section Header Styling - Now in Soft Blue */
     .section-header {{
-        font-size: 18px !important;
-        font-weight: 300 !important;
-        letter-spacing: 4px !important;
-        text-transform: uppercase;
-        margin-top: 30px !important;
-        margin-bottom: 10px !important;
-        text-align: center;
-        width: 100%;
-        color: {soft_blue} !important;
-        opacity: 1;
+        font-size: 17px !important; font-weight: 300 !important; letter-spacing: 4px !important;
+        text-transform: uppercase; margin-top: 25px !important; margin-bottom: 12px !important;
+        text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* Word-Only Buttons */
+    /* Minimalist Word Buttons */
     .stButton>button {{ 
-        background: transparent !important; 
-        color: {txt} !important; 
-        border: none !important; 
-        box-shadow: none !important;
-        width: 100% !important;
-        padding: 8px 0px !important;
+        background: transparent !important; color: {txt} !important; 
+        border: none !important; box-shadow: none !important;
+        width: 100% !important; padding: 8px 0px !important;
         font-size: clamp(10.5px, 3.2vw, 13px) !important; 
-        font-weight: 400 !important;
-        white-space: nowrap !important;
-        text-decoration: underline;
-        text-decoration-color: {soft_blue};
+        font-weight: 400 !important; white-space: nowrap !important;
+        text-decoration: underline; text-decoration-color: {soft_blue};
         transition: all 0.3s ease;
     }}
 
-    /* Grid Layout */
     [data-testid="stHorizontalBlock"] {{
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 5px !important;
-        width: 100% !important;
-        align-items: center;
+        display: grid !important; grid-template-columns: repeat(3, 1fr) !important;
+        gap: 5px !important; width: 100% !important; align-items: center;
     }}
 
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.3rem !important; }}
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.4rem !important; }}
     
     textarea {{ 
-        background: transparent !important; 
-        color: {txt} !important; 
-        border: 0.5px solid {soft_blue} !important; 
-        text-align: center !important;
+        background: transparent !important; color: {txt} !important; 
+        border: 0.5px solid {soft_blue} !important; text-align: center !important;
         border-radius: 0px !important;
     }}
 
@@ -146,7 +120,7 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("---")
     audio_rec = st.audio_input("Voice")
-    text_msg = st.text_area("Reflection...", height=100)
+    text_msg = st.text_area("Record reflection...", height=100)
     
     if st.button("CONSULT GUIDE", key="brain_btn"):
         if model:
@@ -164,16 +138,43 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# (Brief handling of other pages)
+# --- 8. MARKET RESTORED ---
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
+    m1, m2 = st.columns(2)
+    with m1: 
+        st.write("**Starter Ritual**")
+        st.write("₹2,499")
+    with m2: 
+        st.write("**Master Sanctuary**")
+        st.write("₹4,999")
+    st.markdown("---")
+    st.write("Authentic beads, yantras, and grounding stones.")
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue}; text-decoration:underline;'>Connect to Order</a>", unsafe_allow_html=True)
+
+# --- 9. VISION RESTORED ---
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
-    st.write("Ground | Release | Reflect")
+    st.write("### The Sukoon Ritual")
+    st.markdown("""
+    **Ground:** Settle your focus with natural frequencies.  
+    **Release:** Clear mental noise through honest reflection.  
+    **Reflect:** Receive supportive guidance to stay present.
+    """)
+    st.write("Our vision is a bridge between AI and stillness.")
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Talk to the Founder</a>", unsafe_allow_html=True)
+
+# --- 10. FAQ RESTORED ---
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
+    st.write("**Privacy:** Data is session-only and never stored.")
+    st.write("**Sounds:** Frequencies curated for calm focus.")
+    st.write("**Items:** Physical tools designed for sensory grounding.")
+
+# --- 11. INFO (DISCLAIMER) RESTORED ---
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
+    st.write("### Disclaimer")
+    st.write("Sukoon is an AI-supported companion for mindfulness and relaxation. It does not provide medical, psychological, or psychiatric advice. It is not intended to treat or manage any health condition. By using this tool, you acknowledge it is for self-help purposes only.")
 
-st.markdown("<div class='footer-text'>Wellness tool. Not medical substitute.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Sukoon is a wellness tool. Not a medical substitute.</div>", unsafe_allow_html=True)
