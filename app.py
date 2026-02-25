@@ -38,7 +38,7 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS ---
+# --- CSS (FIXED TRIPLE QUOTES) ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -53,7 +53,3 @@ css_template = """
     }
     .breather-circle {
         width: 80px; height: 80px; background: V_BLUE; border-radius: 50%;
-        margin: 20px auto; animation: breathe 10s infinite ease-in-out;
-        box-shadow: 0 0 25px V_BLUE;
-    }
-    .ritual
