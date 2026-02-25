@@ -117,22 +117,17 @@ elif st.session_state.current_page == "Marketplace":
         st.markdown("#### The Starter Ritual")
         st.write("3 Items: ₹2,499")
         link1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
-        st.markdown(f'<a href="{link1}" target="_blank"><button style="width:100%; padding:10px; background:{soft_blue}; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#0A0E0B;">Order Box</button></a>', unsafe_allow_html=True)
+        st.markdown('<a href="' + link1 + '" target="_blank"><button style="width:100%; padding:10px; background:' + soft_blue + '; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#0A0E0B;">Order Box</button></a>', unsafe_allow_html=True)
     with b2:
         st.markdown("#### Master Sanctuary")
         st.write("5 Items: ₹4,999")
         link2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
-        st.markdown(f'<a href="{link2}" target="_blank"><button style="width:100%; padding:10px; background:{soft_blue}; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#0A0E0B;">Order Box</button></a>', unsafe_allow_html=True)
+        st.markdown('<a href="' + link2 + '" target="_blank"><button style="width:100%; padding:10px; background:' + soft_blue + '; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#0A0E0B;">Order Box</button></a>', unsafe_allow_html=True)
     
     st.markdown("---")
     st.markdown("### 🏺 Individual Objects")
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("#### Natural Stones")
-        st.markdown(f'<a href="https://wa.me/{MY_PHONE}?text=Stones" target="_blank"><button style="width:100%; background:{soft_blue}; border-radius:10px; border:none; padding:8px; cursor:pointer; font-weight:bold; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
-    with c2:
-        st.markdown("#### Sacred Buddha")
-        st.markdown(f'<a href="https://wa.me/{MY_PHONE}?text=Buddha" target="_blank"><button style="width:100%; background:{soft_blue}; border-radius:10px; border:none; padding:8px; cursor:pointer; font-weight:bold; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
-    with c3:
-        st.markdown("#### Artic Art")
-        st.markdown(f
+        link_s = "https://wa.me/" + MY_PHONE + "?text=Stones"
+        st.markdown('<a href="' + link_s + '" target="_blank"><button style="width
