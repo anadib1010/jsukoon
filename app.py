@@ -17,7 +17,7 @@ for key in ["private_journal", "current_page", "theme", "active_audio"]:
     if key not in st.session_state:
         st.session_state[key] = [] if key == "private_journal" else "Journal" if key == "current_page" else "Peaceful" if key == "theme" else None
 
-# --- 3. THEME ---
+# --- 3. THEME COLORS ---
 if st.session_state.theme == "Midnight":
     bg, txt, btn_bg = "#0A0E0B", "#AEC6CF", "#1E1E1E"
 else:
@@ -27,50 +27,72 @@ else:
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
-    # Using 1.5 Flash for the best balance of speed and reliability
     model = genai.GenerativeModel("gemini-1.5-flash")
 else:
     model = None
 
-# --- 5. CSS (FORCE CENTER EVERYTHING) ---
+# --- 5. GLOBAL CENTERING CSS ---
 st.markdown(f"""
     <style>
-    /* Global alignment */
+    /* 1. Force the whole app container to center content */
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
-    .main .block-container {{ 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center !important; 
-        text-align: center !important; 
-        max-width: 500px !important;
+    
+    /* 2. Target the vertical blocks to center everything inside them */
+    [data-testid="stVerticalBlock"] {{
+        display: flex;
+        flex-direction: column;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
     }}
-    
-    /* Center all buttons */
-    .stButton {{ display: flex; justify-content: center; width: 100%; }}
-    .stButton>button {{ 
-        background-color: {btn_bg} !important; 
-        color: {txt} !important; 
-        border: 1px solid {soft_blue} !important; 
-        border-radius: 12px !important; 
-        width: 100% !important; 
-        margin: 5px auto !important;
-        display: block !important;
-    }}
-    
-    /* Center Audio */
-    div[data-testid="stAudio"] {{ display: flex; justify-content: center; width: 100%; }}
-    
-    /* Center Text Areas & Inputs */
-    .stTextArea, .stAudioInput {{ width: 100% !important; display: flex; justify-content: center; }}
-    textarea {{ text-align: center !important; border-radius: 12px !important; border: 1px solid {soft_blue} !important; }}
 
-    .breather-circle {{ width: 70px; height: 70px; background: {soft_blue}; border-radius: 50%; margin: 25px auto; animation: breathe 8s infinite ease-in-out; box-shadow: 0 0 15px {soft_blue}; }}
+    /* 3. Center all buttons and make them look consistent */
+    .stButton {{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }}
+    .stButton>button {{
+        background-color: {btn_bg} !important;
+        color: {txt} !important;
+        border: 1px solid {soft_blue} !important;
+        border-radius: 12px !important;
+        width: 85% !important; /* Slightly narrower for better centering look */
+        margin: 5px auto !important;
+        display: block;
+    }}
+
+    /* 4. Center Audio Players */
+    div[data-testid="stAudio"] {{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin: 10px 0;
+    }}
+
+    /* 5. Center Text Area and Inputs */
+    textarea {{
+        text-align: center !important;
+        border-radius: 12px !important;
+        border: 1px solid {soft_blue} !important;
+    }}
+
+    .breather-circle {{
+        width: 70px;
+        height: 70px;
+        background: {soft_blue};
+        border-radius: 50%;
+        margin: 25px auto;
+        animation: breathe 8s infinite ease-in-out;
+        box-shadow: 0 0 15px {soft_blue};
+    }}
     @keyframes breathe {{ 0%, 100% {{ transform: scale(1); opacity: 0.4; }} 50% {{ transform: scale(1.3); opacity: 1; }} }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. NAVIGATION (Centered) ---
-st.markdown("<h1 style='text-align: center;'>Sukoon</h1>", unsafe_allow_html=True)
+# --- 6. NAVIGATION ---
+st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
+# We use st.columns but the CSS above will force the content inside to be centered
 n1, n2, n3 = st.columns(3)
 with n1: 
     if st.button("Journal", key="nav1"): st.session_state.current_page = "Journal"; st.rerun()
@@ -82,20 +104,21 @@ st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    # Energy Buttons
     st.write("#### How is your energy?")
     m_cols = st.columns(5)
-    for i, lab in enumerate(["Low", "Drained", "Neutral", "Steady", "Vibrant"]):
+    mood_list = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
+    for i, lab in enumerate(mood_list):
         with m_cols[i]:
-            if st.button(lab, key=f"m_{lab}"):
+            if st.button(lab, key=f"mood_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
 
-    # Nature Ambience (Centered Row)
     st.write("#### Nature Ambience")
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
+    
+    # Audio buttons row
     aud_cols = st.columns(5)
     for idx, name in enumerate(sounds.keys()):
         with aud_cols[idx]:
@@ -109,13 +132,13 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("---")
     
-    # AI INPUT
-    audio_rec = st.audio_input("Record a note")
+    # AI INPUT (CENTERED)
+    audio_rec = st.audio_input("Record")
     text_msg = st.text_area("Share your heart...", placeholder="Type here...")
     
     if st.button("Consult Guide", use_container_width=True):
         if model:
-            with st.spinner("The Guide is reflecting..."):
+            with st.spinner("Reflecting..."):
                 try:
                     parts = ["You are a mindfulness mentor. Respond in 1 calm paragraph."]
                     if audio_rec:
@@ -131,9 +154,9 @@ if st.session_state.current_page == "Journal":
                     })
                     st.rerun()
                 except:
-                    st.error("The Brain is pausing. Please wait 60 seconds and try again.")
+                    st.error("The Brain is pausing. Wait a minute and try again.")
         else:
-            st.warning("Guide is offline. Check your API Key.")
+            st.warning("Guide is offline.")
 
     # HISTORY
     for entry in reversed(st.session_state.private_journal):
@@ -144,11 +167,11 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Marketplace":
     st.markdown("### ✨ Grounding Objects")
     m1, m2 = st.columns(2)
-    with m1: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:15px; border-radius:12px;'>Starter Ritual<br>₹2,499<br><a href='https://wa.me/{MY_PHONE}?text=Starter' style='color:{soft_blue}; text-decoration:none; font-weight:bold;'>Order</a></div>", unsafe_allow_html=True)
-    with m2: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:15px; border-radius:12px;'>Master Sanctuary<br>₹4,999<br><a href='https://wa.me/{MY_PHONE}?text=Master' style='color:{soft_blue}; text-decoration:none; font-weight:bold;'>Order</a></div>", unsafe_allow_html=True)
+    with m1: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:15px; border-radius:12px; margin: 0 auto;'>Starter Ritual<br>₹2,499<br><a href='https://wa.me/{MY_PHONE}?text=Starter' style='color:{soft_blue}; text-decoration:none; font-weight:bold;'>Order</a></div>", unsafe_allow_html=True)
+    with m2: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:15px; border-radius:12px; margin: 0 auto;'>Master Sanctuary<br>₹4,999<br><a href='https://wa.me/{MY_PHONE}?text=Master' style='color:{soft_blue}; text-decoration:none; font-weight:bold;'>Order</a></div>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.write("### Silence in a Loud World")
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}?text=Vision' style='display:block; border:1px solid {soft_blue}; padding:15px; border-radius:12px; text-decoration:none; color:{soft_blue}; font-weight:bold;'>Connect with Founder</a>", unsafe_allow_html=True)
+    st.markdown(f"<div style='display:flex; justify-content:center; width:100%;'><a href='https://wa.me/{MY_PHONE}?text=Vision' style='display:block; border:1px solid {soft_blue}; padding:15px; border-radius:12px; text-decoration:none; color:{soft_blue}; font-weight:bold; width:200px;'>Connect</a></div>", unsafe_allow_html=True)
 
 st.markdown("<hr><div style='opacity:0.6; font-size:10px; text-align:center;'>Mindfulness Support. Not Medical Advice.</div>", unsafe_allow_html=True)
