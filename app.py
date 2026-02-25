@@ -38,7 +38,7 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (CLEAN & CLOSED) ---
+# --- CSS ---
 css_code = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -82,7 +82,7 @@ st.markdown("---")
 
 # --- PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
-    st.markdown("<div class='ritual-box'><b>✨ Ritual of the Week:</b> Hold your Natural Stone in your left hand while listening to 'Waves' for 3 minutes to ground your center.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='ritual-box'><b>✨ Ritual:</b> Hold your Natural Stone in your left hand for 3 minutes.</div>", unsafe_allow_html=True)
     st.write("#### How is your energy?")
     mood_cols = st.columns(5)
     mood_labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
@@ -90,38 +90,26 @@ if st.session_state.current_page == "Journal":
         with mood_cols[i]:
             if st.button(mood_labels[i], key=f"m_{i}", use_container_width=True):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
-                msg = "I see you're in a " + mood_labels[i].lower() + " energy space. Let's just breathe for a moment."
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check: " + mood_labels[i] + "]", "ai": msg})
+                msg = "I see you're in a " + mood_labels[i].lower() + " energy space."
+                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check]", "ai": msg})
                 st.rerun()
-
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
-    st.markdown("#### 🎵 Ambient Sounds")
-    choice = st.radio("Vibe:", ["Silent", "Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
-    if choice != "Silent":
-        files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
-        target = files.get(choice)
-        if target and os.path.exists(target): st.audio(target)
-
     st.markdown("---")
-    st.write("#### Journal & Voice")
-    if hasattr(st, "audio_input"): st.audio_input("Tap to Record Voice Note")
-    with st.form(key="journal_form", clear_on_submit=True):
+    if hasattr(st, "audio_input"): st.audio_input("Voice Note")
+    with st.form(key="j_form", clear_on_submit=True):
         diary_in = st.text_area("Share your heart...")
         if st.form_submit_button("Consult Guide"):
             if super_brain and diary_in:
-                stressors = ["sad", "anxious", "stress", "tired", "dark", "heavy", "pain", "exhausted"]
-                st.session_state.theme = "Midnight" if any(w in diary_in.lower() for w in stressors) else "Peaceful"
-                with st.spinner("Listening..."):
-                    try:
-                        resp = super_brain.generate_content("Respond as a mindfulness mentor: " + diary_in).text
-                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
-                        st.rerun()
-                    except:
-                        st.error("The Guide is resting.")
+                st.session_state.theme = "Midnight" if "sad" in diary_in.lower() else "Peaceful"
+                resp = super_brain.generate_content("Mentor response: " + diary_in).text
+                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
+                st.rerun()
     for entry in reversed(st.session_state.private_journal):
-        st.write("🕒 " + entry['time'] + " | " + entry['diary'])
-        st.info(entry['ai'])
+        st.write("🕒 " + entry['time'] + " | " + entry['diary']); st.info(entry['ai'])
 
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
-    st.markdown("<h2 style='text-
+    st.markdown("<h2 style='text-align: center;'>Market</h2>", unsafe_allow_html=True)
+    b1, b2 = st.columns(2)
+    with b1:
+        if os.path.exists("buddha.jpg"): st.image("buddha.
