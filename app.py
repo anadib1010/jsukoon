@@ -25,19 +25,19 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. FIXED-GRID SYMMETRY CSS ---
+# --- 5. UPDATED CSS (Increased Horizontal Padding) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
     .block-container {{
-        max-width: 550px !important;
+        max-width: 580px !important; /* Slightly wider container to support the padding increase */
         margin: auto;
         padding-top: 3.5rem !important; 
     }}
 
     @media (max-width: 640px) {{
-        .block-container {{ max-width: 98% !important; padding-top: 3.5rem !important; }}
+        .block-container {{ max-width: 100% !important; padding-top: 3.5rem !important; }}
     }}
 
     .main-title {{
@@ -55,36 +55,32 @@ st.markdown(f"""
     /* THE SYMMETRICAL GRID */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important; /* Forces 3 equal columns */
-        grid-auto-rows: 1fr !important; /* Forces all rows to be equal height */
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 2px !important; 
         width: 100% !important;
+        padding: 0 4px !important; /* Extra 4px padding on the grid edges */
     }}
 
-    /* FIXED SIZE RECTANGULAR BUTTONS */
-    .stButton, .stButton>button {{
-        width: 100% !important;
-        display: block !important;
-    }}
-
+    /* FIXED SIZE BUTTONS WITH ADDED WIDTH PADDING */
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid #2A2A2A !important; 
         border-radius: 2px !important; 
         
-        /* Fixed Aspect Ratio Feel */
-        padding: 4px 0px !important; 
-        min-height: 34px !important;
-        height: 34px !important; /* Hard-coded height for perfect symmetry */
+        /* THE FIX: Increased sideways room and maintained height */
+        padding-left: 10px !important;  /* Added horizontal room inside */
+        padding-right: 10px !important; 
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
         
-        /* Text handling to stay inside the fixed box */
+        min-height: 34px !important;
+        height: 34px !important;
+        width: 100% !important;
+        
         font-size: 11px !important; 
         font-weight: 400 !important;
         white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        
         margin: 0px !important;
         transition: all 0.2s ease;
     }}
@@ -189,7 +185,7 @@ elif st.session_state.current_page == "Market":
     m_cols = st.columns(3)
     with m_cols[0]: st.button("Starter", key="mkt1")
     with m_cols[1]: st.button("Master", key="mkt2")
-    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
+    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
