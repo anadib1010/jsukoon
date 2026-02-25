@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. FIXED SINGLE-LINE CSS ---
+# --- 5. CENTERED TYPOGRAPHY CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -33,65 +33,70 @@ st.markdown(f"""
     .block-container {{
         max-width: 550px !important;
         margin: auto;
+        padding-top: 1.5rem !important;
     }}
 
     @media (max-width: 640px) {{
         .block-container {{ max-width: 98% !important; }}
     }}
 
-    /* The "Word-Only" Button Style - Forced Single Line */
+    /* Section Header Styling */
+    .section-header {{
+        font-size: 20px !important;
+        font-weight: 300 !important;
+        letter-spacing: 4px !important;
+        text-transform: uppercase;
+        margin-top: 25px !important;
+        margin-bottom: 10px !important;
+        text-align: center;
+        width: 100%;
+        color: {txt};
+        opacity: 0.9;
+    }}
+
+    /* Word-Only Buttons */
     .stButton>button {{ 
         background: transparent !important; 
         color: {txt} !important; 
         border: none !important; 
         box-shadow: none !important;
         width: 100% !important;
-        padding: 5px 0px !important;
-        
-        /* Font Scaling to prevent breaks */
-        font-size: clamp(10px, 2.8vw, 13px) !important; 
+        padding: 8px 0px !important;
+        font-size: clamp(10px, 3vw, 13px) !important; 
         font-weight: 400 !important;
-        
-        /* THE FIX: Force Single Line */
         white-space: nowrap !important;
-        overflow: visible !important;
-        text-overflow: clip !important;
-        
-        letter-spacing: 0.5px !important;
         text-decoration: underline;
         text-decoration-color: {soft_blue};
         transition: all 0.3s ease;
     }}
 
-    .stButton>button:hover {{
-        color: {soft_blue} !important;
-        text-decoration-thickness: 2px;
-    }}
+    .stButton>button:hover {{ color: {soft_blue} !important; }}
 
     /* Grid Layout */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 4px !important;
+        gap: 5px !important;
         width: 100% !important;
         align-items: center;
     }}
 
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.5rem !important; }}
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.2rem !important; }}
     
     textarea {{ 
         background: transparent !important; 
         color: {txt} !important; 
         border: 0.5px solid {soft_blue} !important; 
         text-align: center !important; 
+        margin-top: 15px !important;
     }}
 
-    .footer-text {{ font-size: 9px; opacity: 0.5; margin-top: 30px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
+    .footer-text {{ font-size: 9px; opacity: 0.5; margin-top: 35px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 6. NAVIGATION ---
-st.markdown("<h2 style='text-align: center; letter-spacing: 4px; margin-bottom: 0px;'>SUKOON</h2>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; letter-spacing: 6px; font-weight: 200; margin-bottom: 0px;'>SUKOON</h1>", unsafe_allow_html=True)
 nav_row = st.columns(3)
 nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Info")]
 
@@ -102,9 +107,10 @@ for i, (label, target) in enumerate(nav_list):
 
 st.markdown("---")
 
-# --- 7. PAGES ---
+# --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    st.write("Energy")
+    # CENTERED LARGE HEADER: ENERGY
+    st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
     for i, lab in enumerate(moods):
@@ -112,7 +118,8 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
-    st.write("Ambience")
+    # CENTERED LARGE HEADER: AMBIENCE
+    st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     
@@ -129,10 +136,9 @@ if st.session_state.current_page == "Journal":
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("---")
-    audio_rec = st.audio_input("Voice Note")
+    audio_rec = st.audio_input("Voice")
     text_msg = st.text_area("Record reflection...", height=100)
     
-    # Keeping the primary action button slightly more visible
     if st.button("CONSULT GUIDE", key="brain_btn"):
         if model:
             with st.spinner("..."):
@@ -149,15 +155,16 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# (Brief handling of other pages)
+# (Pages handled minimally)
 elif st.session_state.current_page == "Market":
-    st.write("Grounding Objects")
+    st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
 elif st.session_state.current_page == "Vision":
+    st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("Ground | Release | Reflect")
 elif st.session_state.current_page == "FAQ":
-    st.write("Privacy focus.")
+    st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
 elif st.session_state.current_page == "Info":
-    st.write("Wellness companion.")
+    st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
