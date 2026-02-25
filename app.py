@@ -38,7 +38,7 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (With Breath Animation) ---
+# --- CSS (STRATEGY: REPLACEMENT TO AVOID F-STRING ERRORS) ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -52,4 +52,79 @@ css_template = """
         100% { transform: scale(1); opacity: 0.4; }
     }
     .breather-circle {
-        width: 80
+        width: 80px; height: 80px; background: V_BLUE; border-radius: 50%;
+        margin: 20px auto; animation: breathe 10s infinite ease-in-out;
+        box-shadow: 0 0 25px V_BLUE;
+    }
+    div[data-testid="stColumn"] { transition: all 0.4s ease; padding: 15px; border-radius: 20px; border: 1px solid rgba(128,128,128,0.1); margin-bottom: 10px; }
+    div[data-testid="stColumn"]:hover { transform: translateY(-8px); box-shadow: 0px 15px 30px V_HOV; border: 1px solid V_BLUE; }
+    [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg { display: none !important; }
+</style>
+"""
+clean_css = css_template.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_HOV", card_hover).replace("V_BLUE", soft_blue)
+st.markdown(clean_css, unsafe_allow_html=True)
+
+# --- NAVIGATION ---
+st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
+nav_cols = st.columns([1,1,1])
+with nav_cols[0]:
+    if st.button("Journal", use_container_width=True, key="btn_journal"):
+        st.session_state.current_page = "Journal"
+        st.rerun()
+with nav_cols[1]:
+    if st.button("Market", use_container_width=True, key="btn_market"):
+        st.session_state.current_page = "Marketplace"
+        st.rerun()
+with nav_cols[2]:
+    if st.button("Vision", use_container_width=True, key="btn_vision"):
+        st.session_state.current_page = "Vision"
+        st.rerun()
+st.markdown("---")
+
+# --- PAGE: JOURNAL ---
+if st.session_state.current_page == "Journal":
+    st.markdown("<div style='text-align: center;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
+    st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; opacity: 0.7; letter-spacing: 2px;'>INHALE • HOLD • EXHALE</p>", unsafe_allow_html=True)
+    
+    st.markdown("#### 🎵 Ambient Sounds")
+    choice = st.radio("Select Vibe:", ["Silent", "Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
+    if choice != "Silent":
+        files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
+        target = files.get(choice)
+        if target and os.path.exists(target): st.audio(target)
+    
+    st.markdown("---")
+    with st.form(key="journal_entry_form", clear_on_submit=True):
+        diary_in = st.text_area("What is on your mind today?")
+        if st.form_submit_button("Consult Guide"):
+            if super_brain and diary_in:
+                stressors = ["sad", "anxious", "stress", "tired", "dark", "heavy", "pain", "exhausted"]
+                st.session_state.theme = "Midnight" if any(w in diary_in.lower() for w in stressors) else "Peaceful"
+                with st.spinner("Listening..."):
+                    try:
+                        resp = super_brain.generate_content("Respond as a mindfulness mentor: " + diary_in).text
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
+                        st.rerun()
+                    except:
+                        st.error("The Guide is resting.")
+
+    for entry in reversed(st.session_state.private_journal):
+        st.write("🕒 " + entry['time'] + " | " + entry['diary'])
+        st.info(entry['ai'])
+
+# --- PAGE: MARKETPLACE ---
+elif st.session_state.current_page == "Marketplace":
+    st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
+    
+    st.markdown("### ✨ Grounding Bundles")
+    b_col1, b_col2 = st.columns(2)
+    bundles = [
+        ("The Starter Ritual (3 Items)", "Stones, Buddha, & Beads. ₹2,499", "Ritual Box"),
+        ("The Master Sanctuary (5 Items)", "Stones, Buddha, Art, Vaastu, & Journal. ₹4,999", "Ritual Box")
+    ]
+    for i, (name, desc, btype) in enumerate(bundles):
+        with (b_col1 if i==0 else b_col2):
+            st.markdown("#### " + name)
+            st.write(desc)
+            url = "https://wa.me/" + MY_PHONE + "?text=" + urllib.parse.quote("Interest: " + name)
