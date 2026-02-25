@@ -32,13 +32,12 @@ if api_key:
 else:
     super_brain = None
 
-# --- 5. CSS & VOICE SCRIPT ---
-# This JavaScript allows the browser to speak the AI's response out loud
+# --- 5. CSS & VOICE SCRIPT (CENTER ALIGNMENT FOCUS) ---
 st.markdown("""
     <script>
     function speak(text) {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9; // Slightly slower for peace
+        utterance.rate = 0.9;
         utterance.pitch = 1.0;
         window.speechSynthesis.speak(utterance);
     }
@@ -47,47 +46,58 @@ st.markdown("""
 
 css_code = """
 <style>
-    html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
-    h1, h2, h3, h4, p, li { color: V_TXT !important; font-weight: 200 !important; }
-    textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; }
-    .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; }
+    html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; text-align: center !important; }
+    h1, h2, h3, h4, p, li, label { color: V_TXT !important; font-weight: 200 !important; text-align: center !important; }
+    
+    /* Center the text area */
+    textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; text-align: left !important; }
+    
+    /* Center Buttons and Align Text */
+    .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; margin: 0 auto !important; display: block !important; }
+    
     .breather-circle { width: 80px; height: 80px; background: V_BLUE; border-radius: 50%; margin: 20px auto; animation: breathe 10s infinite ease-in-out; box-shadow: 0 0 25px V_BLUE; }
     @keyframes breathe { 0% { transform: scale(1); opacity: 0.4; } 40% { transform: scale(1.4); opacity: 1; } 100% { transform: scale(1); opacity: 0.4; } }
-    .ritual-box { padding: 15px; border: 1px solid V_BLUE; border-radius: 12px; background: rgba(174, 198, 207, 0.1); margin: 15px 0; }
-    .mkt-btn { width:100%; padding:10px; background:V_BLUE; border:none; border-radius:10px; font-weight:bold; color:#0A0E0B; text-align:center; display:block; text-decoration:none; }
+    
+    .ritual-box { padding: 15px; border: 1px solid V_BLUE; border-radius: 12px; background: rgba(174, 198, 207, 0.1); margin: 15px auto; max-width: 90%; }
+    
+    .mkt-btn { width: 80%; padding: 10px; background: V_BLUE; border:none; border-radius: 10px; font-weight: bold; color: #0A0E0B; text-align: center; display: block; margin: 10px auto; text-decoration: none; }
+    
+    /* Audio widget centering */
+    div[data-testid="stAudioInput"] { display: flex; justify-content: center; }
 </style>
 """
 clean_css = css_code.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
 st.markdown(clean_css, unsafe_allow_html=True)
 
-# --- 6. NAVIGATION ---
+# --- 6. NAVIGATION (CENTERED) ---
 st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
 n1, n2, n3 = st.columns(3)
 with n1: 
-    if st.button("Journal", key="nav_j"): st.session_state.current_page = "Journal"; st.rerun()
+    if st.button("Journal", key="nav_j", use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
 with n2: 
-    if st.button("Market", key="nav_m"): st.session_state.current_page = "Marketplace"; st.rerun()
+    if st.button("Market", key="nav_m", use_container_width=True): st.session_state.current_page = "Marketplace"; st.rerun()
 with n3: 
-    if st.button("Vision", key="nav_v"): st.session_state.current_page = "Vision"; st.rerun()
+    if st.button("Vision", key="nav_v", use_container_width=True): st.session_state.current_page = "Vision"; st.rerun()
 st.markdown("---")
 
 # --- 7. PAGE: JOURNAL ---
 if st.session_state.current_page == "Journal":
-    st.markdown("<div class='ritual-box'><b>✨ Ritual:</b> Hold your Natural Stone for 3 minutes.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='ritual-box'><b>✨ Ritual</b><br>Hold your Natural Stone for 3 minutes.</div>", unsafe_allow_html=True)
     
-    # ENERGY BUTTONS
+    st.write("#### How is your energy?")
     mood_cols = st.columns(5)
     mood_labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
     for i, label in enumerate(mood_labels):
         with mood_cols[i]:
-            if st.button(label, key=f"m_{i}"):
+            if st.button(label, key=f"m_{i}", use_container_width=True):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check]", "ai": f"I see you're in a {label.lower()} energy space."})
+                msg = f"I see you're in a {label.lower()} energy space."
+                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check]", "ai": msg})
                 st.rerun()
 
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
+    st.markdown("---")
     
-    # VOICE & TEXT INPUT
     st.write("#### Speak or Type")
     audio_file = st.audio_input("Record your voice")
     
@@ -100,7 +110,6 @@ if st.session_state.current_page == "Journal":
             user_display_text = ""
 
             if audio_file:
-                # Processing Audio
                 audio_bytes = audio_file.read()
                 content_to_send.append({"mime_type": "audio/wav", "data": audio_bytes})
                 user_display_text = "🎙️ Voice Note Sent"
@@ -109,33 +118,44 @@ if st.session_state.current_page == "Journal":
                 user_display_text = text_in
 
             if content_to_send:
-                prompt = "You are a calm mindfulness mentor for the app Sukoon. If audio is provided, transcribe it first. Then, respond to the user's feelings with warmth and brevity (max 2 paragraphs). Speak directly to them."
+                prompt = "You are a calm mindfulness mentor for the app Sukoon. Respond with warmth and brevity (max 2 paragraphs)."
                 with st.spinner("Listening..."):
                     try:
                         response = super_brain.generate_content([prompt] + content_to_send)
                         ai_resp = response.text
                         st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": user_display_text, "ai": ai_resp})
                         
-                        # Trigger Voice Output
                         js_speak = f"<script>speak({repr(ai_resp)})</script>"
                         st.markdown(js_speak, unsafe_allow_html=True)
                         st.rerun()
                     except:
-                        st.error("The Guide is resting. Please breathe and try in 60 seconds.")
+                        st.error("The Guide is resting. Please try in 60 seconds.")
 
     for entry in reversed(st.session_state.private_journal):
         st.write(f"🕒 {entry['time']} | {entry['diary']}")
         st.info(entry['ai'])
 
-# --- 8. PAGE: MARKETPLACE & VISION ---
+# --- 8. PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
-    st.markdown("### ✨ Bundles"); b1, b2 = st.columns(2)
-    with b1: st.markdown(f'#### Starter\n₹2,499\n<a href="https://wa.me/{MY_PHONE}?text=Starter" class="mkt-btn">Order</a>', unsafe_allow_html=True)
-    with b2: st.markdown(f'#### Master\n₹4,999\n<a href="https://wa.me/{MY_PHONE}?text=Master" class="mkt-btn">Order</a>', unsafe_allow_html=True)
+    st.markdown("### ✨ Grounding Bundles")
+    b1, b2 = st.columns(2)
+    with b1: 
+        st.markdown(f'#### Starter Ritual\n₹2,499\n<a href="https://wa.me/{MY_PHONE}?text=Starter" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
+    with b2: 
+        st.markdown(f'#### Master Sanctuary\n₹4,999\n<a href="https://wa.me/{MY_PHONE}?text=Master" class="mkt-btn">Order Box</a>', unsafe_allow_html=True)
+    
+    st.markdown("---")
+    st.markdown("### 🏺 Individual Objects")
+    c1, c2, c3 = st.columns(3)
+    with c1: st.markdown(f'#### Stones\n<a href="https://wa.me/{MY_PHONE}?text=Stones" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+    with c2: st.markdown(f'#### Buddha\n<a href="https://wa.me/{MY_PHONE}?text=Buddha" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
+    with c3: st.markdown(f'#### Art\n<a href="https://wa.me/{MY_PHONE}?text=Art" class="mkt-btn">Inquire</a>', unsafe_allow_html=True)
 
+# --- 9. PAGE: VISION ---
 elif st.session_state.current_page == "Vision":
-    st.write("### Silence in a Loud World\nSukoon bridges digital AI and physical grounding.")
-    st.markdown(f'<br><a href="https://wa.me/{MY_PHONE}?text=Support" class="mkt-btn">Connect with Founder</a>', unsafe_allow_html=True)
+    st.write("### Silence in a Loud World")
+    st.write("Sukoon bridges digital AI and physical grounding.")
+    st.markdown(f'<br><a href="https://wa.me/{MY_PHONE}?text=Support" class="mkt-btn" style="width: 250px;">Connect with Founder</a>', unsafe_allow_html=True)
 
 # --- 10. GLOBAL FOOTER ---
 st.markdown("---")
