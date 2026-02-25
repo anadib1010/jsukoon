@@ -25,92 +25,86 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE ABSOLUTE CENTER CSS ---
+# --- 5. THE HARD-CENTER OVERRIDE CSS ---
 st.markdown(f"""
     <style>
-    /* Force main app container to center */
-    .stApp {{ background-color: {bg} !important; color: {txt} !important; align-items: center !important; }}
+    /* 1. Force the entire screen container to center EVERYTHING */
+    .stApp {{ 
+        background-color: {bg} !important; 
+        color: {txt} !important; 
+    }}
     
     .block-container {{
         max-width: 600px !important;
-        margin: auto;
-        padding-top: 3.5rem !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 0px !important;
+        padding-right: 0px !important;
         text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
     }}
 
-    @media (max-width: 640px) {{
-        .block-container {{ max-width: 100% !important; padding-top: 3.5rem !important; }}
-    }}
-
+    /* 2. Title & Headers - Full Width Centering */
     .main-title {{
-        text-align: center; letter-spacing: 12px; font-weight: 200; 
-        margin-top: 10px; margin-bottom: 25px; font-size: 2.8rem; color: #FFFFFF;
-        text-transform: uppercase; width: 100%;
+        letter-spacing: 12px; font-weight: 200; 
+        margin-bottom: 25px; font-size: 2.8rem; color: #FFFFFF;
+        text-transform: uppercase; width: 100%; text-align: center;
     }}
 
     .section-header {{
         font-size: 16px !important; font-weight: 400 !important; letter-spacing: 4px !important;
         text-transform: uppercase; margin-top: 25px !important; margin-bottom: 12px !important;
-        text-align: center; width: 100%; color: {soft_blue} !important;
+        color: {soft_blue} !important; width: 100%; text-align: center;
     }}
 
-    /* THE GRID FIX: Removing all default Streamlit alignment drift */
+    /* 3. THE GRID FIX: Force-centering the row of columns */
     [data-testid="stHorizontalBlock"] {{
         gap: 2px !important; 
         display: flex !important;
-        flex-direction: row !important;
         justify-content: center !important;
         width: 100% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        max-width: 580px !important;
+        margin: 0 auto !important;
     }}
     
     div[data-testid="column"] {{
         padding: 0px !important; margin: 0px !important;
-        flex: 1 1 0% !important; min-width: 0px !important;
+        flex: 1 1 0% !important;
         display: flex !important;
         justify-content: center !important;
     }}
 
-    /* BUTTON SLAB: Using Flexbox to anchor text in Absolute Center */
+    /* 4. THE BUTTON: Absolute internal centering */
+    .stButton {{ width: 100% !important; }}
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(45,45,45,1) 0%, rgba(30,30,30,1) 100%) !important; 
         color: {txt} !important; 
         border: 1px solid #333 !important; 
         border-radius: 4px !important; 
-        padding: 0 12px !important; /* Controlled horizontal padding */
-        min-height: 42px !important; /* Slightly taller for better centering */
         height: 42px !important;
         width: 100% !important; 
         font-size: 12px !important; 
         
-        /* THE CRITICAL CENTERING RULES */
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        text-align: center !important;
+        margin: 0 auto !important;
         
-        white-space: nowrap !important;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.3) !important;
-        transition: all 0.3s ease;
     }}
 
-    .stButton>button:hover {{ 
-        border-color: {soft_blue} !important;
-        background: linear-gradient(180deg, rgba(55,55,55,1) 0%, rgba(35,35,35,1) 100%) !important;
-    }}
+    .stButton>button:hover {{ border-color: {soft_blue} !important; }}
 
-    .breather-wrapper {{ text-align: center; margin: 25px 0; width: 100%; }}
+    /* 5. Center-align the Breather */
+    .breather-wrapper {{ width: 100%; display: flex; flex-direction: column; align-items: center; margin: 25px 0; }}
     .breather-circle {{
         width: 45px; height: 45px; border: 2px solid {soft_blue};
-        border-radius: 50%; margin: 0 auto 15px auto;
+        border-radius: 50%; margin-bottom: 15px;
         animation: breathe-426 12s infinite ease-in-out;
-        box-shadow: 0 0 15px rgba(91, 150, 178, 0.2);
     }}
-    .breather-text {{ 
-        font-size: 14px !important; letter-spacing: 2px; color: #FFFFFF; font-weight: 300; opacity: 0.9;
-        text-align: center !important; width: 100%; display: block;
-    }}
+    .breather-text {{ font-size: 14px; letter-spacing: 2px; color: #FFFFFF; font-weight: 300; opacity: 0.9; }}
     
     @keyframes breathe-426 {{
         0% {{ transform: scale(0.95); opacity: 0.4; }}
@@ -119,7 +113,7 @@ st.markdown(f"""
         100% {{ transform: scale(0.95); opacity: 0.4; }}    
     }}
 
-    textarea {{ background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; text-align: center !important; border-radius: 8px !important; }}
+    textarea {{ width: 100% !important; background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; border-radius: 8px !important; }}
     .footer-text {{ font-size: 10px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #333; padding: 20px; width: 100%; text-align: center; }}
     </style>
     """, unsafe_allow_html=True)
@@ -144,15 +138,9 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight"; st.rerun()
 
-    st.markdown(f"""
-        <div class='breather-wrapper'>
-            <div class='breather-circle'></div>
-            <div class='breather-text'>4-2-6 RHYTHM</div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div class='breather-wrapper'><div class='breather-circle'></div><div class='breather-text'>4-2-6 RHYTHM</div></div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
-    cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     aud_cols = st.columns(3)
     sound_list = list(sounds.keys())
@@ -160,10 +148,6 @@ if st.session_state.current_page == "Journal":
         with aud_cols[i % 3]:
             if st.button(name, key=f"aud_{name}"):
                 st.session_state.active_audio = sounds[name]; st.session_state.audio_label = name
-
-    if st.session_state.active_audio:
-        st.write(f"~ {st.session_state.audio_label} ~")
-        st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     audio_rec = st.audio_input("Voice Note")
@@ -195,14 +179,5 @@ elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### Ground | Release | Reflect")
     st.write("A bridge between technology and stillness.")
-
-elif st.session_state.current_page == "FAQ":
-    st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("**Privacy:** Data is session-only.")
-
-elif st.session_state.current_page == "Info":
-    st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
-    st.write("### Disclaimer")
-    st.write("Wellness companion only.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
