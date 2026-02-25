@@ -57,7 +57,6 @@ css_code = """
         box-shadow: 0 0 25px V_BLUE;
     }
     .ritual-box { padding: 20px; border: 1px solid V_BLUE; border-radius: 15px; background: rgba(174, 198, 207, 0.1); margin: 20px 0; }
-    img { border-radius: 15px; margin-bottom: 10px; }
 </style>
 """
 clean_css = css_code.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
@@ -74,42 +73,4 @@ with n2:
     if st.button("Market", use_container_width=True, key="n2"):
         st.session_state.current_page = "Marketplace"
         st.rerun()
-with n3: 
-    if st.button("Vision", use_container_width=True, key="n3"):
-        st.session_state.current_page = "Vision"
-        st.rerun()
-st.markdown("---")
-
-# --- PAGE: JOURNAL ---
-if st.session_state.current_page == "Journal":
-    st.markdown("<div class='ritual-box'><b>✨ Ritual:</b> Hold your Natural Stone in your left hand for 3 minutes.</div>", unsafe_allow_html=True)
-    st.write("#### How is your energy?")
-    mood_cols = st.columns(5)
-    mood_labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
-    for i in range(5):
-        with mood_cols[i]:
-            if st.button(mood_labels[i], key=f"m_{i}", use_container_width=True):
-                st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
-                msg = "I see you're in a " + mood_labels[i].lower() + " energy space."
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check]", "ai": msg})
-                st.rerun()
-    st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
-    st.markdown("---")
-    if hasattr(st, "audio_input"): st.audio_input("Voice Note")
-    with st.form(key="j_form", clear_on_submit=True):
-        diary_in = st.text_area("Share your heart...")
-        if st.form_submit_button("Consult Guide"):
-            if super_brain and diary_in:
-                st.session_state.theme = "Midnight" if "sad" in diary_in.lower() else "Peaceful"
-                resp = super_brain.generate_content("Mentor response: " + diary_in).text
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
-                st.rerun()
-    for entry in reversed(st.session_state.private_journal):
-        st.write("🕒 " + entry['time'] + " | " + entry['diary']); st.info(entry['ai'])
-
-# --- PAGE: MARKETPLACE ---
-elif st.session_state.current_page == "Marketplace":
-    st.markdown("<h2 style='text-align: center;'>Market</h2>", unsafe_allow_html=True)
-    b1, b2 = st.columns(2)
-    with b1:
-        if os.path.exists("buddha.jpg"): st.image("buddha.
+with n3:
