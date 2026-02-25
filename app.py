@@ -25,23 +25,30 @@ api_key = os.environ.get("GEMINI_API_KEY")
 brains = []
 if api_key:
     genai.configure(api_key=api_key)
-    # List of models to try in order of preference
-    model_names = ["gemini-3-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-1.5-flash"]
+    model_names = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-pro"]
     for name in model_names:
         try:
             brains.append(genai.GenerativeModel(name))
         except:
             pass
 
-# --- 5. SENSORY SCRIPTS ---
+# --- 5. ENHANCED VOICE SCRIPT ---
 st.markdown(f"""
     <script>
-    function speakWithVisuals(text) {{
+    function manualSpeak() {{
+        const text = document.querySelector('.ai-response-text').innerText;
         const msg = new SpeechSynthesisUtterance(text);
         msg.rate = 0.85;
+        msg.pitch = 1.0;
+        
+        // Find a calm voice
+        const voices = window.speechSynthesis.getVoices();
+        msg.voice = voices.find(v => v.name.includes('Google') || v.name.includes('Natural')) || voices[0];
+        
         const wave = document.getElementById('voice-wave');
         msg.onstart = () => wave.style.display = 'block';
         msg.onend = () => wave.style.display = 'none';
+        
         window.speechSynthesis.speak(msg);
     }}
     </script>
@@ -49,15 +56,15 @@ st.markdown(f"""
 
 css_code = """
 <style>
-    html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; text-align: center !important; }
-    h1, h2, h3, h4, p, li, label { color: V_TXT !important; font-weight: 200 !important; text-align: center !important; }
-    textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 12px !important; }
-    .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 12px !important; margin: 10px auto !important; display: block !important; }
-    .breather-circle { width: 80px; height: 80px; background: V_BLUE; border-radius: 50%; margin: 20px auto; animation: breathe 10s infinite ease-in-out; box-shadow: 0 0 25px V_BLUE; }
-    @keyframes breathe { 0% { transform: scale(1); opacity: 0.4; } 40% { transform: scale(1.4); opacity: 1; } 100% { transform: scale(1); opacity: 0.4; } }
-    #voice-wave { display: none; width: 120px; height: 4px; background: V_BLUE; margin: 15px auto; border-radius: 2px; box-shadow: 0 0 15px V_BLUE; animation: glow 1s infinite alternate; }
-    @keyframes glow { from { opacity: 0.3; width: 80px; } to { opacity: 1; width: 150px; } }
-    .mkt-btn { width: 85%; padding: 12px; background: V_BLUE; border-radius: 12px; font-weight: bold; color: #0A0E0B; display: block; margin: 12px auto; text-decoration: none; border: none; }
+    html, body, .stApp {{ background-color: V_BG !important; color: V_TXT !important; text-align: center !important; }}
+    h1, h2, h3, h4, p, li, label {{ color: V_TXT !important; font-weight: 200 !important; text-align: center !important; }}
+    textarea {{ background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 12px !important; }}
+    .stButton>button {{ background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 12px !important; margin: 10px auto !important; display: block !important; }}
+    .breather-circle {{ width: 80px; height: 80px; background: V_BLUE; border-radius: 50%; margin: 20px auto; animation: breathe 10s infinite ease-in-out; box-shadow: 0 0 25px V_BLUE; }}
+    @keyframes breathe {{ 0% {{ transform: scale(1); opacity: 0.4; }} 40% {{ transform: scale(1.4); opacity: 1; }} 100% {{ transform: scale(1); opacity: 0.4; }} }}
+    #voice-wave {{ display: none; width: 120px; height: 4px; background: V_BLUE; margin: 15px auto; border-radius: 2px; box-shadow: 0 0 15px V_BLUE; animation: glow 1s infinite alternate; }}
+    @keyframes glow {{ from {{ opacity: 0.3; width: 80px; }} to {{ opacity: 1; width: 150px; }} }}
+    .mkt-btn {{ width: 85%; padding: 12px; background: V_BLUE; border-radius: 12px; font-weight: bold; color: #0A0E0B; display: block; margin: 12px auto; text-decoration: none; border: none; }}
 </style>
 """
 clean_css = css_code.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
@@ -76,24 +83,13 @@ st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    mood_cols = st.columns(5)
-    mood_labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
-    for i, label in enumerate(mood_labels):
-        with mood_cols[i]:
-            if st.button(label, key=f"m_{i}", use_container_width=True):
-                st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check]", "ai": f"Acknowledging your {label.lower()} energy."})
-                st.rerun()
-
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
     st.markdown("<div id='voice-wave'></div>", unsafe_allow_html=True)
-    st.markdown("---")
     
-    st.write("#### Record or Type")
-    audio_file = st.audio_input("Record")
+    audio_file = st.audio_input("Record your voice")
 
     with st.form("input_form", clear_on_submit=True):
-        text_in = st.text_area("What's on your mind?")
+        text_in = st.text_area("Share your heart...")
         submit = st.form_submit_button("Consult Guide")
         
         if submit and brains:
@@ -106,33 +102,34 @@ if st.session_state.current_page == "Journal":
                 prompt = "Respond as a calm mindfulness mentor in 1 paragraph."
             
             with st.spinner("Reflecting..."):
-                response_received = False
                 for brain in brains:
                     try:
                         resp = brain.generate_content([prompt] + content).text
-                        response_received = True
-                        
                         if "You said:" in resp:
                             parts = resp.split("You said:", 1)[1].split("\n", 1)
-                            user_entry = "🎙️ " + parts[0].strip()
-                            ai_entry = parts[1].strip() if len(parts) > 1 else "I hear you."
+                            u_entry, a_entry = "🎙️ " + parts[0].strip(), parts[1].strip()
                         else:
-                            user_entry = text_in if text_in else "🎙️ Voice Note"
-                            ai_entry = resp
+                            u_entry, a_entry = text_in if text_in else "🎙️ Voice Note", resp
 
-                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": user_entry, "ai": ai_entry})
-                        st.markdown(f"<script>speakWithVisuals({repr(ai_entry)})</script>", unsafe_allow_html=True)
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": u_entry, "ai": a_entry})
                         st.rerun()
                         break
-                    except:
-                        continue
-                
-                if not response_received:
-                    st.error("The Sanctuary is in deep silence (Quota Exceeded). Please breathe and try again tomorrow.")
+                    except: continue
 
-    for entry in reversed(st.session_state.private_journal):
-        st.write(f"🕒 **{entry['time']}**")
-        st.write(f"*{entry['diary']}*")
+    # RECENT RESPONSE WITH "LISTEN" BUTTON
+    if st.session_state.private_journal:
+        latest = st.session_state.private_journal[-1]
+        st.markdown(f"🕒 **{latest['time']}**")
+        st.write(f"*{latest['diary']}*")
+        st.markdown(f"<div class='ai-response-text' style='background: rgba(174,198,207,0.1); padding:15px; border-radius:10px; border:1px solid {soft_blue}; margin-bottom:10px;'>{latest['ai']}</div>", unsafe_allow_html=True)
+        
+        # This button forces the browser to play the audio
+        if st.button("🔊 Hear the Mentor", use_container_width=True):
+            st.markdown("<script>manualSpeak()</script>", unsafe_allow_html=True)
+
+    st.markdown("---")
+    for entry in reversed(st.session_state.private_journal[:-1]):
+        st.write(f"🕒 {entry['time']} | {entry['diary']}")
         st.info(entry['ai'])
 
 # --- 8. MARKETPLACE & VISION ---
