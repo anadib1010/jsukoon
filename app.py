@@ -25,55 +25,69 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. DYNAMIC RESPONSIVE CSS ---
+# --- 5. MINIMALIST BORDERLESS CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
-    /* DESKTOP: Keep it tight in the middle | MOBILE: Spread wide */
     .block-container {{
-        max-width: 550px !important; /* Perfect width for desktop aesthetics */
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        max-width: 550px !important;
         margin: auto;
     }}
 
     @media (max-width: 640px) {{
-        .block-container {{
-            max-width: 98% !important; /* Spreads wide on mobile for your long buttons */
-        }}
+        .block-container {{ max-width: 98% !important; }}
     }}
 
-    /* Forced 3-Column Grid */
+    /* The "Word-Only" Button Style */
+    .stButton>button {{ 
+        background: transparent !important; 
+        color: {txt} !important; 
+        border: none !important; /* Removes the rectangle */
+        box-shadow: none !important;
+        width: 100% !important;
+        padding: 10px 0px !important;
+        font-size: 13px !important; 
+        font-weight: 400 !important;
+        letter-spacing: 1px !important;
+        text-decoration: underline; /* Visual cue that it is a button */
+        text-decoration-color: {soft_blue};
+        text-decoration-thickness: 1px;
+        transition: all 0.3s ease;
+    }}
+
+    .stButton>button:hover, .stButton>button:active {{
+        color: {soft_blue} !important;
+        background: transparent !important;
+        text-decoration-thickness: 2px;
+        transform: translateY(-1px);
+    }}
+
+    /* Grid Layout for the Words */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 6px !important;
+        gap: 2px !important;
         width: 100% !important;
     }}
 
-    /* Sleek, Wide Buttons */
-    .stButton>button {{ 
-        background-color: {btn_bg} !important; 
-        color: {txt} !important; 
-        border: 1px solid {soft_blue} !important; 
-        border-radius: 8px !important; 
-        width: 100% !important;
-        padding: 6px 2px !important; 
-        min-height: 38px !important;
-        font-size: 11px !important; 
-        white-space: nowrap !important;
-        margin: 0px !important;
-    }}
-
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.8rem !important; }}
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 1rem !important; }}
     
-    .footer-text {{ font-size: 9px; opacity: 0.6; margin-top: 20px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
+    /* Clean Inputs */
+    textarea {{ 
+        background: transparent !important; 
+        color: {txt} !important; 
+        border: 0.5px solid {soft_blue} !important; 
+        border-radius: 0px !important; 
+        text-align: center !important; 
+    }}
+
+    .footer-text {{ font-size: 9px; opacity: 0.5; margin-top: 30px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. TOP NAVIGATION ---
-st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>Sukoon</h2>", unsafe_allow_html=True)
+# --- 6. NAVIGATION ---
+st.markdown("<h2 style='text-align: center; letter-spacing: 3px;'>SUKOON</h2>", unsafe_allow_html=True)
 nav_row = st.columns(3)
 nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Info")]
 
@@ -86,7 +100,7 @@ st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    st.write("Energy Check")
+    st.write("Energy")
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
     for i, lab in enumerate(moods):
@@ -94,7 +108,7 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
-    st.write("Nature Ambience")
+    st.write("Ambience")
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     
@@ -107,14 +121,14 @@ if st.session_state.current_page == "Journal":
                 st.session_state.audio_label = name
 
     if st.session_state.active_audio:
-        st.write(f"🔊 {st.session_state.audio_label}")
+        st.write(f"~ {st.session_state.audio_label} ~")
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("---")
-    audio_rec = st.audio_input("Voice Note")
-    text_msg = st.text_area("Reflection...", height=90)
+    audio_rec = st.audio_input("Voice")
+    text_msg = st.text_area("Reflection...", height=100)
     
-    if st.button("Consult Guide", use_container_width=True):
+    if st.button("CONSULT GUIDE", key="brain_btn"):
         if model:
             with st.spinner("..."):
                 try:
@@ -125,20 +139,20 @@ if st.session_state.current_page == "Journal":
                     resp = model.generate_content(parts).text
                     st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp})
                     st.rerun()
-                except: st.error("The Guide is pausing.")
+                except: st.error("Resting.")
 
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# (Rest of pages)
+# (Briefly handling other pages)
 elif st.session_state.current_page == "Market":
-    st.write("### Grounding Objects")
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
+    st.write("Grounding Objects")
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}'>WhatsApp Order</a>", unsafe_allow_html=True)
 elif st.session_state.current_page == "Vision":
-    st.write("### Ground | Release | Reflect")
+    st.write("Ground | Release | Reflect")
 elif st.session_state.current_page == "FAQ":
-    st.write("### FAQ")
+    st.write("Privacy focus.")
 elif st.session_state.current_page == "Info":
-    st.write("### Information")
+    st.write("Wellness companion.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
