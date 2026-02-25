@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. COMPREHENSIVE CSS (Including Breather) ---
+# --- 5. UPDATED CSS (Prominent Breather + 4-2-6 Logic) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -37,7 +37,7 @@ st.markdown(f"""
     }}
 
     @media (max-width: 640px) {{
-        .block-container {{ max-width: 98% !important; padding-top: 3rem !important; }}
+        .block-container {{ max-width: 98% !important; padding-top: 3.5rem !important; }}
     }}
 
     .main-title {{
@@ -51,22 +51,34 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* BREATHE ANIMATION */
-    .breather-container {{
-        display: flex; justify-content: center; align-items: center;
-        height: 120px; width: 100%; margin: 10px 0;
+    /* UPDATED BREATHE ANIMATION: 4s Inhale, 2s Hold, 6s Exhale (Total 12s) */
+    .breather-wrapper {{
+        text-align: center;
+        margin: 20px 0;
     }}
     .breather-circle {{
-        width: 50px; height: 50px;
+        width: 70px; height: 70px;
         background: {soft_blue};
         border-radius: 50%;
-        animation: breathe 8s infinite ease-in-out;
-        opacity: 0.7;
-        filter: blur(8px);
+        margin: 0 auto 15px auto;
+        animation: breathe-426 12s infinite ease-in-out;
+        opacity: 0.8;
+        filter: blur(4px);
+        box-shadow: 0 0 20px {soft_blue};
     }}
-    @keyframes breathe {{
-        0%, 100% {{ transform: scale(1); opacity: 0.3; }}
-        50% {{ transform: scale(1.8); opacity: 0.8; }}
+    .breather-text {{
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: {txt};
+        opacity: 0.8;
+        height: 20px;
+    }}
+    
+    @keyframes breathe-426 {{
+        0% {{ transform: scale(1); opacity: 0.4; }}      /* Start Inhale */
+        33% {{ transform: scale(2.2); opacity: 0.9; }}   /* End Inhale (4s / 12s = 33%) */
+        50% {{ transform: scale(2.2); opacity: 0.9; }}   /* End Hold (6s / 12s = 50%) */
+        100% {{ transform: scale(1); opacity: 0.4; }}    /* End Exhale (12s / 12s = 100%) */
     }}
 
     /* Minimalist Word Buttons */
@@ -111,7 +123,6 @@ st.markdown("---")
 
 # --- 7. PAGES ---
 
-# JOURNAL PAGE
 if st.session_state.current_page == "Journal":
     # 1. Energy
     st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
@@ -122,8 +133,13 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
-    # 2. THE BREATHER (Restored)
-    st.markdown("<div class='breather-container'><div class='breather-circle'></div></div>", unsafe_allow_html=True)
+    # 2. THE RHYTHMIC BREATHER
+    st.markdown("""
+        <div class='breather-wrapper'>
+            <div class='breather-circle'></div>
+            <div class='breather-text'>INHALE 4s • HOLD 2s • EXHALE 6s</div>
+        </div>
+    """, unsafe_allow_html=True)
 
     # 3. Ambience
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
@@ -160,7 +176,7 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# MARKET PAGE (Locked & Restored)
+# (All other pages locked & restored)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     m1, m2 = st.columns(2)
@@ -170,7 +186,6 @@ elif st.session_state.current_page == "Market":
     st.write("Authentic beads, yantras, and grounding stones.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Connect to Order</a>", unsafe_allow_html=True)
 
-# VISION PAGE (Locked & Restored)
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### The Sukoon Ritual")
@@ -178,13 +193,13 @@ elif st.session_state.current_page == "Vision":
     st.write("A bridge between technology and stillness.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Talk to the Founder</a>", unsafe_allow_html=True)
 
-# FAQ & INFO (Locked & Restored)
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
     st.write("Data is session-only. Frequencies for focus.")
+
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
     st.write("Wellness companion. No medical, psychological, or psychiatric advice provided.")
 
-st.markdown("<div class='footer-text'>Wellness tool. Not medical substitute.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer-text'>Sukoon is a wellness tool. Not a medical substitute.</div>", unsafe_allow_html=True)
