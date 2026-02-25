@@ -25,13 +25,13 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE 580px PRECISION CSS ---
+# --- 5. HIGH-DENSITY CSS (3px Padding) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
     .block-container {{
-        max-width: 580px !important; /* THE MAX PX WIDTH */
+        max-width: 580px !important;
         margin: auto;
         padding-top: 3.5rem !important; 
     }}
@@ -52,16 +52,20 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* THE SYMMETRICAL SLAB (34px Fixed Height) */
+    /* GRID: 2px gap between boxes */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important; grid-template-columns: repeat(3, 1fr) !important;
         gap: 2px !important; width: 100% !important;
     }}
 
+    /* THE SLAB: 3px Horizontal Padding */
     .stButton>button {{ 
         background-color: {btn_bg} !important; color: {txt} !important; 
         border: 1px solid #2A2A2A !important; border-radius: 2px !important; 
-        padding-left: 10px !important; padding-right: 10px !important;
+        
+        /* THE FIX: Padding reduced to 3px */
+        padding-left: 3px !important; padding-right: 3px !important;
+        
         min-height: 34px !important; height: 34px !important;
         width: 100% !important; font-size: 11px !important; 
         white-space: nowrap !important; transition: all 0.2s ease;
@@ -87,12 +91,9 @@ st.markdown(f"""
     
     .footer-text {{ font-size: 9px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #2A2A2A; padding: 15px; width: 100%; }}
     
-    /* Journal Info Entry Styling */
     div[data-testid="stNotification"] {{
-        background-color: {btn_bg} !important;
-        border: 1px solid #2A2A2A !important;
-        color: {txt} !important;
-        border-radius: 4px !important;
+        background-color: {btn_bg} !important; border: 1px solid #2A2A2A !important;
+        color: {txt} !important; border-radius: 4px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -134,7 +135,7 @@ if st.session_state.current_page == "Journal":
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    audio_rec = st.audio_input("Voice")
+    audio_rec = st.audio_input("Voice Note")
     text_msg = st.text_area("Record reflection...", height=80)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
@@ -163,15 +164,15 @@ elif st.session_state.current_page == "Market":
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### Ground | Release | Reflect")
-    st.write("A bridge between technology and stillness. We use AI to hold space for your reflection.")
+    st.write("Sukoon is designed to be a bridge between the noise of daily technology and the silence of inner presence. We use AI not to distract, but to hold space for your reflection.")
 
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("**Privacy:** Data is session-only.  \n**Sounds:** Curated frequencies.")
+    st.write("**Privacy:** No data is stored between sessions.  \n**Sounds:** Professionally curated for high-fidelity focus.")
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
-    st.write("Wellness companion. No medical or psychiatric advice provided.")
+    st.write("Wellness companion only. No medical, psychological, or psychiatric advice provided. Not a substitute for professional health services.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
