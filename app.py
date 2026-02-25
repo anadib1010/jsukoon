@@ -7,7 +7,9 @@ import google.generativeai as genai
 MY_PHONE = "918882850790"
 GITHUB_USER = "anadib1010" 
 REPO_NAME = "jsukoon"
-soft_blue = "#AEC6CF" 
+
+# UPDATED: A deeper, richer Steel Blue for a more grounded feel
+soft_blue = "#4682B4" 
 
 # --- 2. CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
@@ -25,7 +27,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. UPDATED CSS (Prominent Breather + 4-2-6 Logic) ---
+# --- 5. UPDATED CSS (Deeper Blue Tones) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -51,7 +53,7 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* UPDATED BREATHE ANIMATION: 4s Inhale, 2s Hold, 6s Exhale (Total 12s) */
+    /* UPDATED BREATHE ANIMATION: Deeper Blue Glow */
     .breather-wrapper {{
         text-align: center;
         margin: 20px 0;
@@ -62,23 +64,22 @@ st.markdown(f"""
         border-radius: 50%;
         margin: 0 auto 15px auto;
         animation: breathe-426 12s infinite ease-in-out;
-        opacity: 0.8;
-        filter: blur(4px);
-        box-shadow: 0 0 20px {soft_blue};
+        opacity: 0.9;
+        filter: blur(5px);
+        box-shadow: 0 0 30px {soft_blue}; /* Stronger glow for the darker blue */
     }}
     .breather-text {{
-        font-size: 12px;
+        font-size: 11px;
         letter-spacing: 2px;
         color: {txt};
-        opacity: 0.8;
-        height: 20px;
+        opacity: 0.7;
     }}
     
     @keyframes breathe-426 {{
-        0% {{ transform: scale(1); opacity: 0.4; }}      /* Start Inhale */
-        33% {{ transform: scale(2.2); opacity: 0.9; }}   /* End Inhale (4s / 12s = 33%) */
-        50% {{ transform: scale(2.2); opacity: 0.9; }}   /* End Hold (6s / 12s = 50%) */
-        100% {{ transform: scale(1); opacity: 0.4; }}    /* End Exhale (12s / 12s = 100%) */
+        0% {{ transform: scale(1); opacity: 0.5; }}
+        33% {{ transform: scale(2.2); opacity: 1; }}   
+        50% {{ transform: scale(2.2); opacity: 1; }}   
+        100% {{ transform: scale(1); opacity: 0.5; }}    
     }}
 
     /* Minimalist Word Buttons */
@@ -124,7 +125,6 @@ st.markdown("---")
 # --- 7. PAGES ---
 
 if st.session_state.current_page == "Journal":
-    # 1. Energy
     st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
@@ -133,15 +133,14 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
 
-    # 2. THE RHYTHMIC BREATHER
-    st.markdown("""
+    # THE RHYTHMIC BREATHER
+    st.markdown(f"""
         <div class='breather-wrapper'>
             <div class='breather-circle'></div>
             <div class='breather-text'>INHALE 4s • HOLD 2s • EXHALE 6s</div>
         </div>
     """, unsafe_allow_html=True)
 
-    # 3. Ambience
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -176,7 +175,7 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# (All other pages locked & restored)
+# (Rest of pages preserved with the new blue)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     m1, m2 = st.columns(2)
@@ -190,7 +189,6 @@ elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### The Sukoon Ritual")
     st.markdown("**Ground:** Frequencies. | **Release:** Reflection. | **Reflect:** Presence.")
-    st.write("A bridge between technology and stillness.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Talk to the Founder</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "FAQ":
@@ -200,6 +198,6 @@ elif st.session_state.current_page == "FAQ":
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
-    st.write("Wellness companion. No medical, psychological, or psychiatric advice provided.")
+    st.write("Wellness companion. No medical advice provided.")
 
 st.markdown("<div class='footer-text'>Sukoon is a wellness tool. Not a medical substitute.</div>", unsafe_allow_html=True)
