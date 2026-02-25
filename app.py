@@ -20,21 +20,29 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME & STYLING ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- THE "WAKE UP" TEST CODE ---
+# --- 4. ROBUST AI SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if api_key:
     try:
         genai.configure(api_key=api_key)
+        # We use the 'latest' suffix to bypass the 404 error
         model = genai.GenerativeModel("gemini-1.5-flash-latest")
-        # The Ping Test
+        
+        # Test the connection silently
         model.generate_content("Ping") 
-        st.toast("✅ Brain is Active", icon="🧠")
+        st.toast("✅ Sanctuary Brain is Active", icon="🧘")
     except Exception as e:
-        st.error(f"❌ Connection Failed: {e}")
-        model = None
+        # If 'flash' fails, try 'pro' as a fallback
+        try:
+            model = genai.GenerativeModel("gemini-pro")
+            model.generate_content("Ping")
+            st.toast("✅ Sanctuary Brain is Active (Pro Mode)", icon="🧘")
+        except:
+            st.error(f"❌ Model Access Error: {e}")
+            model = None
 else:
-    st.warning("⚠️ Waiting for API Key in Secrets...")
+    st.warning("⚠️ API Key not detected in Secrets.")
     model = None
 
 # --- 5. CSS ---
