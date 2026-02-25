@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. ZERO-GAP PRECISION CSS ---
+# --- 5. THE PRECISION 2PX GAP CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -52,34 +52,35 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* THE ZERO-GAP GRID: This eliminates the space between columns */
+    /* THE FIX: Forcing columns to sit 2px apart */
     [data-testid="stHorizontalBlock"] {{
-        gap: 0px !important; 
+        gap: 2px !important; 
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
+        align-items: stretch !important;
     }}
     
-    [data-testid="column"] {{
+    /* Targeting the specific column container to kill Streamlit's default margins */
+    div[data-testid="column"] {{
         padding: 0px !important;
         margin: 0px !important;
-        width: 33.33% !important;
         flex: 1 1 0% !important;
         min-width: 0px !important;
     }}
 
-    /* THE SLAB: Borders now meet at 0px */
+    /* SLAB BUTTON: 3px Internal Padding, Fixed 34px Height */
     .stButton>button {{ 
         background-color: {btn_bg} !important; color: {txt} !important; 
-        border: 0.5px solid #2A2A2A !important; /* Slightly thinner border for overlap */
-        border-radius: 0px !important; /* Total square for seamless joining */
+        border: 1px solid #2A2A2A !important; 
+        border-radius: 2px !important; 
         padding-left: 3px !important; padding-right: 3px !important;
         min-height: 34px !important; height: 34px !important;
         width: 100% !important; font-size: 11px !important; 
         white-space: nowrap !important; transition: all 0.2s ease;
     }}
 
-    .stButton>button:hover {{ border-color: {soft_blue} !important; z-index: 1; position: relative; }}
+    .stButton>button:hover {{ border-color: {soft_blue} !important; }}
 
     .breather-wrapper {{ text-align: center; margin: 20px 0; }}
     .breather-circle {{
@@ -128,7 +129,7 @@ if st.session_state.current_page == "Journal":
     st.markdown(f"""<div class='breather-wrapper'><div class='breather-circle'></div><div class='breather-text' style='font-size:8px; opacity:0.5;'>4-2-6 RHYTHM</div></div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
-    cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
+    cdn = f"https://cdn.jsdelivr.gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     aud_cols = st.columns(3)
     sound_list = list(sounds.keys())
@@ -161,6 +162,7 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
+# MARKET, VISION, FAQ, INFO (Restored and Locked)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     st.write("### Grounding Objects")
