@@ -20,7 +20,7 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- 4. THE BRAIN SETUP (v72.0) ---
+# --- 4. THE BRAIN SETUP (Safe & Intelligent) ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
@@ -31,7 +31,7 @@ if api_key:
     except:
         model = None
 
-# --- 5. THE DESIGN CSS (Centered Glassy Aesthetic) ---
+# --- 5. THE DESIGN CSS (Centered & Body-Positive) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -101,7 +101,6 @@ st.markdown(f"""
 # --- 6. NAVIGATION & BREATHER ---
 st.markdown(f"<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 
-# THE BREATHER (Immediately under title)
 st.markdown(f"""
     <div style='text-align:center; margin-bottom:20px;'>
         <div style='width:45px; height:45px; border:2px solid {soft_blue}; border-radius:50%; margin:0 auto; animation: breathe 12s infinite ease-in-out;'></div>
@@ -133,30 +132,35 @@ if st.session_state.current_page == "Journal":
     if st.session_state.active_audio:
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
-    # RITUAL PROMPT
+    # RITUAL PROMPT (Safe & Body-Positive)
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    prompts = ["Close your eyes. Hold your stone.", "Feel the beads between your fingers.", "Observe your Yantra.", "Sense the weight of your body."]
+    prompts = [
+        "Close your eyes. Hold your stone.", 
+        "Feel the beads between your fingers.", 
+        "Observe your Yantra.", 
+        "Sense the support of the surface beneath you."
+    ]
     st.markdown(f"<div class='ritual-prompt'>— {prompts[datetime.now().second % 4]} —</div>", unsafe_allow_html=True)
 
     # INPUTS
     audio_rec = st.audio_input("Voice Note")
     text_msg = st.text_area("Release your thoughts...", height=100)
     
-    # THE INTELLIGENT MENTOR RESPONSE
+    # THE INTELLIGENT MENTOR RESPONSE (Compassion & Expansion Protocols)
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Refining..."):
-                # Analyze Energy History for Protocol Selection
+                # Analyze Energy History
                 recent = st.session_state.energy_history[-3:]
                 is_heavy = len(recent) >= 3 and all(e == "Heavier" for e in recent)
                 is_growth = len(recent) >= 3 and all(e in ["Steady", "Vibrant"] for e in recent)
                 
                 if is_heavy:
-                    context = "The user is in a persistent heavy state. Be deeply compassionate. Suggest a gentle grounding ritual. Max 3 sentences."
+                    context = "The user is in a persistent heavy state. Be deeply compassionate and gentle. Suggest a very light grounding ritual. Max 3 sentences."
                 elif is_growth:
-                    context = "The user is in a state of sustained growth. Celebrate subtly. Suggest sealing this energy into their physical object. Max 3 sentences."
+                    context = "The user is in a state of sustained growth. Celebrate this subtly. Encourage them to 'seal' this calm energy into their physical objects. Max 3 sentences."
                 else:
-                    context = "You are a Sukoon Mentor. Use secular mindfulness language. Acknowledge grounding objects (beads/stones). Max 3 sentences."
+                    context = "You are a Sukoon Mentor. Use secular mindfulness language. Acknowledge grounding objects (beads/stones) if relevant. Max 3 sentences."
 
                 try:
                     user_input = text_msg if text_msg else "I am present."
@@ -188,7 +192,7 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>GROUNDING TOOLS</div>", unsafe_allow_html=True)
     st.write("### The Physical Connection")
-    st.write("Stones and beads are not just objects; they are anchors for your focus and storage for your energy.")
+    st.write("Stones and beads are anchors for your focus and storage for your energy.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Inquire on WhatsApp</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
