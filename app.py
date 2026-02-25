@@ -25,55 +25,53 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE SPACIOUS GRID CSS ---
+# --- 5. THE WIDE-SPAN CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
-    /* Force 3 Columns on Mobile & Desktop */
+    /* Expand the main container to allow buttons to be longer sideways */
+    .block-container {{
+        max-width: 95% !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }}
+
+    /* Force 3 Columns with very tight horizontal gaps */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 10px !important; /* Increased gap for breathing room */
+        gap: 6px !important; /* Tight gap to let buttons stretch longer */
         width: 100% !important;
     }}
 
-    /* Spacious Button Styling */
+    /* Wide Button Styling */
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid {soft_blue} !important; 
-        border-radius: 12px !important; 
+        border-radius: 8px !important; 
         
-        /* Increased Length/Height and Padding */
-        padding: 10px 4px !important; 
-        min-height: 48px !important; 
-        
-        /* Text Spacing */
-        font-size: 11px !important; 
-        font-weight: 500 !important;
-        letter-spacing: 0.3px !important;
-        
+        /* Horizontal stretch */
         width: 100% !important;
+        padding: 6px 2px !important; 
+        min-height: 38px !important; /* Reset to a cleaner, non-tall height */
+        
+        font-size: 11px !important; 
+        white-space: nowrap !important;
         margin: 0px !important;
-        transition: all 0.2s ease;
-    }}
-    
-    .stButton>button:active {{
-        transform: scale(0.98);
-        border-color: {txt} !important;
     }}
 
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 1.2rem !important; }}
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.8rem !important; }}
     
     .footer-text {{ font-size: 9px; opacity: 0.6; margin-top: 20px; border-top: 0.5px solid {soft_blue}; padding: 10px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 6. TOP NAVIGATION ---
-st.markdown("<h1 style='text-align: center; margin-bottom: 5px;'>Sukoon</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; margin-bottom: 5px;'>Sukoon</h2>", unsafe_allow_html=True)
 nav_row = st.columns(3)
-nav_list = [("Journal", "Journal"), ("Market", "Marketplace"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Disclaimer")]
+nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Info")]
 
 for i, (label, target) in enumerate(nav_list):
     with nav_row[i % 3]:
@@ -82,7 +80,7 @@ for i, (label, target) in enumerate(nav_list):
 
 st.markdown("---")
 
-# --- 7. JOURNAL PAGE ---
+# --- 7. PAGES ---
 if st.session_state.current_page == "Journal":
     st.write("Energy Check")
     m_cols = st.columns(3)
@@ -128,24 +126,15 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# --- 8. OTHER PAGES ---
-elif st.session_state.current_page == "Marketplace":
+# (Rest of pages kept compact)
+elif st.session_state.current_page == "Market":
     st.write("### Grounding Objects")
-    m_row = st.columns(2)
-    with m_row[0]: st.info("Starter Ritual")
-    with m_row[1]: st.info("Master Sanctuary")
-    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
-
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
 elif st.session_state.current_page == "Vision":
     st.write("### Ground | Release | Reflect")
-    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Connect with Founder</a>", unsafe_allow_html=True)
-
 elif st.session_state.current_page == "FAQ":
     st.write("### FAQ")
-    st.write("Data is session-only. Sounds for focus.")
-
-elif st.session_state.current_page == "Disclaimer":
+elif st.session_state.current_page == "Info":
     st.write("### Information")
-    st.write("Wellness companion. Not medical.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
