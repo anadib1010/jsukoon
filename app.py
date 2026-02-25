@@ -20,16 +20,26 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- 4. THE BRAIN SETUP (Safe & Intelligent) ---
+# --- 4. THE AUTO-WAKE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
+
 if api_key:
-    try:
-        genai.configure(api_key=api_key)
-        # Using the verified gemini-2.5-flash
-        model = genai.GenerativeModel("gemini-2.5-flash")
-    except:
-        model = None
+    genai.configure(api_key=api_key)
+    # List of models to try in order of preference
+    for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]:
+        try:
+            temp_model = genai.GenerativeModel(m_name)
+            # Try a tiny test call
+            temp_model.generate_content("Ping", generation_config={"max_output_tokens": 1})
+            model = temp_model
+            st.toast(f"✅ Sanctuary Brain Awake ({m_name})", icon="🧘")
+            break 
+        except:
+            continue
+    
+    if not model:
+        st.error("🌘 The brain is in deep rest (Quota reached). It will wake up soon.")
 
 # --- 5. THE DESIGN CSS (Centered & Body-Positive) ---
 st.markdown(f"""
