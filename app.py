@@ -38,8 +38,8 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (STRATEGY: NO F-STRINGS TO PREVENT ERRORS) ---
-css_template = """
+# --- CSS (CLEAN & CLOSED) ---
+css_code = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
     h1, h2, h3, h4, label, p, li { color: V_TXT !important; font-weight: 200 !important; }
@@ -60,7 +60,7 @@ css_template = """
     img { border-radius: 15px; margin-bottom: 10px; }
 </style>
 """
-clean_css = css_template.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
+clean_css = css_code.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
 st.markdown(clean_css, unsafe_allow_html=True)
 
 # --- NAVIGATION ---
@@ -129,35 +129,10 @@ elif st.session_state.current_page == "Marketplace":
         st.markdown("#### The Starter Ritual (3 Items)")
         st.write("Stones, Buddha, & Beads. ₹2,499")
         u1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
-        st.markdown('<a href="'+u1+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
+        btn1 = '<a href="' + u1 + '" target="_blank">'
+        btn1 += '<button style="width:100%; border-radius:10px; padding:10px; border:none; '
+        btn1 += 'font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">'
+        btn1 += 'Order Ritual Box</button></a>'
+        st.markdown(btn1, unsafe_allow_html=True)
     with b2:
-        if os.path.exists("vaastu.jpg"): st.image("vaastu.jpg", use_container_width=True)
-        st.markdown("#### The Master Sanctuary (5 Items)")
-        st.write("Stones, Buddha, Art, Vaastu, & Journal. ₹4,999")
-        u2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
-        st.markdown('<a href="'+u2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("### 🏺 Individual Objects")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        if os.path.exists("stones.jpg"): st.image("stones.jpg", use_container_width=True)
-        st.markdown("#### Natural Stones")
-        l1 = "https://wa.me/" + MY_PHONE + "?text=Stones"
-        st.markdown('<a href="'+l1+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; background-color:'+soft_blue+';">Inquire</button></a>', unsafe_allow_html=True)
-    with c2:
-        if os.path.exists("buddha.jpg"): st.image("buddha.jpg", use_container_width=True)
-        st.markdown("#### Sacred Buddha")
-        l2 = "https://wa.me/" + MY_PHONE + "?text=Buddha"
-        st.markdown('<a href="'+l2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; background-color:'+soft_blue+';">Inquire</button></a>', unsafe_allow_html=True)
-    with c3:
-        if os.path.exists("art.jpg"): st.image("art.jpg", use_container_width=True)
-        st.markdown("#### Artic Art")
-        l3 = "https://wa.me/" + MY_PHONE + "?text=Art"
-        st.markdown('<a href="'+l3+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; background-color:'+soft_blue+';">Inquire</button></a>', unsafe_allow_html=True)
-
-# --- PAGE: VISION ---
-elif st.session_state.current_page == "Vision":
-    st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
-    st.write("Sukoon is an ecosystem designed to bridge the gap between digital AI guidance and tangible physical grounding.")
-    wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
-    st.markdown('<div style="text-align: center;"><br><a href="' + wa_v + '" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">💬 Connect with Founder</button
+        if os.path.exists("vaastu.jpg"): st.image("vaastu.jpg",
