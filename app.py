@@ -107,17 +107,26 @@ if st.session_state.current_page == "Journal":
                         st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
                         st.rerun()
                     except:
-                        st.error("The Guide is resting.")
+                        st.error("The Guide is resting. Please try again in a few minutes.")
 
     for entry in reversed(st.session_state.private_journal):
         st.write("🕒 " + entry['time'] + " | " + entry['diary'])
         st.info(entry['ai'])
 
+    # --- LEGAL DISCLAIMER ---
+    st.markdown("---")
+    st.markdown("""
+    <div style='opacity: 0.5; font-size: 10px; text-align: center; padding: 20px;'>
+    <b>DISCLAIMER:</b> Sukoon is an AI-supported mindfulness tool. It is <b>NOT</b> a substitute for professional 
+    medical advice, diagnosis, or psychological treatment. If you are experiencing a mental health crisis, 
+    please consult a licensed professional or contact your local emergency services immediately.
+    </div>
+    """, unsafe_allow_html=True)
+
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
     st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
     
-    # BUNDLES SECTION
     st.markdown("### ✨ Grounding Bundles")
     b1, b2 = st.columns(2)
     with b1:
@@ -132,8 +141,6 @@ elif st.session_state.current_page == "Marketplace":
         st.markdown('<a href="'+u2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
 
     st.markdown("---")
-    
-    # INDIVIDUAL ITEMS SECTION
     st.markdown("### 🏺 Individual Objects")
     c1, c2, c3 = st.columns(3)
     with c1:
