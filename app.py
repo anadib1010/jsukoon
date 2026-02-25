@@ -106,11 +106,8 @@ if st.session_state.current_page == "Journal":
     st.markdown("---")
     st.write("#### Journal & Voice")
     
-    # Check if audio_input is available in this version of streamlit
     if hasattr(st, "audio_input"):
         voice_note = st.audio_input("Tap to Record Voice Note")
-    else:
-        st.info("Note: Voice recording requires a modern browser. Use the text area below if the mic doesn't appear.")
 
     with st.form(key="journal_form", clear_on_submit=True):
         diary_in = st.text_area("Share your heart...")
@@ -170,3 +167,13 @@ elif st.session_state.current_page == "Vision":
     st.write("We are integrating affective computing to understand human emotion and provide support when it is needed most.")
     wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
     st.markdown('<div style="text-align: center;"><br><a href="' + wa_v + '" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
+
+# --- GLOBAL FOOTER (DISCLAIMER) ---
+st.markdown("---")
+st.markdown("""
+<div style='opacity: 0.5; font-size: 10px; text-align: center; padding: 20px;'>
+<b>DISCLAIMER:</b> Sukoon is an AI-supported mindfulness tool. It is <b>NOT</b> a substitute for professional 
+medical advice, diagnosis, or psychological treatment. If you are experiencing a mental health crisis, 
+please consult a licensed professional or contact your local emergency services immediately.
+</div>
+""", unsafe_allow_html=True)
