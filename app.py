@@ -38,13 +38,13 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS ---
+# --- CSS (Shortened Market Buttons to avoid Line Breaks) ---
 css_code = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
     h1, h2, h3, h4, label, p, li { color: V_TXT !important; font-weight: 200 !important; }
     textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; }
-    button[kind="secondaryFormSubmit"], .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; }
+    .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; }
     @keyframes breathe {
         0% { transform: scale(1); opacity: 0.4; }
         40% { transform: scale(1.4); opacity: 1; }
@@ -57,6 +57,7 @@ css_code = """
         box-shadow: 0 0 25px V_BLUE;
     }
     .ritual-box { padding: 20px; border: 1px solid V_BLUE; border-radius: 15px; background: rgba(174, 198, 207, 0.1); margin: 20px 0; }
+    .mkt-btn { width:100%; padding:10px; background:V_BLUE; border:none; border-radius:10px; font-weight:bold; color:#0A0E0B; cursor:pointer; text-align:center; display:block; text-decoration:none; }
 </style>
 """
 clean_css = css_code.replace("V_BG", bg).replace("V_TXT", txt).replace("V_IN", input_bg).replace("V_BTN", btn_bg).replace("V_BLUE", soft_blue)
@@ -64,70 +65,4 @@ st.markdown(clean_css, unsafe_allow_html=True)
 
 # --- NAVIGATION ---
 st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
-n1, n2, n3 = st.columns([1,1,1])
-with n1: 
-    if st.button("Journal", use_container_width=True, key="n1"):
-        st.session_state.current_page = "Journal"
-        st.rerun()
-with n2: 
-    if st.button("Market", use_container_width=True, key="n2"):
-        st.session_state.current_page = "Marketplace"
-        st.rerun()
-with n3: 
-    if st.button("Vision", use_container_width=True, key="n3"):
-        st.session_state.current_page = "Vision"
-        st.rerun()
-st.markdown("---")
-
-# --- PAGE: JOURNAL ---
-if st.session_state.current_page == "Journal":
-    st.markdown("<div class='ritual-box'><b>✨ Ritual:</b> Hold your Natural Stone in your left hand for 3 minutes.</div>", unsafe_allow_html=True)
-    st.write("#### How is your energy?")
-    mood_cols = st.columns(5)
-    mood_labels = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
-    for i in range(5):
-        with mood_cols[i]:
-            if st.button(mood_labels[i], key=f"m_{i}", use_container_width=True):
-                st.session_state.theme = "Midnight" if i < 2 else "Peaceful"
-                msg = "I see you're in a " + mood_labels[i].lower() + " energy space."
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": "[Energy Check]", "ai": msg})
-                st.rerun()
-    st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
-    st.markdown("---")
-    if hasattr(st, "audio_input"): 
-        st.audio_input("Voice Note")
-    with st.form(key="j_form", clear_on_submit=True):
-        diary_in = st.text_area("Share your heart...")
-        if st.form_submit_button("Consult Guide"):
-            if super_brain and diary_in:
-                st.session_state.theme = "Midnight" if "sad" in diary_in.lower() else "Peaceful"
-                resp = super_brain.generate_content("Mentor response: " + diary_in).text
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": diary_in, "ai": resp})
-                st.rerun()
-    for entry in reversed(st.session_state.private_journal):
-        st.write("🕒 " + entry['time'] + " | " + entry['diary'])
-        st.info(entry['ai'])
-
-# --- PAGE: MARKETPLACE ---
-elif st.session_state.current_page == "Marketplace":
-    st.markdown("<h2 style='text-align: center;'>Marketplace</h2>", unsafe_allow_html=True)
-    st.markdown("### ✨ Grounding Bundles")
-    b1, b2 = st.columns(2)
-    with b1:
-        st.markdown("#### The Starter Ritual")
-        st.write("3 Items: ₹2,499")
-        link1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
-        st.markdown('<a href="' + link1 + '" target="_blank"><button style="width:100%; padding:10px; background:' + soft_blue + '; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#0A0E0B;">Order Box</button></a>', unsafe_allow_html=True)
-    with b2:
-        st.markdown("#### Master Sanctuary")
-        st.write("5 Items: ₹4,999")
-        link2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
-        st.markdown('<a href="' + link2 + '" target="_blank"><button style="width:100%; padding:10px; background:' + soft_blue + '; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#0A0E0B;">Order Box</button></a>', unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.markdown("### 🏺 Individual Objects")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown("#### Natural Stones")
-        link_s = "https://wa.me/" + MY_PHONE + "?text=Stones"
-        st.markdown('<a href="' + link_s + '" target="_blank"><button style="width
+n
