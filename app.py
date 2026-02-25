@@ -20,10 +20,22 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME & STYLING ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- 4. AI SETUP (With Ritual Influence) ---
-api_key = os.environ.get("GEMINI_API_KEY")
-model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
-if api_key: genai.configure(api_key=api_key)
+# --- 4. DIAGNOSTIC AI SETUP ---
+api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+
+if not api_key:
+    st.error("❌ KEY MISSING: Please add GEMINI_API_KEY to your Streamlit Secrets.")
+    model = None
+else:
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        # Direct test to wake it up
+        test_check = model.generate_content("Ping", generation_config={"max_output_tokens": 10})
+        st.toast("✅ Brain is Awake", icon="🧠")
+    except Exception as e:
+        st.error(f"❌ BRAIN OFFLINE: {e}")
+        model = None
 
 st.markdown(f"""
     <style>
