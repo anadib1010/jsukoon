@@ -28,12 +28,12 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. MOBILE-FIRST CSS (FLUID FONTS) ---
+# --- 5. UPDATED UI CSS (Tile Styling) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
-    /* Center vertical blocks */
+    /* Global Centering */
     [data-testid="stVerticalBlock"] {{
         display: flex;
         flex-direction: column;
@@ -41,34 +41,47 @@ st.markdown(f"""
         text-align: center !important;
     }}
 
-    /* Buttons: Wider and Fluid Font */
+    /* Premium Button Tiles */
     .stButton {{ display: flex; justify-content: center; width: 100%; }}
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid {soft_blue} !important; 
-        border-radius: 10px !important; 
+        border-radius: 14px !important; 
         width: 100% !important; 
-        padding: 5px 2px !important;
-        font-size: clamp(10px, 3vw, 14px) !important; /* Shrinks text to fit */
-        white-space: nowrap !important; /* Prevents 2-line break */
-        overflow: hidden;
-        margin: 2px auto !important;
+        
+        /* Padding and Spacing */
+        padding: 10px 15px !important; 
+        min-height: 45px !important;
+        margin: 6px auto !important;
+        
+        /* Text Styling */
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        white-space: nowrap !important;
+        letter-spacing: 0.5px;
+        
+        /* Shadow for Depth */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
     }}
     
-    /* Center Audio */
-    div[data-testid="stAudio"] {{ display: flex; justify-content: center; width: 100%; }}
-    
-    /* Text Input Alignment */
-    textarea {{ text-align: center !important; border-radius: 12px !important; border: 1px solid {soft_blue} !important; }}
+    .stButton>button:hover {{
+        border-color: {txt} !important;
+        transform: translateY(-1px);
+    }}
 
-    .breather-circle {{ width: 65px; height: 65px; background: {soft_blue}; border-radius: 50%; margin: 20px auto; animation: breathe 8s infinite ease-in-out; }}
+    /* Center Audio & Inputs */
+    div[data-testid="stAudio"] {{ display: flex; justify-content: center; width: 100%; margin: 15px 0; }}
+    textarea {{ text-align: center !important; border-radius: 15px !important; border: 1px solid {soft_blue} !important; padding: 10px !important; }}
+
+    .breather-circle {{ width: 68px; height: 68px; background: {soft_blue}; border-radius: 50%; margin: 25px auto; animation: breathe 8s infinite ease-in-out; }}
     @keyframes breathe {{ 0%, 100% {{ transform: scale(1); opacity: 0.4; }} 50% {{ transform: scale(1.3); opacity: 1; }} }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 6. NAVIGATION ---
-st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>Sukoon</h2>", unsafe_allow_html=True)
 n1, n2, n3 = st.columns(3)
 with n1: 
     if st.button("Journal", key="nj"): st.session_state.current_page = "Journal"; st.rerun()
@@ -80,7 +93,7 @@ st.markdown("---")
 
 # --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    st.write("#### Energy Check")
+    st.write("#### Energy Balance")
     m_cols = st.columns(5)
     moods = ["Low", "Drained", "Neutral", "Steady", "Vibrant"]
     for i, lab in enumerate(moods):
@@ -102,14 +115,14 @@ if st.session_state.current_page == "Journal":
                 st.session_state.audio_label = name
 
     if st.session_state.active_audio:
-        st.write(f"🔊 Playing: **{st.session_state.audio_label}**")
+        st.markdown(f"🔊 Playing: **{st.session_state.audio_label}**")
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("---")
     
     # AI INPUT
     audio_rec = st.audio_input("Record")
-    text_msg = st.text_area("Share your heart...", placeholder="Type here...")
+    text_msg = st.text_area("Share your heart...", placeholder="How are you feeling?")
     
     if st.button("Consult Guide", use_container_width=True):
         if model:
@@ -121,7 +134,7 @@ if st.session_state.current_page == "Journal":
                     resp = model.generate_content(parts).text
                     st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp})
                     st.rerun()
-                except: st.error("The Brain is pausing. Wait a minute.")
+                except: st.error("The Brain is pausing. Wait a moment.")
         else: st.warning("Guide Offline.")
 
     for entry in reversed(st.session_state.private_journal):
@@ -132,9 +145,9 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Marketplace":
     st.markdown("### ✨ Grounding Objects")
     m1, m2 = st.columns(2)
-    with m1: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:10px; border-radius:10px;'>Starter Ritual<br>₹2,499<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue}; text-decoration:none;'>Order</a></div>", unsafe_allow_html=True)
-    with m2: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:10px; border-radius:10px;'>Master Sanctuary<br>₹4,999<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue}; text-decoration:none;'>Order</a></div>", unsafe_allow_html=True)
+    with m1: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:20px; border-radius:15px; background:{btn_bg};'>Starter Ritual<br>₹2,499<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue}; font-weight:bold; text-decoration:none;'>Order</a></div>", unsafe_allow_html=True)
+    with m2: st.markdown(f"<div style='border:1px solid {soft_blue}; padding:20px; border-radius:15px; background:{btn_bg};'>Master Sanctuary<br>₹4,999<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue}; font-weight:bold; text-decoration:none;'>Order</a></div>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.write("### Silence in a Loud World")
-    st.markdown(f"<div style='display:flex; justify-content:center; width:100%;'><a href='https://wa.me/{MY_PHONE}' style='display:block; border:1px solid {soft_blue}; padding:15px; border-radius:12px; text-decoration:none; color:{soft_blue}; font-weight:bold;'>Connect</a></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='display:flex; justify-content:center; width:100%;'><a href='https://wa.me/{MY_PHONE}' style='display:block; border:1px solid {soft_blue}; padding:18px; border-radius:15px; text-decoration:none; color:{soft_blue}; font-weight:bold; width:220px; background:{btn_bg};'>Connect with Founder</a></div>", unsafe_allow_html=True)
