@@ -23,7 +23,7 @@ if api_key:
 else:
     super_brain = None
 
-# --- UI STATE & PERSISTENCE ---
+# --- UI STATE ---
 if "private_journal" not in st.session_state:
     st.session_state.private_journal = []
 if "current_page" not in st.session_state:
@@ -38,7 +38,7 @@ if st.session_state.theme == "Peaceful":
 else:
     bg, txt, input_bg, btn_bg, card_hover = "#0A0E0B", "#AEC6CF", "#1E1E1E", "#2A2A2A", "rgba(255, 255, 255, 0.05)"
 
-# --- CSS (STRATEGY: REPLACEMENT TO AVOID F-STRING ERRORS) ---
+# --- CSS ---
 css_template = """
 <style>
     html, body, .stApp { background-color: V_BG !important; color: V_TXT !important; }
@@ -68,15 +68,15 @@ st.markdown(clean_css, unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=True)
 nav_cols = st.columns([1,1,1])
 with nav_cols[0]:
-    if st.button("Journal", use_container_width=True, key="btn_journal"):
+    if st.button("Journal", use_container_width=True, key="nav1"):
         st.session_state.current_page = "Journal"
         st.rerun()
 with nav_cols[1]:
-    if st.button("Market", use_container_width=True, key="btn_market"):
+    if st.button("Market", use_container_width=True, key="nav2"):
         st.session_state.current_page = "Marketplace"
         st.rerun()
 with nav_cols[2]:
-    if st.button("Vision", use_container_width=True, key="btn_vision"):
+    if st.button("Vision", use_container_width=True, key="nav3"):
         st.session_state.current_page = "Vision"
         st.rerun()
 st.markdown("---")
@@ -95,7 +95,7 @@ if st.session_state.current_page == "Journal":
         if target and os.path.exists(target): st.audio(target)
     
     st.markdown("---")
-    with st.form(key="journal_entry_form", clear_on_submit=True):
+    with st.form(key="j_form", clear_on_submit=True):
         diary_in = st.text_area("What is on your mind today?")
         if st.form_submit_button("Consult Guide"):
             if super_brain and diary_in:
@@ -117,14 +117,66 @@ if st.session_state.current_page == "Journal":
 elif st.session_state.current_page == "Marketplace":
     st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
     
+    # BUNDLES SECTION
     st.markdown("### ✨ Grounding Bundles")
-    b_col1, b_col2 = st.columns(2)
-    bundles = [
-        ("The Starter Ritual (3 Items)", "Stones, Buddha, & Beads. ₹2,499", "Ritual Box"),
-        ("The Master Sanctuary (5 Items)", "Stones, Buddha, Art, Vaastu, & Journal. ₹4,999", "Ritual Box")
-    ]
-    for i, (name, desc, btype) in enumerate(bundles):
-        with (b_col1 if i==0 else b_col2):
-            st.markdown("#### " + name)
-            st.write(desc)
-            url = "https://wa.me/" + MY_PHONE + "?text=" + urllib.parse.quote("Interest: " + name)
+    b1, b2 = st.columns(2)
+    with b1:
+        st.markdown("#### The Starter Ritual (3 Items)")
+        st.write("Stones, Buddha, & Beads. ₹2,499")
+        u1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
+        st.markdown('<a href="'+u1+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
+    with b2:
+        st.markdown("#### The Master Sanctuary (5 Items)")
+        st.write("Stones, Buddha, Art, Vaastu, & Journal. ₹4,999")
+        u2 = "https://wa.me/" + MY_PHONE + "?text=Interest:MasterSanctuary"
+        st.markdown('<a href="'+u2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Order Ritual Box</button></a>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    
+    # INDIVIDUAL ITEMS SECTION
+    st.markdown("### 🏺 Individual Objects")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("#### Natural Stones")
+        st.write("Grounding energy.")
+        l1 = "https://wa.me/" + MY_PHONE + "?text=Interest:NaturalStones"
+        st.markdown('<a href="'+l1+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
+    with c2:
+        st.markdown("#### Sacred Buddha")
+        st.write("Stillness focal point.")
+        l2 = "https://wa.me/" + MY_PHONE + "?text=Interest:SacredBuddha"
+        st.markdown('<a href="'+l2+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
+    with c3:
+        st.markdown("#### Artic Art")
+        st.write("Visual tranquility.")
+        l3 = "https://wa.me/" + MY_PHONE + "?text=Interest:ArticArt"
+        st.markdown('<a href="'+l3+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
+
+    c4, c5, c6 = st.columns(3)
+    with c4:
+        st.markdown("#### Vaastu Objects")
+        st.write("Spatial harmony.")
+        l4 = "https://wa.me/" + MY_PHONE + "?text=Interest:VaastuObjects"
+        st.markdown('<a href="'+l4+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
+    with c5:
+        st.markdown("#### Crafted Beads")
+        st.write("Focus through touch.")
+        l5 = "https://wa.me/" + MY_PHONE + "?text=Interest:CraftedBeads"
+        st.markdown('<a href="'+l5+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
+    with c6:
+        st.markdown("#### Insight Journals")
+        st.write("Inner clarity.")
+        l6 = "https://wa.me/" + MY_PHONE + "?text=Interest:InsightJournals"
+        st.markdown('<a href="'+l6+'" target="_blank"><button style="width:100%; border-radius:10px; padding:10px; border:none; font-weight:bold; cursor:pointer; background-color:'+soft_blue+'; color:#0A0E0B;">Inquire</button></a>', unsafe_allow_html=True)
+
+# --- PAGE: VISION ---
+elif st.session_state.current_page == "Vision":
+    st.markdown("<h2 style='text-align: center;'>Our Vision</h2>", unsafe_allow_html=True)
+    st.write("### Silence in a Loud World")
+    st.write("Sukoon is an ecosystem designed to bridge the gap between digital AI guidance and tangible physical grounding. We believe that technology should be a gateway to tranquility, not a source of distraction.")
+    st.write("---")
+    st.write("### The Journey")
+    st.write("We are integrating affective computing to understand human emotion and provide support when it is needed most. This app is the first step toward a personalized, responsive sanctuary.")
+    
+    wa_v = "https://wa.me/" + MY_PHONE + "?text=SupportSukoon"
+    st.markdown('<div style="text-align: center;"><br><a href="' + wa_v + '" target="_blank"><button style="padding:10px 25px; border-radius:10px; border:none; font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">💬 Connect with Founder</button></a></div>', unsafe_allow_html=True)
