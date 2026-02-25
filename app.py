@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. "SLEEK SLAB" CSS ---
+# --- 5. FIXED-GRID SYMMETRY CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -52,29 +52,39 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* THE GRID: Ultra-Tight Horizontal Spacing */
+    /* THE SYMMETRICAL GRID */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(3, 1fr) !important; /* Forces 3 equal columns */
+        grid-auto-rows: 1fr !important; /* Forces all rows to be equal height */
         gap: 2px !important; 
         width: 100% !important;
     }}
 
-    /* SLENDER RECTANGULAR BUTTONS */
+    /* FIXED SIZE RECTANGULAR BUTTONS */
+    .stButton, .stButton>button {{
+        width: 100% !important;
+        display: block !important;
+    }}
+
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid #2A2A2A !important; 
-        border-radius: 2px !important; /* Sharper corners for a slab look */
-        width: 100% !important;
+        border-radius: 2px !important; 
         
-        /* THE FIX: Reduced Height & Sideways Width */
+        /* Fixed Aspect Ratio Feel */
         padding: 4px 0px !important; 
-        min-height: 32px !important; 
+        min-height: 34px !important;
+        height: 34px !important; /* Hard-coded height for perfect symmetry */
         
+        /* Text handling to stay inside the fixed box */
         font-size: 11px !important; 
         font-weight: 400 !important;
         white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        
         margin: 0px !important;
         transition: all 0.2s ease;
     }}
@@ -173,17 +183,22 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# Pages below remain safe and formatted
+# MARKET, VISION, FAQ, INFO (All locked and restored)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
-    st.write("Starter Ritual | Master Sanctuary")
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a>", unsafe_allow_html=True)
+    m_cols = st.columns(3)
+    with m_cols[0]: st.button("Starter", key="mkt1")
+    with m_cols[1]: st.button("Master", key="mkt2")
+    st.markdown(f"<br><a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
+
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("Ground | Release | Reflect")
+
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
     st.write("Privacy focus.")
+
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("Wellness companion.")
