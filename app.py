@@ -68,13 +68,16 @@ st.markdown("<h2 style='text-align: center;'>Sukoon</h2>", unsafe_allow_html=Tru
 n1, n2, n3 = st.columns([1,1,1])
 with n1: 
     if st.button("Journal", use_container_width=True, key="n1"):
-        st.session_state.current_page = "Journal"; st.rerun()
+        st.session_state.current_page = "Journal"
+        st.rerun()
 with n2: 
     if st.button("Market", use_container_width=True, key="n2"):
-        st.session_state.current_page = "Marketplace"; st.rerun()
+        st.session_state.current_page = "Marketplace"
+        st.rerun()
 with n3: 
     if st.button("Vision", use_container_width=True, key="n3"):
-        st.session_state.current_page = "Vision"; st.rerun()
+        st.session_state.current_page = "Vision"
+        st.rerun()
 st.markdown("---")
 
 # --- PAGE: JOURNAL ---
@@ -121,18 +124,4 @@ if st.session_state.current_page == "Journal":
 
 # --- PAGE: MARKETPLACE ---
 elif st.session_state.current_page == "Marketplace":
-    st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
-    st.markdown("### ✨ Grounding Bundles")
-    b1, b2 = st.columns(2)
-    with b1:
-        if os.path.exists("buddha.jpg"): st.image("buddha.jpg", use_container_width=True)
-        st.markdown("#### The Starter Ritual (3 Items)")
-        st.write("Stones, Buddha, & Beads. ₹2,499")
-        u1 = "https://wa.me/" + MY_PHONE + "?text=Interest:StarterRitual"
-        btn1 = '<a href="' + u1 + '" target="_blank">'
-        btn1 += '<button style="width:100%; border-radius:10px; padding:10px; border:none; '
-        btn1 += 'font-weight:bold; cursor:pointer; background-color:' + soft_blue + '; color:#0A0E0B;">'
-        btn1 += 'Order Ritual Box</button></a>'
-        st.markdown(btn1, unsafe_allow_html=True)
-    with b2:
-        if os.path.exists("vaastu.jpg"): st.image("vaastu.jpg",
+    st.markdown("<h2 style='text-
