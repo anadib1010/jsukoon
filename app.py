@@ -32,7 +32,13 @@ if api_key:
     except: model = None
 else: model = None
 
-# --- 5. SCRIPTS ---
+# --- 5. THE "RAW" PATH ENGINE ---
+# This looks at your current URL to find the files
+def get_raw_url(filename):
+    # This construction is the 'Golden Standard' for Streamlit on GitHub
+    return f"https://raw.githubusercontent.com/{GITHUB_USER}/sukoon/main/{filename}"
+
+# --- 6. SCRIPTS & CSS ---
 st.markdown(f"""
     <script>
     function speakNow(text) {{
@@ -51,7 +57,7 @@ st.markdown(f"""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. NAVIGATION ---
+# --- 7. NAVIGATION ---
 st.markdown("<h2>Sukoon</h2>", unsafe_allow_html=True)
 n1, n2, n3 = st.columns(3)
 with n1: 
@@ -62,9 +68,8 @@ with n3:
     if st.button("Vision", key="nv"): st.session_state.current_page = "Vision"; st.rerun()
 st.markdown("---")
 
-# --- 7. JOURNAL PAGE ---
+# --- 8. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
-    # Mood Buttons
     m_cols = st.columns(5)
     for i, lab in enumerate(["Low", "Drained", "Neutral", "Steady", "Vibrant"]):
         with m_cols[i]:
@@ -73,7 +78,7 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
 
-    # NATURE AMBIENCE (Branch-Proof Logic)
+    # NATURE AMBIENCE
     st.write("#### Nature Ambience")
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     
@@ -85,19 +90,22 @@ if st.session_state.current_page == "Journal":
                 st.session_state.audio_label = name
 
     if st.session_state.active_audio:
-        # We try 'main' first, then 'master' automatically
-        file_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/sukoon/main/{st.session_state.active_audio}"
+        file_url = get_raw_url(st.session_state.active_audio)
         st.write(f"🔊 Playing: **{st.session_state.audio_label}**")
         st.audio(file_url, format="audio/mp3", autoplay=True)
         
-        with st.expander("Still no sound?"):
-            st.write("If you see a 404, click below to try the 'Master' branch link:")
-            master_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/sukoon/master/{st.session_state.active_audio}"
-            st.link_button("Try Master Branch Link", master_url)
+        with st.expander("Diagnostic Tool"):
+            st.write("If you see a 404, we need to check the branch name.")
+            st.code(f"Current Path: {file_url}")
+            if st.button("Try Master Branch"):
+                # Manual override for the session
+                alt_url = file_url.replace("/main/", "/master/")
+                st.audio(alt_url, format="audio/mp3", autoplay=True)
+                st.write(f"Trying: {alt_url}")
 
     st.markdown("---")
     
-    # RESTORED: AI INPUT SECTION
+    # AI INPUT SECTION
     audio_data = st.audio_input("Record your thoughts")
     text_in = st.text_area("Or type here...")
     
@@ -108,14 +116,13 @@ if st.session_state.current_page == "Journal":
                     parts = ["You are a mindfulness mentor. Give a calm 1-paragraph response."]
                     if audio_data:
                         parts.append({"mime_type": "audio/wav", "data": audio_data.read()})
-                        parts.append("Start by transcribing what you heard.")
                     else: parts.append(text_in)
 
                     response = model.generate_content(parts).text
                     uid = datetime.now().strftime("%H%M%S")
                     st.session_state.private_journal.append({
                         "id": uid, "time": datetime.now().strftime("%H:%M"), 
-                        "diary": text_in if text_in else "🎙️ Voice Note", "ai": response
+                        "diary": text_in if text_in else "🎙️ Voice Entry", "ai": response
                     })
                     st.rerun()
                 except: st.error("The Brain is resting.")
@@ -128,7 +135,7 @@ if st.session_state.current_page == "Journal":
             st.markdown(f"<script>speakNow({repr(entry['ai'])})</script>", unsafe_allow_html=True)
         st.write("---")
 
-# --- 8. MARKETPLACE & VISION ---
+# --- 9. OTHER PAGES ---
 elif st.session_state.current_page == "Marketplace":
     st.write("### ✨ Grounding Objects")
     m1, m2 = st.columns(2)
