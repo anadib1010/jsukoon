@@ -3,7 +3,6 @@ from datetime import datetime
 import os
 import google.generativeai as genai
 import urllib.parse
-import time
 
 # --- CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
@@ -43,7 +42,6 @@ css_template = """
     h1, h2, h3, h4, label, p, li { color: V_TXT !important; font-weight: 200 !important; }
     textarea { background-color: V_IN !important; color: V_TXT !important; border: 1px solid #444 !important; }
     button[kind="secondaryFormSubmit"], .stButton>button { background-color: V_BTN !important; color: V_TXT !important; border: 1px solid #444 !important; border-radius: 10px !important; }
-    
     @keyframes breathe {
         0% { transform: scale(1); opacity: 0.4; }
         40% { transform: scale(1.4); opacity: 1; }
@@ -55,7 +53,6 @@ css_template = """
         margin: 20px auto; animation: breathe 10s infinite ease-in-out;
         box-shadow: 0 0 25px V_BLUE;
     }
-    
     div[data-testid="stColumn"] { transition: all 0.4s ease; padding: 15px; border-radius: 20px; border: 1px solid rgba(128,128,128,0.1); margin-bottom: 10px; }
     div[data-testid="stColumn"]:hover { transform: translateY(-8px); box-shadow: 0px 15px 30px V_HOV; border: 1px solid V_BLUE; }
     [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], svg { display: none !important; }
@@ -80,14 +77,35 @@ if st.session_state.current_page == "Journal":
     st.markdown("<div style='text-align: center;'><h3>Welcome to your sanctuary.</h3></div>", unsafe_allow_html=True)
     st.markdown("<div class='breather-circle'></div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; opacity: 0.7; letter-spacing: 2px;'>INHALE • HOLD • EXHALE</p>", unsafe_allow_html=True)
-    
     st.markdown("#### 🎵 Ambient Sounds")
     choice = st.radio("Select Vibe:", ["Silent", "Forest", "Waves", "Birds", "Wind", "Flute"], horizontal=True)
     if choice != "Silent":
         files = {"Forest": "forest.mp3", "Waves": "waves.mp3", "Birds": "birds.mp3", "Wind": "wind.mp3", "Flute": "flute.mp3"}
         target = files.get(choice)
         if target and os.path.exists(target): st.audio(target)
-        else: st.info("Playing " + choice + "...")
-
+    
     st.markdown("---")
-    with st.
+    with st.form(key="journal_form", clear_on_submit=True):
+        user_input = st.text_area("What is on your mind today?")
+        if st.form_submit_button("Consult Guide"):
+            if super_brain and user_input:
+                stressors = ["sad", "anxious", "stress", "tired", "dark", "heavy", "pain"]
+                st.session_state.theme = "Midnight" if any(w in user_input.lower() for w in stressors) else "Peaceful"
+                with st.spinner("Listening..."):
+                    try:
+                        resp = super_brain.generate_content("Respond as a mindfulness mentor: " + user_input).text
+                        st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "diary": user_input, "ai": resp})
+                        st.rerun()
+                    except:
+                        st.error("The Guide is resting.")
+
+    for entry in reversed(st.session_state.private_journal):
+        st.write("🕒 " + entry['time'] + " | " + entry['diary'])
+        st.info(entry['ai'])
+
+# --- PAGE: MARKETPLACE ---
+elif st.session_state.current_page == "Marketplace":
+    st.markdown("<h2 style='text-align: center;'>The Marketplace</h2>", unsafe_allow_html=True)
+    def display_item(label, desc, is_bundle=False):
+        st.markdown("#### " + label)
+        st
