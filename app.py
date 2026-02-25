@@ -25,15 +25,17 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. CENTERED GLASSY CSS ---
+# --- 5. THE ABSOLUTE CENTER CSS ---
 st.markdown(f"""
     <style>
-    .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
+    /* Force main app container to center */
+    .stApp {{ background-color: {bg} !important; color: {txt} !important; align-items: center !important; }}
     
     .block-container {{
         max-width: 600px !important;
         margin: auto;
-        padding-top: 3.5rem !important; 
+        padding-top: 3.5rem !important;
+        text-align: center !important;
     }}
 
     @media (max-width: 640px) {{
@@ -43,7 +45,7 @@ st.markdown(f"""
     .main-title {{
         text-align: center; letter-spacing: 12px; font-weight: 200; 
         margin-top: 10px; margin-bottom: 25px; font-size: 2.8rem; color: #FFFFFF;
-        text-transform: uppercase;
+        text-transform: uppercase; width: 100%;
     }}
 
     .section-header {{
@@ -52,39 +54,42 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* GRID: Balanced Center Alignment */
+    /* THE GRID FIX: Removing all default Streamlit alignment drift */
     [data-testid="stHorizontalBlock"] {{
         gap: 2px !important; 
         display: flex !important;
         flex-direction: row !important;
-        justify-content: center !important; /* Centers the whole row */
+        justify-content: center !important;
         width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }}
     
     div[data-testid="column"] {{
         padding: 0px !important; margin: 0px !important;
-        flex: 1 1 0% !important; 
-        min-width: 0px !important;
+        flex: 1 1 0% !important; min-width: 0px !important;
         display: flex !important;
-        justify-content: center !important; /* Centers button in column */
+        justify-content: center !important;
     }}
 
-    /* BUTTON SLAB: Centered Text & Wide Padding */
+    /* BUTTON SLAB: Using Flexbox to anchor text in Absolute Center */
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(45,45,45,1) 0%, rgba(30,30,30,1) 100%) !important; 
         color: {txt} !important; 
         border: 1px solid #333 !important; 
         border-radius: 4px !important; 
-        padding-left: 12px !important; 
-        padding-right: 12px !important;
-        min-height: 38px !important; 
-        height: 38px !important;
+        padding: 0 12px !important; /* Controlled horizontal padding */
+        min-height: 42px !important; /* Slightly taller for better centering */
+        height: 42px !important;
         width: 100% !important; 
         font-size: 12px !important; 
-        text-align: center !important; /* Forces text to center */
+        
+        /* THE CRITICAL CENTERING RULES */
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
+        text-align: center !important;
+        
         white-space: nowrap !important;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.3) !important;
         transition: all 0.3s ease;
@@ -95,7 +100,7 @@ st.markdown(f"""
         background: linear-gradient(180deg, rgba(55,55,55,1) 0%, rgba(35,35,35,1) 100%) !important;
     }}
 
-    .breather-wrapper {{ text-align: center; margin: 25px 0; }}
+    .breather-wrapper {{ text-align: center; margin: 25px 0; width: 100%; }}
     .breather-circle {{
         width: 45px; height: 45px; border: 2px solid {soft_blue};
         border-radius: 50%; margin: 0 auto 15px auto;
@@ -104,6 +109,7 @@ st.markdown(f"""
     }}
     .breather-text {{ 
         font-size: 14px !important; letter-spacing: 2px; color: #FFFFFF; font-weight: 300; opacity: 0.9;
+        text-align: center !important; width: 100%; display: block;
     }}
     
     @keyframes breathe-426 {{
@@ -114,7 +120,7 @@ st.markdown(f"""
     }}
 
     textarea {{ background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; text-align: center !important; border-radius: 8px !important; }}
-    .footer-text {{ font-size: 10px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #333; padding: 20px; width: 100%; }}
+    .footer-text {{ font-size: 10px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #333; padding: 20px; width: 100%; text-align: center; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -179,26 +185,24 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# MARKET, VISION, FAQ, INFO (Full Content Restoration)
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     st.write("### Grounding Objects")
     st.write("**Starter Ritual:** ₹2,499  \n**Master Sanctuary:** ₹4,999")
-    st.write("Authentic beads, yantras, and grounding stones for physical focus.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### Ground | Release | Reflect")
-    st.write("A bridge between technology and stillness. We use AI not to distract, but to hold space for your reflection.")
+    st.write("A bridge between technology and stillness.")
 
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("**Privacy:** Data is session-only.  \n**Sounds:** Professionally curated focus frequencies.")
+    st.write("**Privacy:** Data is session-only.")
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
-    st.write("Wellness companion only. No medical, psychological, or psychiatric advice provided.")
+    st.write("Wellness companion only.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
