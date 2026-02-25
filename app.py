@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE ULTIMATE LAYOUT CSS ---
+# --- 5. THE DESIGN CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -33,7 +33,7 @@ st.markdown(f"""
     .block-container {{
         max-width: 600px !important;
         margin: auto;
-        padding-top: 3rem !important;
+        padding-top: 2.5rem !important;
     }}
 
     .main-title {{
@@ -42,14 +42,13 @@ st.markdown(f"""
         text-transform: uppercase; width: 100%;
     }}
 
-    /* SECTION HEADERS */
     .section-header {{
         font-size: 16px !important; font-weight: 400 !important; letter-spacing: 4px !important;
         text-transform: uppercase; margin-top: 25px !important; margin-bottom: 12px !important;
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* GRID: 2px Gap Between Slabs */
+    /* GRID CONTROL */
     [data-testid="stHorizontalBlock"] {{
         gap: 2px !important; 
         display: flex !important;
@@ -68,7 +67,7 @@ st.markdown(f"""
         color: {txt} !important; 
         border: 1px solid #333 !important; 
         border-radius: 4px !important; 
-        padding-left: 12px !important; padding-right: 12px !important;
+        padding: 0 12px !important;
         min-height: 40px !important; height: 40px !important;
         width: 100% !important; font-size: 12px !important; 
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.3) !important;
@@ -78,17 +77,14 @@ st.markdown(f"""
 
     .stButton>button:hover {{ border-color: {soft_blue} !important; }}
 
-    /* TOP BREATHER PLACEMENT */
+    /* TOP BREATHER */
     .breather-wrapper {{ text-align: center; margin: 10px 0 25px 0; width: 100%; }}
     .breather-circle {{
         width: 45px; height: 45px; border: 2px solid {soft_blue};
         border-radius: 50%; margin: 0 auto 10px auto;
         animation: breathe-426 12s infinite ease-in-out;
-        box-shadow: 0 0 15px rgba(91, 150, 178, 0.2);
     }}
-    .breather-text {{ 
-        font-size: 14px !important; letter-spacing: 2px; color: #FFFFFF; font-weight: 300; opacity: 0.9;
-    }}
+    .breather-text {{ font-size: 14px !important; letter-spacing: 2px; color: #FFFFFF; font-weight: 300; opacity: 0.9; }}
     
     @keyframes breathe-426 {{
         0% {{ transform: scale(0.95); opacity: 0.4; }}
@@ -97,15 +93,15 @@ st.markdown(f"""
         100% {{ transform: scale(0.95); opacity: 0.4; }}    
     }}
 
-    textarea {{ background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; border-radius: 8px !important; }}
-    .footer-text {{ font-size: 10px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #333; padding: 20px; width: 100%; text-align: center; }}
+    textarea {{ background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; border-radius: 8px !important; text-align: center !important; }}
+    .footer-text {{ font-size: 10px; opacity: 0.4; margin-top: 60px; border-top: 1px solid #333; padding: 20px; width: 100%; text-align: center; }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 6. NAVIGATION ---
 st.markdown(f"<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 
-# THE BREATHER (Now immediately under title)
+# THE BREATHER
 st.markdown(f"""
     <div class='breather-wrapper'>
         <div class='breather-circle'></div>
@@ -113,9 +109,9 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
+# Main Nav Row (Reduced to 3 core items)
 nav_row = st.columns(3)
-nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision"), ("FAQ", "FAQ"), ("Info", "Info")]
-
+nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision")]
 for i, (label, target) in enumerate(nav_list):
     with nav_row[i % 3]:
         if st.button(label, key=f"n_{label}"):
@@ -123,15 +119,9 @@ for i, (label, target) in enumerate(nav_list):
 
 # --- 7. PAGES ---
 if st.session_state.current_page == "Journal":
-    st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
-    m_cols = st.columns(3)
-    moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
-    for i, lab in enumerate(moods):
-        with m_cols[i % 3]:
-            if st.button(lab, key=f"m_{lab}"):
-                st.session_state.theme = "Midnight"; st.rerun()
-
+    # 1. Ambience (Moved up)
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
+    cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
     aud_cols = st.columns(3)
     sound_list = list(sounds.keys())
@@ -142,12 +132,14 @@ if st.session_state.current_page == "Journal":
 
     if st.session_state.active_audio:
         st.write(f"~ {st.session_state.audio_label} ~")
-        st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
+        st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
-    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    # 2. Reflection Inputs
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     audio_rec = st.audio_input("Voice Note")
     text_msg = st.text_area("Record reflection...", height=90)
     
+    # 3. CONSULT GUIDE (Primary Action)
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("..."):
@@ -161,18 +153,43 @@ if st.session_state.current_page == "Journal":
                     st.rerun()
                 except: st.error("Resting.")
 
+    # 4. ENERGY (Moved below Consult Guide)
+    st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
+    m_cols = st.columns(3)
+    moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
+    for i, lab in enumerate(moods):
+        with m_cols[i % 3]:
+            if st.button(lab, key=f"m_{lab}"):
+                st.session_state.theme = "Midnight" if i < 2 else "Peaceful"; st.rerun()
+
+    # 5. Journal Responses
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
+# REST OF PAGES
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     st.write("### Grounding Objects")
-    st.write("**Starter Ritual:** ₹2,499  \n**Master Sanctuary:** ₹4,999")
+    st.write("**Starter Ritual:** ₹2,499 | **Master Sanctuary:** ₹4,999")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### Ground | Release | Reflect")
-    st.write("A bridge between technology and stillness.")
 
-st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
+# FOOTER NAVIGATION (FAQ & INFO)
+st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+footer_cols = st.columns(2)
+with footer_cols[0]:
+    if st.button("FAQ", key="foot_faq"): st.session_state.current_page = "FAQ"; st.rerun()
+with footer_cols[1]:
+    if st.button("INFO", key="foot_info"): st.session_state.current_page = "Info"; st.rerun()
+
+if st.session_state.current_page == "FAQ":
+    st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
+    st.write("Privacy focus. Data stays in session.")
+elif st.session_state.current_page == "Info":
+    st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
+    st.write("Wellness companion only.")
+
+st.markdown("<div class='footer-text'>Sukoon is a wellness tool. Not a medical substitute.</div>", unsafe_allow_html=True)
