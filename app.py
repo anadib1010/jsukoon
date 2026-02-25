@@ -26,7 +26,7 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-1.5-flash-latest")
         # The Ping Test
         model.generate_content("Ping") 
         st.toast("✅ Brain is Active", icon="🧠")
