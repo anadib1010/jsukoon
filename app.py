@@ -25,13 +25,13 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE SYMMETRICAL SLAB CSS ---
+# --- 5. THE 580px PRECISION CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
     .block-container {{
-        max-width: 580px !important;
+        max-width: 580px !important; /* THE MAX PX WIDTH */
         margin: auto;
         padding-top: 3.5rem !important; 
     }}
@@ -52,39 +52,27 @@ st.markdown(f"""
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
+    /* THE SYMMETRICAL SLAB (34px Fixed Height) */
     [data-testid="stHorizontalBlock"] {{
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 2px !important; 
-        width: 100% !important;
+        display: grid !important; grid-template-columns: repeat(3, 1fr) !important;
+        gap: 2px !important; width: 100% !important;
     }}
 
-    /* THE SLAB (BUTTON BOX) */
     .stButton>button {{ 
-        background-color: {btn_bg} !important; 
-        color: {txt} !important; 
-        border: 1px solid #2A2A2A !important; 
-        border-radius: 2px !important; 
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-        min-height: 34px !important;
-        height: 34px !important;
-        width: 100% !important;
-        font-size: 11px !important; 
-        white-space: nowrap !important;
-        transition: all 0.2s ease;
+        background-color: {btn_bg} !important; color: {txt} !important; 
+        border: 1px solid #2A2A2A !important; border-radius: 2px !important; 
+        padding-left: 10px !important; padding-right: 10px !important;
+        min-height: 34px !important; height: 34px !important;
+        width: 100% !important; font-size: 11px !important; 
+        white-space: nowrap !important; transition: all 0.2s ease;
     }}
 
-    .stButton>button:hover {{
-        border-color: {soft_blue} !important;
-    }}
+    .stButton>button:hover {{ border-color: {soft_blue} !important; }}
 
     .breather-wrapper {{ text-align: center; margin: 20px 0; }}
     .breather-circle {{
-        width: 40px; height: 40px;
-        border: 2px solid {soft_blue};
-        border-radius: 50%;
-        margin: 0 auto 10px auto;
+        width: 40px; height: 40px; border: 2px solid {soft_blue};
+        border-radius: 50%; margin: 0 auto 10px auto;
         animation: breathe-426 12s infinite ease-in-out;
     }}
     
@@ -95,8 +83,17 @@ st.markdown(f"""
         100% {{ transform: scale(0.95); opacity: 0.4; }}    
     }}
 
-    textarea {{ background: {btn_bg} !important; color: {soft_blue} !important; border: 1px solid #2A2A2A !important; text-align: center !important; }}
+    textarea {{ background: {btn_bg} !important; color: {soft_blue} !important; border: 1px solid #2A2A2A !important; text-align: center !important; border-radius: 4px !important; }}
+    
     .footer-text {{ font-size: 9px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #2A2A2A; padding: 15px; width: 100%; }}
+    
+    /* Journal Info Entry Styling */
+    div[data-testid="stNotification"] {{
+        background-color: {btn_bg} !important;
+        border: 1px solid #2A2A2A !important;
+        color: {txt} !important;
+        border-radius: 4px !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -137,7 +134,7 @@ if st.session_state.current_page == "Journal":
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    audio_rec = st.audio_input("Voice Note")
+    audio_rec = st.audio_input("Voice")
     text_msg = st.text_area("Record reflection...", height=80)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
@@ -160,21 +157,21 @@ elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
     st.write("### Grounding Objects")
     st.write("**Starter Ritual:** ₹2,499  \n**Master Sanctuary:** ₹4,999")
-    st.write("Hand-selected beads, yantras, and grounding stones for physical focus.")
+    st.write("Authentic beads, yantras, and grounding stones for physical focus.")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("### Ground | Release | Reflect")
-    st.write("Sukoon is designed to be a bridge between the noise of daily technology and the silence of inner presence. We use AI not to distract, but to hold space for your reflection.")
+    st.write("A bridge between technology and stillness. We use AI to hold space for your reflection.")
 
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("**Privacy:** No data is stored between sessions.  \n**Sounds:** Professionally curated for high-fidelity focus.")
+    st.write("**Privacy:** Data is session-only.  \n**Sounds:** Curated frequencies.")
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("### Disclaimer")
-    st.write("Wellness companion only. No medical, psychological, or psychiatric advice provided. Not a substitute for professional health services.")
+    st.write("Wellness companion. No medical or psychiatric advice provided.")
 
 st.markdown("<div class='footer-text'>Wellness tool. Not medical.</div>", unsafe_allow_html=True)
