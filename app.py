@@ -25,7 +25,7 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. "NANA BANANA" PRECISION CSS ---
+# --- 5. "SLEEK SLAB" CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
@@ -48,27 +48,30 @@ st.markdown(f"""
 
     .section-header {{
         font-size: 13px !important; font-weight: 300 !important; letter-spacing: 3px !important;
-        text-transform: uppercase; margin-top: 25px !important; margin-bottom: 8px !important;
+        text-transform: uppercase; margin-top: 20px !important; margin-bottom: 5px !important;
         text-align: center; width: 100%; color: {soft_blue} !important;
     }}
 
-    /* THE GRID: Ultra-Tight 2px Gaps */
+    /* THE GRID: Ultra-Tight Horizontal Spacing */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 2px !important; /* Precision gap as requested */
+        gap: 2px !important; 
         width: 100% !important;
     }}
 
-    /* EQUAL SIZE RECTANGULAR BUTTONS */
+    /* SLENDER RECTANGULAR BUTTONS */
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid #2A2A2A !important; 
-        border-radius: 4px !important; /* Subtle rounding for a rectangular feel */
+        border-radius: 2px !important; /* Sharper corners for a slab look */
         width: 100% !important;
-        padding: 12px 2px !important; 
-        min-height: 45px !important;
+        
+        /* THE FIX: Reduced Height & Sideways Width */
+        padding: 4px 0px !important; 
+        min-height: 32px !important; 
+        
         font-size: 11px !important; 
         font-weight: 400 !important;
         white-space: nowrap !important;
@@ -81,34 +84,16 @@ st.markdown(f"""
         background-color: #252525 !important;
     }}
 
-    /* SYNCED COLORS FOR INPUTS */
-    textarea {{ 
-        background: {btn_bg} !important; 
-        color: {soft_blue} !important; /* Synced color */
-        border: 1px solid #2A2A2A !important; 
-        text-align: center !important;
-        border-radius: 4px !important;
-        margin-top: 5px;
-    }}
-    
-    /* Voice Input Styling Sync */
-    [data-testid="stAudioInput"] {{
-        border: 1px solid #2A2A2A !important;
-        border-radius: 4px !important;
-        background: {btn_bg} !important;
-    }}
-
-    /* SMALLER BREATHER RING */
-    .breather-wrapper {{ text-align: center; margin: 25px 0; }}
+    /* BREATHER RING */
+    .breather-wrapper {{ text-align: center; margin: 20px 0; }}
     .breather-circle {{
-        width: 45px; height: 45px;
+        width: 40px; height: 40px;
         border: 2px solid {soft_blue};
         border-radius: 50%;
-        margin: 0 auto 15px auto;
+        margin: 0 auto 10px auto;
         animation: breathe-426 12s infinite ease-in-out;
-        box-shadow: 0 0 10px rgba(91, 150, 178, 0.2);
     }}
-    .breather-text {{ font-size: 9px; letter-spacing: 2px; color: {txt}; opacity: 0.5; }}
+    .breather-text {{ font-size: 8px; letter-spacing: 2px; color: {txt}; opacity: 0.5; }}
     
     @keyframes breathe-426 {{
         0% {{ transform: scale(0.95); opacity: 0.4; }}
@@ -117,7 +102,15 @@ st.markdown(f"""
         100% {{ transform: scale(0.95); opacity: 0.4; }}    
     }}
 
-    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.2rem !important; }}
+    textarea {{ 
+        background: {btn_bg} !important; 
+        color: {soft_blue} !important; 
+        border: 1px solid #2A2A2A !important; 
+        text-align: center !important;
+        border-radius: 4px !important;
+    }}
+    
+    [data-testid="stVerticalBlock"] {{ align-items: center !important; text-align: center !important; gap: 0.1rem !important; }}
     .footer-text {{ font-size: 9px; opacity: 0.4; margin-top: 40px; border-top: 1px solid #2A2A2A; padding: 15px; width: 100%; }}
     </style>
     """, unsafe_allow_html=True)
@@ -132,12 +125,10 @@ for i, (label, target) in enumerate(nav_list):
         if st.button(label, key=f"n_{label}"):
             st.session_state.current_page = target; st.rerun()
 
-st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
 # --- 7. PAGES ---
-
 if st.session_state.current_page == "Journal":
-    # Energy
     st.markdown("<div class='section-header'>ENERGY</div>", unsafe_allow_html=True)
     m_cols = st.columns(3)
     moods = ["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]
@@ -146,15 +137,8 @@ if st.session_state.current_page == "Journal":
             if st.button(lab, key=f"m_{lab}"):
                 st.session_state.theme = "Midnight"; st.rerun()
 
-    # BREATHER
-    st.markdown(f"""
-        <div class='breather-wrapper'>
-            <div class='breather-circle'></div>
-            <div class='breather-text'>INHALE 4s • HOLD 2s • EXHALE 6s</div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div class='breather-wrapper'><div class='breather-circle'></div><div class='breather-text'>4-2-6 RHYTHM</div></div>""", unsafe_allow_html=True)
 
-    # Ambience
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     cdn = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/"
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -169,11 +153,9 @@ if st.session_state.current_page == "Journal":
         st.write(f"~ {st.session_state.audio_label} ~")
         st.audio(f"{cdn}{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    
-    # INPUTS
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     audio_rec = st.audio_input("Voice")
-    text_msg = st.text_area("Record reflection...", height=100)
+    text_msg = st.text_area("Record reflection...", height=80)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
@@ -191,22 +173,17 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# Other pages (Preserved with the same deck style)
+# Pages below remain safe and formatted
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>MARKET</div>", unsafe_allow_html=True)
-    m1, m2 = st.columns(2)
-    with m1: st.info("Starter Ritual")
-    with m2: st.info("Master Sanctuary")
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Connect to Order</a>", unsafe_allow_html=True)
-
+    st.write("Starter Ritual | Master Sanctuary")
+    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>Order</a>", unsafe_allow_html=True)
 elif st.session_state.current_page == "Vision":
     st.markdown("<div class='section-header'>VISION</div>", unsafe_allow_html=True)
     st.write("Ground | Release | Reflect")
-
 elif st.session_state.current_page == "FAQ":
     st.markdown("<div class='section-header'>FAQ</div>", unsafe_allow_html=True)
-    st.write("Data is session-only.")
-
+    st.write("Privacy focus.")
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INFO</div>", unsafe_allow_html=True)
     st.write("Wellness companion.")
