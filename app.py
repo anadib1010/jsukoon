@@ -25,38 +25,42 @@ api_key = os.environ.get("GEMINI_API_KEY")
 model = genai.GenerativeModel("gemini-1.5-flash") if api_key else None
 if api_key: genai.configure(api_key=api_key)
 
-# --- 5. THE WIDE-SPAN CSS ---
+# --- 5. DYNAMIC RESPONSIVE CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
     
-    /* Expand the main container to allow buttons to be longer sideways */
+    /* DESKTOP: Keep it tight in the middle | MOBILE: Spread wide */
     .block-container {{
-        max-width: 95% !important;
+        max-width: 550px !important; /* Perfect width for desktop aesthetics */
         padding-left: 1rem !important;
         padding-right: 1rem !important;
+        margin: auto;
     }}
 
-    /* Force 3 Columns with very tight horizontal gaps */
+    @media (max-width: 640px) {{
+        .block-container {{
+            max-width: 98% !important; /* Spreads wide on mobile for your long buttons */
+        }}
+    }}
+
+    /* Forced 3-Column Grid */
     [data-testid="stHorizontalBlock"] {{
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 6px !important; /* Tight gap to let buttons stretch longer */
+        gap: 6px !important;
         width: 100% !important;
     }}
 
-    /* Wide Button Styling */
+    /* Sleek, Wide Buttons */
     .stButton>button {{ 
         background-color: {btn_bg} !important; 
         color: {txt} !important; 
         border: 1px solid {soft_blue} !important; 
         border-radius: 8px !important; 
-        
-        /* Horizontal stretch */
         width: 100% !important;
         padding: 6px 2px !important; 
-        min-height: 38px !important; /* Reset to a cleaner, non-tall height */
-        
+        min-height: 38px !important;
         font-size: 11px !important; 
         white-space: nowrap !important;
         margin: 0px !important;
@@ -80,7 +84,7 @@ for i, (label, target) in enumerate(nav_list):
 
 st.markdown("---")
 
-# --- 7. PAGES ---
+# --- 7. JOURNAL PAGE ---
 if st.session_state.current_page == "Journal":
     st.write("Energy Check")
     m_cols = st.columns(3)
@@ -121,12 +125,12 @@ if st.session_state.current_page == "Journal":
                     resp = model.generate_content(parts).text
                     st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp})
                     st.rerun()
-                except: st.error("Pausing.")
+                except: st.error("The Guide is pausing.")
 
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
 
-# (Rest of pages kept compact)
+# (Rest of pages)
 elif st.session_state.current_page == "Market":
     st.write("### Grounding Objects")
     st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='color:{soft_blue};'>WhatsApp Order</a>", unsafe_allow_html=True)
