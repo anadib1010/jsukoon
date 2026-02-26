@@ -20,30 +20,25 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 # --- 3. THEME ---
 bg, txt = "#121212", "#E0E0E0"
 
-# --- 4. BRAIN SETUP ---
+# --- 4. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    try:
-        model = genai.GenerativeModel("gemini-2.5-flash")
-    except:
-        model = None
+    for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]:
+        try:
+            temp_model = genai.GenerativeModel(m_name)
+            temp_model.generate_content("Ping", generation_config={"max_output_tokens": 1})
+            model = temp_model
+            break 
+        except: continue
 
 # --- 5. DESIGN CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
+    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4rem !important; text-align: center !important; }}
     
-    /* FIX: Added padding-top to prevent title from cutting at the top */
-    .block-container {{ 
-        max-width: 600px !important; 
-        margin: auto; 
-        padding-top: 4rem !important; 
-        text-align: center !important; 
-    }}
-    
-    /* 4-2-6 BREATHING ANIMATION */
     @keyframes pulse426 {{
         0%   {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
         33%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }}
@@ -57,19 +52,9 @@ st.markdown(f"""
         box-shadow: 0 0 25px rgba(91, 150, 178, 0.5);
     }}
 
-    .main-title {{ 
-        text-align: center; 
-        letter-spacing: 12px; 
-        font-weight: 200; 
-        font-size: 2.5rem; 
-        color: #FFFFFF; 
-        text-transform: uppercase; 
-        margin-top: 0px; 
-    }}
-    
+    .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; }}
     .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
     
-    /* NAV BUTTONS */
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
         color: {txt} !important; border: 1px solid #444 !important; border-radius: 4px !important; 
@@ -94,7 +79,8 @@ st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
 nav_row = st.columns(3)
-for i, (lab, tar) in enumerate([("Journal", "Journal"), ("Market", "Market"), ("Info & FAQ", "Info")]):
+nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Info & FAQ", "Info")]
+for i, (lab, tar) in enumerate(nav_list):
     with nav_row[i]:
         if st.button(lab, key=f"nav_{lab}"): st.session_state.current_page = tar; st.rerun()
 
@@ -111,23 +97,32 @@ if st.session_state.current_page == "Journal":
         st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    
-    # RE-ADDED: Microphone Option
-    voice_input = st.audio_input("Speak your thoughts")
-    text_msg = st.text_area("Or type your reflection...", height=100)
+    voice_input = st.audio_input("Record your thoughts")
+    text_msg = st.text_area("Or type your reflection...", height=150)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
-            with st.spinner("Processing..."):
-                # Handle Voice or Text
-                content_to_send = text_msg if text_msg else "I am practicing silence."
-                if voice_input:
-                    # In a real scenario, you'd send the audio bytes for transcription
-                    # Here we treat the presence of voice as a prompt for the mentor
-                    content_to_send = "The user has recorded a voice reflection. Please provide a grounding response."
-                
-                resp = model.generate_content(["You are a Sukoon Mentor. Max 3 sentences. Focus on sensory grounding.", content_to_send])
+            with st.spinner("Channeling Wisdom..."):
+                context = (
+                    "You are the Sukoon Mentor. If a user shares a struggle regarding money, health, love, or career, "
+                    "validate their specific pain. Provide a thoughtful, long-form, practical perspective. "
+                    "Explain that a stable mind is necessary for right action. End by guiding them to hold "
+                    "their beads/stone and follow the 4-2-6 breathing rhythm to clear their mindset."
+                )
+                user_content = text_msg if text_msg else "I am seeking silence."
+                resp = model.generate_content([context, user_content])
                 st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
+                
+                # SCRIPTED VOICE OUTPUT
+                clean_text = resp.text.replace('"', "'").replace("\n", " ")
+                st.markdown(f"""
+                    <script>
+                        var msg = new SpeechSynthesisUtterance("{clean_text}");
+                        msg.rate = 0.85; 
+                        msg.pitch = 0.9;
+                        window.speechSynthesis.speak(msg);
+                    </script>
+                """, unsafe_allow_html=True)
                 st.rerun()
 
     st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
@@ -138,6 +133,10 @@ if st.session_state.current_page == "Journal":
 
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
+        # RE-SPEAK BUTTON FOR HISTORY
+        if st.button(f"Listen Again ({entry['time']})", key=f"sp_{entry['time']}"):
+            clean_hist = entry['ai'].replace('"', "'").replace("\n", " ")
+            st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_hist}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
@@ -158,21 +157,21 @@ elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
     faqs = [
         ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers."),
-        ("What is the 4-2-6 Rhythm?", "It is a breathing pattern (Inhale 4s, Hold 2s, Exhale 6s) designed to reduce stress."),
+        ("What is the 4-2-6 Rhythm?", "It is a breathing pattern designed to reduce stress and clear the mind."),
         ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being."),
-        ("Are the objects religious?", "No. They are tactile grounding tools intended only for sensory focus.")
+        ("Are the objects religious?", "No. They are tactile grounding tools intended for sensory focus.")
     ]
     for q, a in faqs:
         st.markdown(f"<div class='faq-q'>{q}</div><div class='faq-a'>{a}</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>LEGAL & ETHICAL DISCLAIMER</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='disclaimer-box'>
-        <b>SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for personal wellness. 
+        <b>SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for wellness. 
         <br><br>
-        <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual or religious claims regarding physical objects. They are tactile tools for focus.
+        <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual claims regarding physical objects. They are tactile tools for focus.
         <br><br>
-        <b>NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. It is not intended to diagnose or treat medical conditions.
+        <b>NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. Not intended to diagnose or treat medical conditions.
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown("<div style='font-size:10px; opacity:0.3;'>Sukoon v77.0 | A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size:10px; opacity:0.3;'>Sukoon v80.0 | A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
