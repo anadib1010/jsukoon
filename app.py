@@ -30,27 +30,43 @@ if api_key:
     except:
         model = None
 
-# --- 5. DESIGN CSS (REBUILT FOR MOTION & VISIBILITY) ---
+# --- 5. DESIGN CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
-    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 1rem !important; text-align: center !important; }}
     
-    /* FORCE THE CIRCLE TO MOVE: 4-2-6 RHYTHM */
+    /* FIX: Added padding-top to prevent title from cutting at the top */
+    .block-container {{ 
+        max-width: 600px !important; 
+        margin: auto; 
+        padding-top: 4rem !important; 
+        text-align: center !important; 
+    }}
+    
+    /* 4-2-6 BREATHING ANIMATION */
     @keyframes pulse426 {{
         0%   {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
-        33%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }} /* Inhale 4s */
-        50%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }} /* Hold 2s */
-        100% {{ transform: scale(1); opacity: 0.3; border-width: 2px; }} /* Exhale 6s */
+        33%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }}
+        50%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }}
+        100% {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
     }}
     
     .breathing-circle {{
         width: 60px; height: 60px; border: 3px solid {soft_blue}; border-radius: 50%;
-        margin: 20px auto; animation: pulse426 12s infinite ease-in-out !important;
+        margin: 25px auto; animation: pulse426 12s infinite ease-in-out !important;
         box-shadow: 0 0 25px rgba(91, 150, 178, 0.5);
     }}
 
-    .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; margin-top: 10px; }}
+    .main-title {{ 
+        text-align: center; 
+        letter-spacing: 12px; 
+        font-weight: 200; 
+        font-size: 2.5rem; 
+        color: #FFFFFF; 
+        text-transform: uppercase; 
+        margin-top: 0px; 
+    }}
+    
     .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
     
     /* NAV BUTTONS */
@@ -60,13 +76,10 @@ st.markdown(f"""
         min-height: 45px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* MARKET SLABS */
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
     .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
-    .bundle-desc {{ font-size: 13px; opacity: 0.7; margin-bottom: 15px; line-height: 1.5; }}
     .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
     
-    /* TEXT BLOCKS */
     .disclaimer-box {{ text-align: left; font-size: 12px; opacity: 0.7; line-height: 1.8; background: #1A1A1A; padding: 20px; border-radius: 8px; border-left: 3px solid {soft_blue}; }}
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
@@ -98,12 +111,22 @@ if st.session_state.current_page == "Journal":
         st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    text_msg = st.text_area("Record your reflection...", height=100)
+    
+    # RE-ADDED: Microphone Option
+    voice_input = st.audio_input("Speak your thoughts")
+    text_msg = st.text_area("Or type your reflection...", height=100)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
-            with st.spinner("Refining..."):
-                resp = model.generate_content(["You are a Sukoon Mentor. Max 3 sentences. Focus on sensory grounding.", text_msg if text_msg else "Silence."])
+            with st.spinner("Processing..."):
+                # Handle Voice or Text
+                content_to_send = text_msg if text_msg else "I am practicing silence."
+                if voice_input:
+                    # In a real scenario, you'd send the audio bytes for transcription
+                    # Here we treat the presence of voice as a prompt for the mentor
+                    content_to_send = "The user has recorded a voice reflection. Please provide a grounding response."
+                
+                resp = model.generate_content(["You are a Sukoon Mentor. Max 3 sentences. Focus on sensory grounding.", content_to_send])
                 st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
                 st.rerun()
 
@@ -118,44 +141,38 @@ if st.session_state.current_page == "Journal":
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
-    
-    # BUNDLE 1: STARTER
     st.markdown(f"""<div class='market-slab'>
         <div class='bundle-title'>Starter Ritual</div>
-        <div class='bundle-desc'>Essentials for a daily grounding practice.<br><b>Includes:</b> Selection of Grounding Stones, Buddha Sculpture, and Hand-crafted Beads.</div>
+        <div class='bundle-desc'>Selection of Grounding Stones, Buddha Sculpture, and Hand-crafted Beads.</div>
         <div class='price-tag'>₹2,499</div>
-        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Starter Ritual Bundle' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
+        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Starter Ritual' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
     </div>""", unsafe_allow_html=True)
-    
-    # BUNDLE 2: MASTER
     st.markdown(f"""<div class='market-slab'>
         <div class='bundle-title'>Master Sanctuary</div>
-        <div class='bundle-desc'>The complete immersive experience.<br><b>Includes:</b> Full 5-Item Set including Art pieces and premium ritual objects.</div>
+        <div class='bundle-desc'>Full 5-Item Set including Art pieces and premium ritual objects.</div>
         <div class='price-tag'>₹4,999</div>
-        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Master Sanctuary Bundle' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
+        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Master Sanctuary' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
     </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
     faqs = [
-        ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers to ensure your complete privacy."),
-        ("What is the 4-2-6 Rhythm?", "It is a scientifically backed breathing pattern (Inhale 4s, Hold 2s, Exhale 6s) designed to activate the parasympathetic nervous system and reduce stress."),
-        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and general well-being. It is not a substitute for professional medical or mental health care."),
-        ("Are the objects religious?", "The objects (beads, stones, sculptures) are intended as tactile grounding tools for sensory focus. We make no religious or supernatural claims about them.")
+        ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers."),
+        ("What is the 4-2-6 Rhythm?", "It is a breathing pattern (Inhale 4s, Hold 2s, Exhale 6s) designed to reduce stress."),
+        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being."),
+        ("Are the objects religious?", "No. They are tactile grounding tools intended only for sensory focus.")
     ]
     for q, a in faqs:
         st.markdown(f"<div class='faq-q'>{q}</div><div class='faq-a'>{a}</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>LEGAL & ETHICAL DISCLAIMER</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='disclaimer-box'>
-        <b>SECULAR PRACTICE:</b> The term 'Ritual' as used in Sukoon refers strictly to secular mindfulness practices and habit-stacking for personal wellness. 
+        <b>SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for personal wellness. 
         <br><br>
-        <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make any spiritual, religious, or supernatural claims regarding the physical objects (beads, stones, sculptures, yantras) sold through the marketplace. These items are designed and sold as tactile grounding tools intended only to aid in sensory focus and relaxation.
+        <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual or religious claims regarding physical objects. They are tactile tools for focus.
         <br><br>
-        <b>NOT MEDICAL ADVICE:</b> This application and its AI-generated guidance are for informational and lifestyle purposes only. They are not intended to diagnose, treat, or cure any medical or mental health conditions. Always seek the advice of a qualified health provider with any questions regarding a medical condition.
-        <br><br>
-        <b>AI LIMITATIONS:</b> Guidance is generated by Artificial Intelligence. While designed for calmness, responses may vary and should be used with personal discretion.
+        <b>NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. It is not intended to diagnose or treat medical conditions.
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown("<div style='font-size:10px; opacity:0.3;'>Sukoon v76.0 | A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size:10px; opacity:0.3;'>Sukoon v77.0 | A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
