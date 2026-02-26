@@ -25,59 +25,65 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]:
-        try:
-            temp_model = genai.GenerativeModel(m_name)
-            temp_model.generate_content("Ping", generation_config={"max_output_tokens": 1})
-            model = temp_model
-            break 
-        except: continue
+    try:
+        model = genai.GenerativeModel("gemini-2.5-flash")
+    except:
+        model = None
 
-# --- 5. DESIGN CSS (With Precise 4-2-6 Animation) ---
+# --- 5. DESIGN CSS (REBUILT FOR MOTION & VISIBILITY) ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
-    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 2rem !important; text-align: center !important; }}
+    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 1rem !important; text-align: center !important; }}
     
-    /* 4-2-6 BREATHING MATH (Total 12s) */
-    @keyframes breathe426 {{
-        0%   {{ transform: scale(1); opacity: 0.3; }}      /* Start Inhale */
-        33%  {{ transform: scale(1.7); opacity: 1; }}    /* 4s: Full Inhale (33% of 12s) */
-        50%  {{ transform: scale(1.7); opacity: 1; }}    /* 2s: Hold (to 50% of 12s) */
-        100% {{ transform: scale(1); opacity: 0.3; }}      /* 6s: Full Exhale (to 100%) */
+    /* FORCE THE CIRCLE TO MOVE: 4-2-6 RHYTHM */
+    @keyframes pulse426 {{
+        0%   {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
+        33%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }} /* Inhale 4s */
+        50%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }} /* Hold 2s */
+        100% {{ transform: scale(1); opacity: 0.3; border-width: 2px; }} /* Exhale 6s */
     }}
     
     .breathing-circle {{
-        width: 50px; height: 50px; border: 2px solid {soft_blue}; border-radius: 50%;
-        margin: 0 auto; animation: breathe426 12s infinite ease-in-out;
-        box-shadow: 0 0 20px rgba(91, 150, 178, 0.4);
+        width: 60px; height: 60px; border: 3px solid {soft_blue}; border-radius: 50%;
+        margin: 20px auto; animation: pulse426 12s infinite ease-in-out !important;
+        box-shadow: 0 0 25px rgba(91, 150, 178, 0.5);
     }}
 
-    .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.8rem; color: #FFFFFF; text-transform: uppercase; }}
-    .section-header {{ font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 5px; }}
+    .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; margin-top: 10px; }}
+    .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
     
+    /* NAV BUTTONS */
     .stButton>button {{ 
-        background: linear-gradient(180deg, rgba(45,45,45,1) 0%, rgba(30,30,30,1) 100%) !important; 
-        color: {txt} !important; border: 1px solid #333 !important; border-radius: 4px !important; 
-        min-height: 44px !important; width: 100% !important; font-size: 12px !important;
+        background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
+        color: {txt} !important; border: 1px solid #444 !important; border-radius: 4px !important; 
+        min-height: 45px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    .market-card {{ background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 15px; text-align: left; }}
-    .price-tag {{ color: {soft_blue}; font-weight: bold; font-size: 18px; }}
-    .ritual-prompt {{ font-size: 14px; font-style: italic; color: {soft_blue}; text-align: center; margin: 20px 0; opacity: 0.8; }}
+    /* MARKET SLABS */
+    .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
+    .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
+    .bundle-desc {{ font-size: 13px; opacity: 0.7; margin-bottom: 15px; line-height: 1.5; }}
+    .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
+    
+    /* TEXT BLOCKS */
+    .disclaimer-box {{ text-align: left; font-size: 12px; opacity: 0.7; line-height: 1.8; background: #1A1A1A; padding: 20px; border-radius: 8px; border-left: 3px solid {soft_blue}; }}
+    .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
+    .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
+    
     textarea {{ background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; text-align: center !important; }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 6. HEADER ---
-st.markdown(f"<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-st.markdown(f"<div class='breathing-circle'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:11px; margin-top:15px; opacity:0.6; letter-spacing:3px;'>INHALE (4) • HOLD (2) • EXHALE (6)</div>", unsafe_allow_html=True)
+st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
+st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
 nav_row = st.columns(3)
-for i, (lab, tar) in enumerate([("Journal", "Journal"), ("Market", "Market"), ("Vision", "Vision")]):
+for i, (lab, tar) in enumerate([("Journal", "Journal"), ("Market", "Market"), ("Info & FAQ", "Info")]):
     with nav_row[i]:
-        if st.button(lab, key=f"n_{lab}"): st.session_state.current_page = tar; st.rerun()
+        if st.button(lab, key=f"nav_{lab}"): st.session_state.current_page = tar; st.rerun()
 
 # --- 7. PAGES ---
 
@@ -91,17 +97,13 @@ if st.session_state.current_page == "Journal":
     if st.session_state.active_audio:
         st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
-    st.markdown("<div class='ritual-prompt'>— Sense the support of the surface beneath you —</div>", unsafe_allow_html=True)
-    text_msg = st.text_area("Release your thoughts...", height=100)
+    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    text_msg = st.text_area("Record your reflection...", height=100)
     
-    if st.button("CONSULT GUIDE", key="brain_btn"):
+    if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
-            with st.spinner("Processing..."):
-                recent = st.session_state.energy_history[-3:]
-                is_heavy = len(recent) >= 3 and all(e == "Heavier" for e in recent)
-                context = "You are a Sukoon Mentor. Max 3 sentences. Focus on physical grounding."
-                if is_heavy: context += " User is persistent heavy, be deeply gentle."
-                resp = model.generate_content([context, text_msg if text_msg else "Silence."])
+            with st.spinner("Refining..."):
+                resp = model.generate_content(["You are a Sukoon Mentor. Max 3 sentences. Focus on sensory grounding.", text_msg if text_msg else "Silence."])
                 st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
                 st.rerun()
 
@@ -113,50 +115,47 @@ if st.session_state.current_page == "Journal":
 
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
-        if st.button(f"Speak ({entry['time']})", key=f"sp_{entry['time']}"):
-            st.markdown(f'<script>var m=new SpeechSynthesisUtterance("{entry["ai"]}");m.rate=0.85;window.speechSynthesis.speak(m);</script>', unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
     
-    # Bundle 1
-    st.markdown(f"""<div class='market-card'>
-        <div style='font-size:20px; margin-bottom:5px;'>The Starter Ritual</div>
-        <div style='font-size:13px; opacity:0.7; margin-bottom:10px;'>Includes: Grounding Stones, Buddha Statue, and Meditation Beads.</div>
+    # BUNDLE 1: STARTER
+    st.markdown(f"""<div class='market-slab'>
+        <div class='bundle-title'>Starter Ritual</div>
+        <div class='bundle-desc'>Essentials for a daily grounding practice.<br><b>Includes:</b> Selection of Grounding Stones, Buddha Sculpture, and Hand-crafted Beads.</div>
         <div class='price-tag'>₹2,499</div>
+        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Starter Ritual Bundle' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
     </div>""", unsafe_allow_html=True)
     
-    # Bundle 2
-    st.markdown(f"""<div class='market-card'>
-        <div style='font-size:20px; margin-bottom:5px;'>The Master Sanctuary</div>
-        <div style='font-size:13px; opacity:0.7; margin-bottom:10px;'>Complete 5-Item Set for a fully immersive ritual space.</div>
+    # BUNDLE 2: MASTER
+    st.markdown(f"""<div class='market-slab'>
+        <div class='bundle-title'>Master Sanctuary</div>
+        <div class='bundle-desc'>The complete immersive experience.<br><b>Includes:</b> Full 5-Item Set including Art pieces and premium ritual objects.</div>
         <div class='price-tag'>₹4,999</div>
-    </div>""", unsafe_allow_html=True)
-    
-    st.markdown(f"<a href='https://wa.me/{MY_PHONE}' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:15px; border-radius:5px; text-align:center;'>WHATSAPP TO ORDER</div></a>", unsafe_allow_html=True)
-
-elif st.session_state.current_page == "Vision":
-    st.markdown("<div class='section-header'>THE VISION</div>", unsafe_allow_html=True)
-    st.write("Sukoon is a bridge between the digital and the physical. We believe that true mindfulness requires both mental presence and physical anchors.")
-
-# --- FOOTER & INFO ---
-st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-f_cols = st.columns(2)
-with f_cols[0]:
-    if st.button("FAQ"): st.session_state.current_page = "FAQ"; st.rerun()
-with f_cols[1]:
-    if st.button("INFO"): st.session_state.current_page = "Info"; st.rerun()
-
-if st.session_state.current_page == "Info":
-    st.markdown("<div class='section-header'>LEGAL DISCLAIMER</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div style='text-align:left; font-size:12px; opacity:0.6; line-height:1.6;'>
-        The term 'Ritual' as used in Sukoon refers to secular mindfulness practices and habit-stacking for personal wellness. 
-        <br><br>
-        Sukoon does not make any spiritual, religious, or supernatural claims regarding the physical objects (beads, stones, yantras) sold. 
-        These items are intended as tactile grounding tools only. 
-        <br><br>
-        This app and its contents are not intended to diagnose, treat, or cure any medical or mental health conditions. 
-        Always seek the advice of a qualified health provider with any questions regarding a medical condition.
+        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Master Sanctuary Bundle' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
     </div>""", unsafe_allow_html=True)
 
-st.markdown("<div class='footer-text'>Sukoon: A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
+elif st.session_state.current_page == "Info":
+    st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
+    faqs = [
+        ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers to ensure your complete privacy."),
+        ("What is the 4-2-6 Rhythm?", "It is a scientifically backed breathing pattern (Inhale 4s, Hold 2s, Exhale 6s) designed to activate the parasympathetic nervous system and reduce stress."),
+        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and general well-being. It is not a substitute for professional medical or mental health care."),
+        ("Are the objects religious?", "The objects (beads, stones, sculptures) are intended as tactile grounding tools for sensory focus. We make no religious or supernatural claims about them.")
+    ]
+    for q, a in faqs:
+        st.markdown(f"<div class='faq-q'>{q}</div><div class='faq-a'>{a}</div>", unsafe_allow_html=True)
+
+    st.markdown("<div class='section-header'>LEGAL & ETHICAL DISCLAIMER</div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='disclaimer-box'>
+        <b>SECULAR PRACTICE:</b> The term 'Ritual' as used in Sukoon refers strictly to secular mindfulness practices and habit-stacking for personal wellness. 
+        <br><br>
+        <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make any spiritual, religious, or supernatural claims regarding the physical objects (beads, stones, sculptures, yantras) sold through the marketplace. These items are designed and sold as tactile grounding tools intended only to aid in sensory focus and relaxation.
+        <br><br>
+        <b>NOT MEDICAL ADVICE:</b> This application and its AI-generated guidance are for informational and lifestyle purposes only. They are not intended to diagnose, treat, or cure any medical or mental health conditions. Always seek the advice of a qualified health provider with any questions regarding a medical condition.
+        <br><br>
+        <b>AI LIMITATIONS:</b> Guidance is generated by Artificial Intelligence. While designed for calmness, responses may vary and should be used with personal discretion.
+    </div>""", unsafe_allow_html=True)
+
+st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size:10px; opacity:0.3;'>Sukoon v76.0 | A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
