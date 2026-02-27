@@ -1,5 +1,5 @@
 import streamlit as st
-import streamlit.components.v1 as components # Added for better tracking
+import streamlit.components.v1 as components
 from datetime import datetime
 import os
 import google.generativeai as genai
@@ -11,16 +11,24 @@ REPO_NAME = "jsukoon"
 soft_blue = "#5B96B2" 
 GA_ID = "G-29F4EM37KE"
 
-# --- 2. CONFIG ---
+# --- 2. CONFIG & PWA META TAGS ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
 
-if "private_journal" not in st.session_state: st.session_state.core_journal = []
+# Injecting Meta Tags for Full-Screen PWA Mode
+st.markdown(f"""
+    <head>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="mobile-web-app-capable" content="yes">
+    </head>
+    """, unsafe_allow_html=True)
+
+if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
 
-# --- 3. GOOGLE ANALYTICS (Improved Injection) ---
-# This creates a tiny, invisible frame that forced-fires your tracking ID
+# --- 3. GOOGLE ANALYTICS ---
 components.html(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
     <script>
@@ -48,7 +56,7 @@ if api_key:
 st.markdown(f"""
     <style>
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
-    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4rem !important; text-align: center !important; }}
+    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; }}
     
     @keyframes pulse426 {{
         0%   {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
@@ -69,7 +77,7 @@ st.markdown(f"""
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
         color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
-        min-height: 45px !important; width: 100% !important; font-size: 11px !important;
+        min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
@@ -114,27 +122,20 @@ if st.session_state.current_page == "Journal":
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                context = (
-                    "You are the Sukoon Mentor. If a user shares a struggle regarding money, health, love, or career, "
-                    "validate their specific pain. Provide a thoughtful, long-form, practical perspective. "
-                    "Explain that a stable mind is necessary for right action. End by guiding them to hold "
-                    "their beads/stone and follow the 4-2-6 breathing rhythm to clear their mindset."
-                )
+                context = "You are the Sukoon Mentor. Provide long-form, empathetic wisdom on user's pain (money, love, health). Explain that clarity precedes action. End with 4-2-6 breathing instructions."
                 user_content = text_msg if text_msg else "I am seeking silence."
-                resp = model.generate_content([context, user_content])
-                st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
-                
-                # AUTO-SPEAK
-                clean_text = resp.text.replace('"', "'").replace("\n", " ")
-                st.markdown(f"""
-                    <script>
-                        var msg = new SpeechSynthesisUtterance("{clean_text}");
-                        msg.rate = 0.85; 
-                        msg.pitch = 0.9;
-                        window.speechSynthesis.speak(msg);
-                    </script>
-                """, unsafe_allow_html=True)
-                st.rerun()
+                try:
+                    resp = model.generate_content([context, user_content])
+                    st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
+                    
+                    # AUTO-SPEAK
+                    clean_text = resp.text.replace('"', "'").replace("\n", " ")
+                    st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
+                    st.rerun()
+                except:
+                    st.warning("The Mentor is currently in deep meditation. Please try again later.")
+        else:
+            st.warning("The Mentor is resting. Please try again in an hour.")
 
     st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
     m_cols = st.columns(5)
@@ -164,12 +165,20 @@ elif st.session_state.current_page == "Market":
     </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
+    # NEW: INSTALLATION GUIDE
+    st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px;'>
+        1. Open this link in <b>Safari (iPhone)</b> or <b>Chrome (Android)</b>.<br><br>
+        2. Tap the <b>Share</b> or <b>Menu (⋮)</b> icon.<br><br>
+        3. Select <b>'Add to Home Screen'</b>.<br><br>
+        4. Open Sukoon from your home screen for a <b>Full-Screen experience</b>.
+    </div>""", unsafe_allow_html=True)
+
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
     faqs = [
         ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers."),
         ("What is the 4-2-6 Rhythm?", "It is a breathing pattern designed to reduce stress and clear the mind."),
-        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being."),
-        ("Are the objects religious?", "No. They are tactile grounding tools intended for sensory focus.")
+        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being.")
     ]
     for q, a in faqs:
         st.markdown(f"<div class='faq-q'>{q}</div><div class='faq-a'>{a}</div>", unsafe_allow_html=True)
@@ -179,9 +188,7 @@ elif st.session_state.current_page == "Info":
         <b>SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for wellness. 
         <br><br>
         <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual claims regarding physical objects. They are tactile tools for focus.
-        <br><br>
-        <b>NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. Not intended to diagnose or treat medical conditions.
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v82.0</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v83.0</div>", unsafe_allow_html=True)
