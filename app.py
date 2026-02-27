@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components # Added for better tracking
 from datetime import datetime
 import os
 import google.generativeai as genai
@@ -13,21 +14,22 @@ GA_ID = "G-29F4EM37KE"
 # --- 2. CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
 
-if "private_journal" not in st.session_state: st.session_state.private_journal = []
+if "private_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
 
-# --- 3. GOOGLE ANALYTICS INJECTION ---
-st.markdown(f"""
+# --- 3. GOOGLE ANALYTICS (Improved Injection) ---
+# This creates a tiny, invisible frame that forced-fires your tracking ID
+components.html(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){{dataLayer.push(arguments);}}
         gtag('js', new Date());
-        gtag('config', '{GA_ID}');
+        gtag('config', '{GA_ID}', {{ 'anonymize_ip': true }});
     </script>
-    """, unsafe_allow_html=True)
+    """, height=0)
 
 # --- 4. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
@@ -120,9 +122,9 @@ if st.session_state.current_page == "Journal":
                 )
                 user_content = text_msg if text_msg else "I am seeking silence."
                 resp = model.generate_content([context, user_content])
-                st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
+                st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
                 
-                # VOICE SYNTHESIS
+                # AUTO-SPEAK
                 clean_text = resp.text.replace('"', "'").replace("\n", " ")
                 st.markdown(f"""
                     <script>
@@ -140,7 +142,7 @@ if st.session_state.current_page == "Journal":
         with m_cols[i]:
             if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
-    for entry in reversed(st.session_state.private_journal):
+    for entry in reversed(st.session_state.core_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
         if st.button(f"Listen Again ({entry['time']})", key=f"sp_{entry['time']}"):
             clean_hist = entry['ai'].replace('"', "'").replace("\n", " ")
@@ -182,4 +184,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon v81.0 | Google Analytics: {GA_ID}</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v82.0</div>", unsafe_allow_html=True)
