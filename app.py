@@ -8,6 +8,7 @@ MY_PHONE = "918882850790"
 GITHUB_USER = "anadib1010" 
 REPO_NAME = "jsukoon"
 soft_blue = "#5B96B2" 
+GA_ID = "G-29F4EM37KE"
 
 # --- 2. CONFIG ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
@@ -17,8 +18,16 @@ if "current_page" not in st.session_state: st.session_state.current_page = "Jour
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
 
-# --- 3. THEME ---
-bg, txt = "#121212", "#E0E0E0"
+# --- 3. GOOGLE ANALYTICS INJECTION ---
+st.markdown(f"""
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{GA_ID}');
+    </script>
+    """, unsafe_allow_html=True)
 
 # --- 4. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
@@ -36,7 +45,7 @@ if api_key:
 # --- 5. DESIGN CSS ---
 st.markdown(f"""
     <style>
-    .stApp {{ background-color: {bg} !important; color: {txt} !important; }}
+    .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4rem !important; text-align: center !important; }}
     
     @keyframes pulse426 {{
@@ -57,7 +66,7 @@ st.markdown(f"""
     
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
-        color: {txt} !important; border: 1px solid #444 !important; border-radius: 4px !important; 
+        color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
         min-height: 45px !important; width: 100% !important; font-size: 11px !important;
     }}
     
@@ -113,7 +122,7 @@ if st.session_state.current_page == "Journal":
                 resp = model.generate_content([context, user_content])
                 st.session_state.private_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
                 
-                # SCRIPTED VOICE OUTPUT
+                # VOICE SYNTHESIS
                 clean_text = resp.text.replace('"', "'").replace("\n", " ")
                 st.markdown(f"""
                     <script>
@@ -133,7 +142,6 @@ if st.session_state.current_page == "Journal":
 
     for entry in reversed(st.session_state.private_journal):
         st.info(f"{entry['time']} | {entry['ai']}")
-        # RE-SPEAK BUTTON FOR HISTORY
         if st.button(f"Listen Again ({entry['time']})", key=f"sp_{entry['time']}"):
             clean_hist = entry['ai'].replace('"', "'").replace("\n", " ")
             st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_hist}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
@@ -174,4 +182,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown("<div style='font-size:10px; opacity:0.3;'>Sukoon v80.0 | A Sanctuary for the Modern Mind.</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon v81.0 | Google Analytics: {GA_ID}</div>", unsafe_allow_html=True)
