@@ -81,7 +81,11 @@ st.markdown(f"""
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
     
-    textarea {{ background: #1A1A1A !important; color: {soft_blue} !important; border: 1px solid #333 !important; text-align: center !important; }}
+    /* UPDATED: Text area is now light grey for readability */
+    textarea {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
+    
+    /* NEW: Custom styling for highly readable AI responses */
+    .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 15px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -108,7 +112,6 @@ if st.session_state.current_page == "Journal":
     if st.session_state.active_audio:
         st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
-    # --- NEW: THE ZEN SURFACE ---
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     components.html("""
         <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
@@ -159,14 +162,30 @@ if st.session_state.current_page == "Journal":
     """, height=135)
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    
+    # AUDIO AND TEXT INPUTS
     voice_input = st.audio_input("Record your thoughts")
     text_msg = st.text_area("Or type your reflection...", height=150)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                context = "You are the Sukoon Mentor. Provide long-form, empathetic wisdom on user's pain. End with 4-2-6 breathing instructions."
-                user_content = text_msg if text_msg else "I am seeking silence."
+                # UPDATED PROMPT: Simple English, 2 Paragraphs, Audio Transcription
+                context = """You are the Sukoon Mentor.
+                1. Use very simple, easy-to-understand English.
+                2. Keep your response short: maximum of 2 paragraphs (unless the user explicitly asks for a long response).
+                3. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
+                4. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with "You said: [their transcribed words]". Then give your advice below it."""
+                
+                # Handling the Speech-to-Text logic natively with Gemini
+                if voice_input:
+                    audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
+                    user_content = [audio_part, "Listen to my voice note, transcribe it first, then respond."]
+                elif text_msg:
+                    user_content = text_msg
+                else:
+                    user_content = "I am seeking silence."
+                    
                 try:
                     resp = model.generate_content([context, user_content])
                     st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
@@ -175,7 +194,7 @@ if st.session_state.current_page == "Journal":
                     st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
                     st.rerun()
                 except Exception as e:
-                    st.warning("The Mentor is currently in deep meditation (Quota Limit Reached). Please try again later.")
+                    st.warning("The Mentor is currently in deep meditation. Please try again later.")
         else:
             st.warning("The Mentor is resting. Please try again in an hour.")
 
@@ -185,8 +204,10 @@ if st.session_state.current_page == "Journal":
         with m_cols[i]:
             if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
+    # UPDATED RESPONSE DISPLAY: Highly readable custom box instead of default info box
     for entry in reversed(st.session_state.core_journal):
-        st.info(f"{entry['time']} | {entry['ai']}")
+        formatted_text = entry['ai'].replace('\n', '<br>')
+        st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         if st.button(f"Listen Again ({entry['time']})", key=f"sp_{entry['time']}"):
             clean_hist = entry['ai'].replace('"', "'").replace("\n", " ")
             st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_hist}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
@@ -235,4 +256,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v86.0 | Zen Surface Added</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v87.0 | Accessible Wisdom</div>", unsafe_allow_html=True)
