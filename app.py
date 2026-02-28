@@ -151,7 +151,13 @@ if st.session_state.current_page == "Journal":
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                context = """You are the Sukoon Mentor. Use very simple, easy-to-understand English. Keep response short: max 2 paragraphs. End with 'Inhale 4 - Hold 2 - Exhale 6'. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with 'You said: [their transcribed words]'. Then give your advice below it."""
+                # NEW MULTILINGUAL INSTRUCTIONS
+                context = """You are the Sukoon Mentor. 
+                1. Detect the language the user is speaking or typing. You MUST respond in that exact same language, using its native script (e.g., Devanagari for Hindi).
+                2. Keep the response short: maximum 2 paragraphs. Use simple, easy-to-understand words.
+                3. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, TRANSLATED perfectly into the user's language.
+                4. IMPORTANT: If the user provides an audio recording, transcribe exactly what they said. Start with 'You said: [their transcribed words]' (translated to their language), then give your advice."""
+                
                 try:
                     if voice_input:
                         audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
@@ -209,7 +215,6 @@ if st.session_state.current_page == "Journal":
         components.html(html_button, height=50)
 
 elif st.session_state.current_page == "Focus":
-    # Sub-navigation for the games
     g_col1, g_col2 = st.columns(2)
     with g_col1:
         if st.button("The Release"): st.session_state.active_focus = "Release"; st.rerun()
@@ -396,4 +401,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v92.0 | Dual Focus Modes</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v93.0 | Multilingual Brain</div>", unsafe_allow_html=True)
