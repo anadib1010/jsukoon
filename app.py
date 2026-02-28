@@ -14,7 +14,6 @@ GA_ID = "G-29F4EM37KE"
 # --- 2. CONFIG & PWA META TAGS ---
 st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
 
-# Injecting Meta Tags for Full-Screen PWA Mode
 st.markdown(f"""
     <head>
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,12 +38,11 @@ components.html(f"""
     </script>
     """, height=0)
 
-# --- 4. THE BRAIN SETUP (QUOTA-SAFE FIX) ---
+# --- 4. THE BRAIN SETUP (QUOTA-SAFE) ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    # We simply link the brain quietly. No "Ping" test, saving your 20 daily uses.
     model = genai.GenerativeModel("gemini-2.5-flash")
 
 # --- 5. DESIGN CSS ---
@@ -110,6 +108,56 @@ if st.session_state.current_page == "Journal":
     if st.session_state.active_audio:
         st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
+    # --- NEW: THE ZEN SURFACE ---
+    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+    components.html("""
+        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.4; pointer-events:none; text-align:center;">
+                TOUCH THE SURFACE<br>TO GROUND YOURSELF
+            </div>
+            <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
+        </div>
+        <script>
+            const canvas = document.getElementById('zenCanvas');
+            const ctx = canvas.getContext('2d');
+            let ripples = [];
+            
+            function resize() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < ripples.length; i++) {
+                    let r = ripples[i];
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    r.radius += 0.8;
+                    r.alpha -= 0.01;
+                }
+                ripples = ripples.filter(r => r.alpha > 0);
+                requestAnimationFrame(draw);
+            }
+            
+            document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                ripples.push({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top,
+                    radius: 5,
+                    alpha: 0.8
+                });
+            });
+            draw();
+        </script>
+    """, height=135)
+
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     voice_input = st.audio_input("Record your thoughts")
     text_msg = st.text_area("Or type your reflection...", height=150)
@@ -117,13 +165,12 @@ if st.session_state.current_page == "Journal":
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                context = "You are the Sukoon Mentor. Provide long-form, empathetic wisdom on user's pain (money, love, health). Explain that clarity precedes action. End with 4-2-6 breathing instructions."
+                context = "You are the Sukoon Mentor. Provide long-form, empathetic wisdom on user's pain. End with 4-2-6 breathing instructions."
                 user_content = text_msg if text_msg else "I am seeking silence."
                 try:
                     resp = model.generate_content([context, user_content])
                     st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
                     
-                    # AUTO-SPEAK
                     clean_text = resp.text.replace('"', "'").replace("\n", " ")
                     st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
                     st.rerun()
@@ -188,4 +235,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v85.0 | Legal Complete</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v86.0 | Zen Surface Added</div>", unsafe_allow_html=True)
