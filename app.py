@@ -151,12 +151,13 @@ if st.session_state.current_page == "Journal":
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                # NEW MULTILINGUAL INSTRUCTIONS
+                # UPDATED: Explicit Hinglish Rules
                 context = """You are the Sukoon Mentor. 
-                1. Detect the language the user is speaking or typing. You MUST respond in that exact same language, using its native script (e.g., Devanagari for Hindi).
-                2. Keep the response short: maximum 2 paragraphs. Use simple, easy-to-understand words.
-                3. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, TRANSLATED perfectly into the user's language.
-                4. IMPORTANT: If the user provides an audio recording, transcribe exactly what they said. Start with 'You said: [their transcribed words]' (translated to their language), then give your advice."""
+                1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
+                2. IMPORTANT: If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not reply in pure English.
+                3. Keep the response short: maximum 2 paragraphs. Use simple, easy-to-understand words.
+                4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
+                5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their language/Hinglish, then give your advice."""
                 
                 try:
                     if voice_input:
@@ -191,6 +192,7 @@ if st.session_state.current_page == "Journal":
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         
+        # UPDATED: JavaScript now forces an Indian Accent (en-IN or hi-IN)
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
         <style>
@@ -203,11 +205,23 @@ if st.session_state.current_page == "Journal":
         </style>
         <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
         <script>
+            // Pre-warm the voice engine
+            window.speechSynthesis.getVoices();
+            
             function playVoice() {{
                 window.speechSynthesis.cancel();
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 m.rate = 0.85;
+                
+                // Hunt for an Indian accent in the phone's system
+                var voices = window.speechSynthesis.getVoices();
+                var indianVoice = voices.find(v => v.lang.includes('IN') || v.lang.includes('hi') || v.name.includes('India'));
+                
+                if (indianVoice) {{
+                    m.voice = indianVoice;
+                }}
+                
                 window.speechSynthesis.speak(m);
             }}
         </script>
@@ -401,4 +415,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v93.0 | Multilingual Brain</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v94.0 | Local Voice Fix</div>", unsafe_allow_html=True)
