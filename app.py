@@ -181,12 +181,11 @@ if st.session_state.current_page == "Journal":
         else:
             st.warning("The Mentor is resting. Please try again in an hour.")
 
-    # --- UI UPDATE: Journal History now renders BEFORE the Energy State ---
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
     for entry in reversed(st.session_state.core_journal):
-        # 1. Place Listen Button FIRST
         safe_speech_text = urllib.parse.quote(entry['ai'])
+        # UPDATED: The script now rigorously hunts for local voices and waits for them to load.
         html_button = f"""
         <style>
             .listen-btn {{
@@ -199,27 +198,37 @@ if st.session_state.current_page == "Journal":
         </style>
         <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
         <script>
-            window.speechSynthesis.getVoices();
             function playVoice() {{
                 window.speechSynthesis.cancel();
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 m.rate = 0.85;
-                var voices = window.speechSynthesis.getVoices();
-                var indianVoice = voices.find(v => v.lang.includes('IN') || v.lang.includes('hi') || v.name.includes('India'));
-                if (indianVoice) {{ m.voice = indianVoice; }}
-                window.speechSynthesis.speak(m);
+                m.lang = 'hi-IN'; // Force a Hindi/Indian hint to the browser natively
+                
+                function setVoiceAndSpeak() {{
+                    var voices = window.speechSynthesis.getVoices();
+                    var localVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.name.includes('India') || v.name.includes('Hindi'));
+                    
+                    if (localVoice) {{
+                        m.voice = localVoice;
+                    }}
+                    window.speechSynthesis.speak(m);
+                }}
+
+                if (window.speechSynthesis.getVoices().length === 0) {{
+                    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+                }} else {{
+                    setVoiceAndSpeak();
+                }}
             }}
         </script>
         """
         components.html(html_button, height=50)
 
-        # 2. Place Text Response SECOND
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-    # --- UI UPDATE: Energy State moved to the BOTTOM ---
     st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
     m_cols = st.columns(5)
     for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
@@ -413,4 +422,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v95.0 | Clean UX Flow</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v96.0 | Robust Accent Loader</div>", unsafe_allow_html=True)
