@@ -27,6 +27,7 @@ if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
+if "active_focus" not in st.session_state: st.session_state.active_focus = "Release"
 
 # --- 3. GOOGLE ANALYTICS ---
 components.html(f"""
@@ -92,7 +93,6 @@ st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
-# NEW: Added 'Focus' tab to the navigation
 nav_row = st.columns(4)
 nav_list = [("Journal", "Journal"), ("Focus", "Focus"), ("Market", "Market"), ("Info", "Info")]
 for i, (lab, tar) in enumerate(nav_list):
@@ -208,90 +208,149 @@ if st.session_state.current_page == "Journal":
         """
         components.html(html_button, height=50)
 
-# --- NEW PAGE: FOCUS GAME ---
 elif st.session_state.current_page == "Focus":
-    st.markdown("<div class='section-header'>THE RELEASE</div>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
-    
-    game_html = """
-    <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden;">
-        <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
-            THOUGHTS RELEASED: <span id="scoreVal">0</span>
-        </div>
-        <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-    </div>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let bubbles = [];
-        let score = 0;
+    # Sub-navigation for the games
+    g_col1, g_col2 = st.columns(2)
+    with g_col1:
+        if st.button("The Release"): st.session_state.active_focus = "Release"; st.rerun()
+    with g_col2:
+        if st.button("The Bloom"): st.session_state.active_focus = "Bloom"; st.rerun()
+
+    if st.session_state.active_focus == "Release":
+        st.markdown("<div class='section-header'>THE RELEASE</div>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
         
-        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-        window.addEventListener('resize', resize); resize();
-
-        function createBubble() {
-            bubbles.push({
-                x: Math.random() * (canvas.width - 40) + 20,
-                y: canvas.height + 20,
-                radius: Math.random() * 15 + 15,
-                speed: Math.random() * 0.8 + 0.4,
-                alpha: 0.6,
-                popping: false
-            });
-        }
-
-        setInterval(createBubble, 1200);
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = bubbles.length - 1; i >= 0; i--) {
-                let b = bubbles[i];
-                
-                ctx.beginPath();
-                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                
-                if (b.popping) {
-                    b.radius += 2;
-                    b.alpha -= 0.05;
-                    ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    if (b.alpha <= 0) bubbles.splice(i, 1);
-                } else {
-                    b.y -= b.speed;
-                    ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`;
-                    ctx.fill();
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
-                    if (b.y < -50) bubbles.splice(i, 1); // Remove if off screen
-                }
-            }
-            requestAnimationFrame(draw);
-        }
-
-        canvas.addEventListener('pointerdown', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
+        game_html = """
+        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden;">
+            <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
+                THOUGHTS RELEASED: <span id="scoreVal">0</span>
+            </div>
+            <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+        </div>
+        <script>
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let bubbles = []; let score = 0;
             
-            for (let i = 0; i < bubbles.length; i++) {
-                let b = bubbles[i];
-                if (!b.popping) {
-                    const dist = Math.hypot(clickX - b.x, clickY - b.y);
-                    if (dist < b.radius + 15) { // forgiving hit box
-                        b.popping = true;
-                        score++;
-                        document.getElementById('scoreVal').innerText = score;
-                        break; // Only pop one at a time
+            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+            window.addEventListener('resize', resize); resize();
+
+            function createBubble() {
+                bubbles.push({
+                    x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20,
+                    radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4,
+                    alpha: 0.6, popping: false
+                });
+            }
+            setInterval(createBubble, 1200);
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = bubbles.length - 1; i >= 0; i--) {
+                    let b = bubbles[i];
+                    ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                    
+                    if (b.popping) {
+                        b.radius += 2; b.alpha -= 0.05;
+                        ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke();
+                        if (b.alpha <= 0) bubbles.splice(i, 1);
+                    } else {
+                        b.y -= b.speed;
+                        ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill();
+                        ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
+                        if (b.y < -50) bubbles.splice(i, 1);
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+
+            canvas.addEventListener('pointerdown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+                for (let i = 0; i < bubbles.length; i++) {
+                    let b = bubbles[i];
+                    if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) {
+                        b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break;
+                    }
+                }
+            });
+            draw();
+        </script>
+        """
+        components.html(game_html, height=470)
+
+    elif st.session_state.active_focus == "Bloom":
+        st.markdown("<div class='section-header'>THE BLOOM</div>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the center slowly to grow your light.</p>", unsafe_allow_html=True)
+        
+        bloom_html = """
+        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+            <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+            <div id="bloomMessage" style="position:absolute; z-index:10; color:#FFFFFF; font-family:sans-serif; font-size:14px; letter-spacing:3px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:4px; border:1px solid #5B96B2;">
+            </div>
+        </div>
+        <script>
+            const c = document.getElementById('bloomCanvas');
+            const ctx = c.getContext('2d');
+            const msg = document.getElementById('bloomMessage');
+            let taps = 0;
+            const maxTaps = 6;
+            const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
+
+            function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); }
+            window.addEventListener('resize', resize);
+            
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                const cx = c.width / 2;
+                const cy = c.height / 2;
+                
+                if (taps === 0) {
+                    ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px";
+                    ctx.fillText("TAP TO BLOOM", cx, cy);
+                    return;
+                }
+                
+                for (let i = 1; i <= taps; i++) {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, i * 25, 0, Math.PI * 2);
+                    ctx.strokeStyle = "#5B96B2";
+                    ctx.lineWidth = 1.5;
+                    ctx.globalAlpha = 0.2 + (i * 0.1);
+                    ctx.stroke();
+                    
+                    for (let j = 0; j < 8; j++) {
+                        let angle = (j * Math.PI / 4) + (i * 0.2);
+                        let px = cx + Math.cos(angle) * (i * 25);
+                        let py = cy + Math.sin(angle) * (i * 25);
+                        ctx.beginPath();
+                        ctx.arc(px, py, 4 + i, 0, Math.PI * 2);
+                        ctx.fillStyle = "#5B96B2";
+                        ctx.shadowBlur = 15;
+                        ctx.shadowColor = "#5B96B2";
+                        ctx.fill();
                     }
                 }
             }
-        });
-        
-        draw();
-    </script>
-    """
-    components.html(game_html, height=470)
+            
+            c.addEventListener('pointerdown', () => {
+                if (taps < maxTaps) {
+                    taps++;
+                    draw();
+                    if (taps === maxTaps) {
+                        msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)];
+                        msg.style.opacity = 1;
+                        setTimeout(() => {
+                            msg.style.opacity = 0;
+                            setTimeout(() => { taps = 0; draw(); }, 1500);
+                        }, 3500);
+                    }
+                }
+            });
+            resize();
+        </script>
+        """
+        components.html(bloom_html, height=470)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
@@ -337,4 +396,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v91.0 | Focus Game Added</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v92.0 | Dual Focus Modes</div>", unsafe_allow_html=True)
