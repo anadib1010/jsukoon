@@ -156,7 +156,6 @@ if st.session_state.current_page == "Journal":
                 4. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with 'You said: [their transcribed words]'. Then give your advice below it."""
                 
                 try:
-                    # FIX: Properly formatting the payload as a flat list so the AI doesn't crash
                     if voice_input:
                         audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
                         prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond."]
@@ -166,13 +165,20 @@ if st.session_state.current_page == "Journal":
                         prompt_parts = [context, "I am seeking silence."]
                         
                     resp = model.generate_content(prompt_parts)
-                    st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
+                    
+                    # FIX: Generating a unique microsecond ID for the button key
+                    unique_id = str(datetime.now().timestamp()).replace('.', '')
+                    
+                    st.session_state.core_journal.append({
+                        "time": datetime.now().strftime("%H:%M"), 
+                        "ai": resp.text,
+                        "id": unique_id # Storing the unique ID
+                    })
                     
                     clean_text = resp.text.replace('"', "'").replace("\n", " ")
                     st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
                     st.rerun()
                 except Exception as e:
-                    # FIX: Now showing the ACTUAL error so we can debug if needed
                     st.error(f"Technical Error: {str(e)}")
         else:
             st.warning("The Mentor is resting. Please try again in an hour.")
@@ -186,7 +192,10 @@ if st.session_state.current_page == "Journal":
     for entry in reversed(st.session_state.core_journal):
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
-        if st.button(f"Listen Again ({entry['time']})", key=f"sp_{entry['time']}"):
+        
+        # FIX: Using the unique ID for the button key so it never crashes, even if clicked in the same minute
+        button_key = f"sp_{entry.get('id', entry['time'])}" 
+        if st.button(f"Listen Again ({entry['time']})", key=button_key):
             clean_hist = entry['ai'].replace('"', "'").replace("\n", " ")
             st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_hist}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
 
@@ -234,4 +243,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v88.0 | Audio Transcribe Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v89.0 | Duplicate Key Fix</div>", unsafe_allow_html=True)
