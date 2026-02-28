@@ -81,10 +81,7 @@ st.markdown(f"""
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
     
-    /* UPDATED: Text area is now light grey for readability */
     textarea {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
-    
-    /* NEW: Custom styling for highly readable AI responses */
     .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 15px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
     </style>
     """, unsafe_allow_html=True)
@@ -124,38 +121,21 @@ if st.session_state.current_page == "Journal":
             const canvas = document.getElementById('zenCanvas');
             const ctx = canvas.getContext('2d');
             let ripples = [];
-            
-            function resize() {
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
+            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+            window.addEventListener('resize', resize); resize();
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 for (let i = 0; i < ripples.length; i++) {
                     let r = ripples[i];
-                    ctx.beginPath();
-                    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    r.radius += 0.8;
-                    r.alpha -= 0.01;
+                    ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`; ctx.lineWidth = 2; ctx.stroke();
+                    r.radius += 0.8; r.alpha -= 0.01;
                 }
-                ripples = ripples.filter(r => r.alpha > 0);
-                requestAnimationFrame(draw);
+                ripples = ripples.filter(r => r.alpha > 0); requestAnimationFrame(draw);
             }
-            
             document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
                 const rect = canvas.getBoundingClientRect();
-                ripples.push({
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top,
-                    radius: 5,
-                    alpha: 0.8
-                });
+                ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 5, alpha: 0.8 });
             });
             draw();
         </script>
@@ -163,38 +143,37 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     
-    # AUDIO AND TEXT INPUTS
     voice_input = st.audio_input("Record your thoughts")
     text_msg = st.text_area("Or type your reflection...", height=150)
     
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                # UPDATED PROMPT: Simple English, 2 Paragraphs, Audio Transcription
                 context = """You are the Sukoon Mentor.
                 1. Use very simple, easy-to-understand English.
                 2. Keep your response short: maximum of 2 paragraphs (unless the user explicitly asks for a long response).
                 3. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
-                4. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with "You said: [their transcribed words]". Then give your advice below it."""
+                4. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with 'You said: [their transcribed words]'. Then give your advice below it."""
                 
-                # Handling the Speech-to-Text logic natively with Gemini
-                if voice_input:
-                    audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                    user_content = [audio_part, "Listen to my voice note, transcribe it first, then respond."]
-                elif text_msg:
-                    user_content = text_msg
-                else:
-                    user_content = "I am seeking silence."
-                    
                 try:
-                    resp = model.generate_content([context, user_content])
+                    # FIX: Properly formatting the payload as a flat list so the AI doesn't crash
+                    if voice_input:
+                        audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
+                        prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond."]
+                    elif text_msg:
+                        prompt_parts = [context, text_msg]
+                    else:
+                        prompt_parts = [context, "I am seeking silence."]
+                        
+                    resp = model.generate_content(prompt_parts)
                     st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": resp.text})
                     
                     clean_text = resp.text.replace('"', "'").replace("\n", " ")
                     st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
                     st.rerun()
                 except Exception as e:
-                    st.warning("The Mentor is currently in deep meditation. Please try again later.")
+                    # FIX: Now showing the ACTUAL error so we can debug if needed
+                    st.error(f"Technical Error: {str(e)}")
         else:
             st.warning("The Mentor is resting. Please try again in an hour.")
 
@@ -204,7 +183,6 @@ if st.session_state.current_page == "Journal":
         with m_cols[i]:
             if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
-    # UPDATED RESPONSE DISPLAY: Highly readable custom box instead of default info box
     for entry in reversed(st.session_state.core_journal):
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
@@ -256,4 +234,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v87.0 | Accessible Wisdom</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v88.0 | Audio Transcribe Fix</div>", unsafe_allow_html=True)
