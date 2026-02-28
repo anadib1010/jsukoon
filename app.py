@@ -172,17 +172,20 @@ elif st.session_state.current_page == "Info":
     faqs = [
         ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers."),
         ("What is the 4-2-6 Rhythm?", "It is a breathing pattern designed to reduce stress and clear the mind."),
-        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being.")
+        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being."),
+        ("Are the objects religious?", "No. They are tactile grounding tools intended for sensory focus.")
     ]
     for q, a in faqs:
         st.markdown(f"<div class='faq-q'>{q}</div><div class='faq-a'>{a}</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>LEGAL & ETHICAL DISCLAIMER</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='disclaimer-box'>
-        <b>SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for wellness. 
-        <br><br>
-        <b>NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual claims regarding physical objects. They are tactile tools for focus.
+        <b>1. SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for wellness. <br><br>
+        <b>2. NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual claims regarding physical objects. They are strictly tactile tools for focus. <br><br>
+        <b>3. NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. Not intended to diagnose or treat medical conditions. <br><br>
+        <b>4. DATA PRIVACY:</b> Your journal entries and voice recordings are session-based and are not permanently stored on our servers. <br><br>
+        <b>5. COMMERCE & TAXES:</b> Physical bundle sales are initiated via WhatsApp and are subject to standard shipping timelines and applicable state taxes (including GST).
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v84.0 | Quota Safe</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v85.0 | Legal Complete</div>", unsafe_allow_html=True)
