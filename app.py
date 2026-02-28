@@ -84,7 +84,7 @@ st.markdown(f"""
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
     
     textarea {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
-    .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 15px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
+    .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 5px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -151,7 +151,6 @@ if st.session_state.current_page == "Journal":
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                # UPDATED: Explicit Hinglish Rules
                 context = """You are the Sukoon Mentor. 
                 1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
                 2. IMPORTANT: If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not reply in pure English.
@@ -182,17 +181,11 @@ if st.session_state.current_page == "Journal":
         else:
             st.warning("The Mentor is resting. Please try again in an hour.")
 
-    st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
-    m_cols = st.columns(5)
-    for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
-        with m_cols[i]:
-            if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
-
+    # --- UI UPDATE: Journal History now renders BEFORE the Energy State ---
+    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+    
     for entry in reversed(st.session_state.core_journal):
-        formatted_text = entry['ai'].replace('\n', '<br>')
-        st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
-        
-        # UPDATED: JavaScript now forces an Indian Accent (en-IN or hi-IN)
+        # 1. Place Listen Button FIRST
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
         <style>
@@ -200,33 +193,38 @@ if st.session_state.current_page == "Journal":
                 background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%);
                 color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 12px;
                 font-size: 11px; font-family: sans-serif; cursor: pointer; width: 100%; text-transform: uppercase;
+                margin-bottom: 5px;
             }}
             .listen-btn:active {{ background: #333; }}
         </style>
         <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
         <script>
-            // Pre-warm the voice engine
             window.speechSynthesis.getVoices();
-            
             function playVoice() {{
                 window.speechSynthesis.cancel();
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 m.rate = 0.85;
-                
-                // Hunt for an Indian accent in the phone's system
                 var voices = window.speechSynthesis.getVoices();
                 var indianVoice = voices.find(v => v.lang.includes('IN') || v.lang.includes('hi') || v.name.includes('India'));
-                
-                if (indianVoice) {{
-                    m.voice = indianVoice;
-                }}
-                
+                if (indianVoice) {{ m.voice = indianVoice; }}
                 window.speechSynthesis.speak(m);
             }}
         </script>
         """
         components.html(html_button, height=50)
+
+        # 2. Place Text Response SECOND
+        formatted_text = entry['ai'].replace('\n', '<br>')
+        st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+    # --- UI UPDATE: Energy State moved to the BOTTOM ---
+    st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
+    m_cols = st.columns(5)
+    for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
+        with m_cols[i]:
+            if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
 elif st.session_state.current_page == "Focus":
     g_col1, g_col2 = st.columns(2)
@@ -415,4 +413,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v94.0 | Local Voice Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v95.0 | Clean UX Flow</div>", unsafe_allow_html=True)
