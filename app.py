@@ -39,18 +39,13 @@ components.html(f"""
     </script>
     """, height=0)
 
-# --- 4. THE BRAIN SETUP ---
+# --- 4. THE BRAIN SETUP (QUOTA-SAFE FIX) ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"]:
-        try:
-            temp_model = genai.GenerativeModel(m_name)
-            temp_model.generate_content("Ping", generation_config={"max_output_tokens": 1})
-            model = temp_model
-            break 
-        except: continue
+    # We simply link the brain quietly. No "Ping" test, saving your 20 daily uses.
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
 # --- 5. DESIGN CSS ---
 st.markdown(f"""
@@ -132,8 +127,8 @@ if st.session_state.current_page == "Journal":
                     clean_text = resp.text.replace('"', "'").replace("\n", " ")
                     st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
                     st.rerun()
-                except:
-                    st.warning("The Mentor is currently in deep meditation. Please try again later.")
+                except Exception as e:
+                    st.warning("The Mentor is currently in deep meditation (Quota Limit Reached). Please try again later.")
         else:
             st.warning("The Mentor is resting. Please try again in an hour.")
 
@@ -165,7 +160,6 @@ elif st.session_state.current_page == "Market":
     </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
-    # NEW: INSTALLATION GUIDE
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px;'>
         1. Open this link in <b>Safari (iPhone)</b> or <b>Chrome (Android)</b>.<br><br>
@@ -191,4 +185,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v83.0</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v84.0 | Quota Safe</div>", unsafe_allow_html=True)
