@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import os
 import google.generativeai as genai
-import urllib.parse  # NEW: Used to safely encode the text for the audio player
+import urllib.parse
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -39,7 +39,7 @@ components.html(f"""
     </script>
     """, height=0)
 
-# --- 4. THE BRAIN SETUP (QUOTA-SAFE) ---
+# --- 4. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
@@ -92,8 +92,9 @@ st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
-nav_row = st.columns(3)
-nav_list = [("Journal", "Journal"), ("Market", "Market"), ("Info & FAQ", "Info")]
+# NEW: Added 'Focus' tab to the navigation
+nav_row = st.columns(4)
+nav_list = [("Journal", "Journal"), ("Focus", "Focus"), ("Market", "Market"), ("Info", "Info")]
 for i, (lab, tar) in enumerate(nav_list):
     with nav_row[i]:
         if st.button(lab, key=f"nav_{lab}"): st.session_state.current_page = tar; st.rerun()
@@ -150,12 +151,7 @@ if st.session_state.current_page == "Journal":
     if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
         if model:
             with st.spinner("Channeling Wisdom..."):
-                context = """You are the Sukoon Mentor.
-                1. Use very simple, easy-to-understand English.
-                2. Keep your response short: maximum of 2 paragraphs (unless the user explicitly asks for a long response).
-                3. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
-                4. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with 'You said: [their transcribed words]'. Then give your advice below it."""
-                
+                context = """You are the Sukoon Mentor. Use very simple, easy-to-understand English. Keep response short: max 2 paragraphs. End with 'Inhale 4 - Hold 2 - Exhale 6'. IMPORTANT: If the user provides an audio recording, you MUST start your response by transcribing exactly what they said. Start with 'You said: [their transcribed words]'. Then give your advice below it."""
                 try:
                     if voice_input:
                         audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
@@ -173,9 +169,6 @@ if st.session_state.current_page == "Journal":
                         "ai": resp.text,
                         "id": unique_id
                     })
-                    
-                    # We removed the auto-speak script because mobile browsers block it. 
-                    # The user will now use the dedicated "Listen" button below.
                     st.rerun()
                 except Exception as e:
                     st.error(f"Technical Error: {str(e)}")
@@ -192,7 +185,6 @@ if st.session_state.current_page == "Journal":
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         
-        # FIX: The new Native Web Audio Button (Client-Side)
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
         <style>
@@ -206,7 +198,7 @@ if st.session_state.current_page == "Journal":
         <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
         <script>
             function playVoice() {{
-                window.speechSynthesis.cancel(); // Stops any ongoing speech
+                window.speechSynthesis.cancel();
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 m.rate = 0.85;
@@ -215,6 +207,91 @@ if st.session_state.current_page == "Journal":
         </script>
         """
         components.html(html_button, height=50)
+
+# --- NEW PAGE: FOCUS GAME ---
+elif st.session_state.current_page == "Focus":
+    st.markdown("<div class='section-header'>THE RELEASE</div>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
+    
+    game_html = """
+    <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden;">
+        <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
+            THOUGHTS RELEASED: <span id="scoreVal">0</span>
+        </div>
+        <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let bubbles = [];
+        let score = 0;
+        
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        function createBubble() {
+            bubbles.push({
+                x: Math.random() * (canvas.width - 40) + 20,
+                y: canvas.height + 20,
+                radius: Math.random() * 15 + 15,
+                speed: Math.random() * 0.8 + 0.4,
+                alpha: 0.6,
+                popping: false
+            });
+        }
+
+        setInterval(createBubble, 1200);
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                let b = bubbles[i];
+                
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                
+                if (b.popping) {
+                    b.radius += 2;
+                    b.alpha -= 0.05;
+                    ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    if (b.alpha <= 0) bubbles.splice(i, 1);
+                } else {
+                    b.y -= b.speed;
+                    ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`;
+                    ctx.fill();
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
+                    if (b.y < -50) bubbles.splice(i, 1); // Remove if off screen
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            for (let i = 0; i < bubbles.length; i++) {
+                let b = bubbles[i];
+                if (!b.popping) {
+                    const dist = Math.hypot(clickX - b.x, clickY - b.y);
+                    if (dist < b.radius + 15) { // forgiving hit box
+                        b.popping = true;
+                        score++;
+                        document.getElementById('scoreVal').innerText = score;
+                        break; // Only pop one at a time
+                    }
+                }
+            }
+        });
+        
+        draw();
+    </script>
+    """
+    components.html(game_html, height=470)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
@@ -260,4 +337,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v90.0 | Native Audio Button</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v91.0 | Focus Game Added</div>", unsafe_allow_html=True)
