@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import os
 import google.generativeai as genai
+import urllib.parse  # NEW: Used to safely encode the text for the audio player
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -165,18 +166,16 @@ if st.session_state.current_page == "Journal":
                         prompt_parts = [context, "I am seeking silence."]
                         
                     resp = model.generate_content(prompt_parts)
-                    
-                    # FIX: Generating a unique microsecond ID for the button key
                     unique_id = str(datetime.now().timestamp()).replace('.', '')
                     
                     st.session_state.core_journal.append({
                         "time": datetime.now().strftime("%H:%M"), 
                         "ai": resp.text,
-                        "id": unique_id # Storing the unique ID
+                        "id": unique_id
                     })
                     
-                    clean_text = resp.text.replace('"', "'").replace("\n", " ")
-                    st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_text}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
+                    # We removed the auto-speak script because mobile browsers block it. 
+                    # The user will now use the dedicated "Listen" button below.
                     st.rerun()
                 except Exception as e:
                     st.error(f"Technical Error: {str(e)}")
@@ -193,11 +192,29 @@ if st.session_state.current_page == "Journal":
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         
-        # FIX: Using the unique ID for the button key so it never crashes, even if clicked in the same minute
-        button_key = f"sp_{entry.get('id', entry['time'])}" 
-        if st.button(f"Listen Again ({entry['time']})", key=button_key):
-            clean_hist = entry['ai'].replace('"', "'").replace("\n", " ")
-            st.markdown(f"""<script>var m=new SpeechSynthesisUtterance("{clean_hist}");m.rate=0.85;window.speechSynthesis.speak(m);</script>""", unsafe_allow_html=True)
+        # FIX: The new Native Web Audio Button (Client-Side)
+        safe_speech_text = urllib.parse.quote(entry['ai'])
+        html_button = f"""
+        <style>
+            .listen-btn {{
+                background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%);
+                color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 12px;
+                font-size: 11px; font-family: sans-serif; cursor: pointer; width: 100%; text-transform: uppercase;
+            }}
+            .listen-btn:active {{ background: #333; }}
+        </style>
+        <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
+        <script>
+            function playVoice() {{
+                window.speechSynthesis.cancel(); // Stops any ongoing speech
+                var decodedText = decodeURIComponent("{safe_speech_text}");
+                var m = new SpeechSynthesisUtterance(decodedText);
+                m.rate = 0.85;
+                window.speechSynthesis.speak(m);
+            }}
+        </script>
+        """
+        components.html(html_button, height=50)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
@@ -243,4 +260,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v89.0 | Duplicate Key Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v90.0 | Native Audio Button</div>", unsafe_allow_html=True)
