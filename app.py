@@ -45,7 +45,6 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    # RESTORED: The flagship 2.5-flash model tied to your Jio 20-use quota
     model = genai.GenerativeModel("gemini-2.5-flash")
 
 # --- 5. DESIGN CSS ---
@@ -74,6 +73,25 @@ st.markdown(f"""
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
         color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
+    }}
+    
+    /* THE MOBILE OVERRIDE: Forces buttons into a BigBasket style horizontal row */
+    @media (max-width: 600px) {{
+        div[data-testid="stHorizontalBlock"] {{
+            flex-wrap: nowrap !important;
+            gap: 4px !important;
+        }}
+        div[data-testid="column"] {{
+            min-width: 0 !important;
+            flex: 1 1 0 !important;
+            padding: 0 !important;
+        }}
+        .stButton>button {{
+            font-size: 8.5px !important;
+            min-height: 45px !important;
+            padding: 0 !important;
+            word-wrap: break-word !important;
+        }}
     }}
     
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
@@ -160,12 +178,19 @@ if st.session_state.current_page == "Journal":
             with st.spinner("Channeling Wisdom..."):
                 length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
                 
+                # WIRED: Inject the button click data into the AI's brain
+                energy_context = ""
+                if st.session_state.energy_history:
+                    latest_energy = st.session_state.energy_history[-1]
+                    energy_context = f"\n\nSECRET CONTEXT: The user clicked a button indicating their physical energy state is currently '{latest_energy}'. Softly acknowledge this in your response or adapt your tone to match this specific energy."
+
                 context = f"""You are the Sukoon Mentor. 
                 1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
                 2. STRICT LANGUAGE RULE: If the user speaks or writes in pure English, you MUST respond in pure English. If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not mix them up.
                 3. {length_instruction} Use simple, easy-to-understand words.
                 4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
-                5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their exact language, then give your advice."""
+                5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their exact language, then give your advice.
+                {energy_context}"""
                 
                 try:
                     if voice_input:
@@ -238,6 +263,9 @@ if st.session_state.current_page == "Journal":
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
+    # ADDED: The UX Prompt
+    st.markdown("<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px;'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
+    
     m_cols = st.columns(5)
     for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
         with m_cols[i]:
@@ -248,21 +276,15 @@ elif st.session_state.current_page == "Ether":
     
     ether_html = """
     <div id="ether-container" style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
-        
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
-
         <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
             WHAT IS WEIGHING ON YOUR SOUL?<br>TYPE IT HERE, AND LET IT GO.
         </p>
-        
         <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
-        
         <div style="height: 30px; z-index: 10;"></div>
-        
         <button id="releaseBtn" style="background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%); color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 15px; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; width: 100%; transition: opacity 1s; z-index: 10;">
             RELEASE TO THE ETHER
         </button>
-
         <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
             THE ETHER HAS ABSORBED IT.<br>IT IS NO LONGER YOURS TO CARRY.
         </div>
@@ -274,123 +296,61 @@ elif st.session_state.current_page == "Ether":
         const promptText = document.getElementById('promptText');
         const msg = document.getElementById('messageText');
         const container = document.getElementById('ether-container');
-
-        // Star Animation Setup
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         let animating = false;
 
-        function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
         function createStars() {
-            // Get dimensions relative to the container
             const rect = input.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
-            const top = rect.top - containerRect.top;
-            const left = rect.left - containerRect.left;
-
-            // Spawn 100 glowing stars over the text box
+            const top = rect.top - containerRect.top; const left = rect.left - containerRect.left;
             for (let i = 0; i < 100; i++) {
                 particles.push({
-                    x: left + Math.random() * rect.width,
-                    y: top + Math.random() * rect.height,
-                    vx: (Math.random() - 0.5) * 3, // drift horizontally
-                    vy: (Math.random() * -3) - 0.5, // float upwards
-                    radius: Math.random() * 2 + 0.5, // star size
-                    alpha: 1, // starting opacity
-                    decay: Math.random() * 0.015 + 0.005 // fade out speed
+                    x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
+                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -3) - 0.5,
+                    radius: Math.random() * 2 + 0.5, alpha: 1, decay: Math.random() * 0.015 + 0.005
                 });
             }
-            if (!animating) {
-                animating = true;
-                animateStars();
-            }
+            if (!animating) { animating = true; animateStars(); }
         }
 
         function animateStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             let active = false;
-
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 if (p.alpha > 0) {
-                    active = true;
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.alpha -= p.decay;
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    active = true; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, p.alpha)})`;
-                    ctx.shadowBlur = 12;
-                    ctx.shadowColor = "#FFF";
-                    ctx.fill();
+                    ctx.shadowBlur = 12; ctx.shadowColor = "#FFF"; ctx.fill();
                 }
             }
-
-            if (active) {
-                requestAnimationFrame(animateStars);
-            } else {
-                animating = false;
-                particles = [];
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
+            if (active) { requestAnimationFrame(animateStars); } 
+            else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
         }
 
         btn.addEventListener('click', () => {
             if(input.value.trim() === '') return;
-
-            // Trigger the star explosion
             createStars();
-
-            // Trigger the dissolving animation on the text box
-            input.style.filter = "blur(12px)";
-            input.style.transform = "translateY(-60px) scale(1.05)";
-            input.style.opacity = "0";
-
-            // Fade out the surrounding elements
-            btn.style.opacity = "0";
-            promptText.style.opacity = "0";
-            
-            // Disable button to prevent double-clicks
-            btn.style.pointerEvents = "none";
-            input.style.pointerEvents = "none";
-
-            // Fade in the comforting message
-            setTimeout(() => {
-                msg.style.opacity = "1";
-            }, 2000);
-
-            // Reset the entire UI for the next thought
+            input.style.filter = "blur(12px)"; input.style.transform = "translateY(-60px) scale(1.05)"; input.style.opacity = "0";
+            btn.style.opacity = "0"; promptText.style.opacity = "0";
+            btn.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+            setTimeout(() => { msg.style.opacity = "1"; }, 2000);
             setTimeout(() => {
                 msg.style.opacity = "0";
-                
                 setTimeout(() => {
-                    input.value = '';
-                    input.style.transition = "none"; // Temporarily remove transition to snap back
-                    input.style.filter = "none";
-                    input.style.transform = "none";
-                    input.style.opacity = "1";
-                    
-                    // Force a reflow so the transition removal takes effect instantly
+                    input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1";
                     void input.offsetWidth; 
-                    
-                    // Restore transitions
                     input.style.transition = "all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)";
-                    btn.style.opacity = "1";
-                    promptText.style.opacity = "1";
-                    
-                    btn.style.pointerEvents = "auto";
-                    input.style.pointerEvents = "auto";
-                }, 2000); // Wait for message to fade out before snapping UI back
-                
-            }, 6500); // How long the comforting message stays on screen
+                    btn.style.opacity = "1"; promptText.style.opacity = "1";
+                    btn.style.pointerEvents = "auto"; input.style.pointerEvents = "auto";
+                }, 2000);
+            }, 6500); 
         });
     </script>
     """
@@ -406,7 +366,6 @@ elif st.session_state.current_page == "Focus":
     if st.session_state.active_focus == "Release":
         st.markdown("<div class='section-header'>THE RELEASE</div>", unsafe_allow_html=True)
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
-        
         game_html = """
         <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden;">
             <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
@@ -415,50 +374,34 @@ elif st.session_state.current_page == "Focus":
             <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
         </div>
         <script>
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
             let bubbles = []; let score = 0;
-            
             function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
             window.addEventListener('resize', resize); resize();
-
             function createBubble() {
-                bubbles.push({
-                    x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20,
-                    radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4,
-                    alpha: 0.6, popping: false
-                });
+                bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false });
             }
             setInterval(createBubble, 1200);
-
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 for (let i = bubbles.length - 1; i >= 0; i--) {
                     let b = bubbles[i];
                     ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                    
                     if (b.popping) {
-                        b.radius += 2; b.alpha -= 0.05;
-                        ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke();
+                        b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke();
                         if (b.alpha <= 0) bubbles.splice(i, 1);
                     } else {
-                        b.y -= b.speed;
-                        ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill();
-                        ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
+                        b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
                         if (b.y < -50) bubbles.splice(i, 1);
                     }
                 }
                 requestAnimationFrame(draw);
             }
-
             canvas.addEventListener('pointerdown', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+                const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
                 for (let i = 0; i < bubbles.length; i++) {
                     let b = bubbles[i];
-                    if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) {
-                        b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break;
-                    }
+                    if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; }
                 }
             });
             draw();
@@ -469,68 +412,33 @@ elif st.session_state.current_page == "Focus":
     elif st.session_state.active_focus == "Bloom":
         st.markdown("<div class='section-header'>THE BLOOM</div>", unsafe_allow_html=True)
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the center slowly to grow your light.</p>", unsafe_allow_html=True)
-        
         bloom_html = """
         <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
             <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-            <div id="bloomMessage" style="position:absolute; z-index:10; color:#FFFFFF; font-family:sans-serif; font-size:14px; letter-spacing:3px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:4px; border:1px solid #5B96B2;">
-            </div>
+            <div id="bloomMessage" style="position:absolute; z-index:10; color:#FFFFFF; font-family:sans-serif; font-size:14px; letter-spacing:3px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:4px; border:1px solid #5B96B2;"></div>
         </div>
         <script>
-            const c = document.getElementById('bloomCanvas');
-            const ctx = c.getContext('2d');
-            const msg = document.getElementById('bloomMessage');
-            let taps = 0;
-            const maxTaps = 6;
-            const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
-
+            const c = document.getElementById('bloomCanvas'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage');
+            let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
             function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); }
             window.addEventListener('resize', resize);
-            
             function draw() {
-                ctx.clearRect(0, 0, c.width, c.height);
-                const cx = c.width / 2;
-                const cy = c.height / 2;
-                
-                if (taps === 0) {
-                    ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px";
-                    ctx.fillText("TAP TO BLOOM", cx, cy);
-                    return;
-                }
-                
+                ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2;
+                if (taps === 0) { ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; }
                 for (let i = 1; i <= taps; i++) {
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, i * 25, 0, Math.PI * 2);
-                    ctx.strokeStyle = "#5B96B2";
-                    ctx.lineWidth = 1.5;
-                    ctx.globalAlpha = 0.2 + (i * 0.1);
-                    ctx.stroke();
-                    
+                    ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "#5B96B2"; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.2 + (i * 0.1); ctx.stroke();
                     for (let j = 0; j < 8; j++) {
-                        let angle = (j * Math.PI / 4) + (i * 0.2);
-                        let px = cx + Math.cos(angle) * (i * 25);
-                        let py = cy + Math.sin(angle) * (i * 25);
-                        ctx.beginPath();
-                        ctx.arc(px, py, 4 + i, 0, Math.PI * 2);
-                        ctx.fillStyle = "#5B96B2";
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = "#5B96B2";
-                        ctx.fill();
+                        let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25);
+                        ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "#5B96B2"; ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2"; ctx.fill();
                     }
                 }
             }
-            
             c.addEventListener('pointerdown', () => {
                 if (taps < maxTaps) {
-                    taps++;
-                    draw();
+                    taps++; draw();
                     if (taps === maxTaps) {
-                        msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)];
-                        msg.style.opacity = 1;
-                        setTimeout(() => {
-                            msg.style.opacity = 0;
-                            setTimeout(() => { taps = 0; draw(); }, 1500);
-                        }, 3500);
+                        msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1;
+                        setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500);
                     }
                 }
             });
@@ -583,4 +491,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v104.0 | Star Dust Ether</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v105.0 | Mobile UI & Context Wired</div>", unsafe_allow_html=True)
