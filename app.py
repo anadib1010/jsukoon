@@ -75,55 +75,39 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* THE SURGICAL MOBILE GRID FIX */
+    /* THE BULLETPROOF FIX: NO ASPECT RATIO, JUST FLEX MATH */
     @media (max-width: 600px) {{
-        
-        /* 1. TARGET ONLY 5-COLUMN ROWS (Nav, Audio, Energy) */
-        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(5)) {{
+        div[data-testid="stHorizontalBlock"] {{
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            width: 100% !important;
             gap: 4px !important;
+            width: 100% !important;
         }}
-        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(5)) > div[data-testid="column"] {{
-            width: 20% !important;
-            min-width: 20% !important;
-            max-width: 20% !important;
-            flex: 1 1 20% !important;
+        
+        /* Forces every column to shrink and fit the screen without pushing off */
+        div[data-testid="column"] {{
+            flex: 1 1 0px !important;
+            min-width: 0px !important; 
+            width: 100% !important;
+            padding: 0 !important;
         }}
-        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(5)) button {{
-            aspect-ratio: 1 / 1 !important; /* Forces the perfect square */
-            min-height: 0 !important;
-            height: auto !important;
-            font-size: 7px !important; /* Locked at 7px */
+        
+        div[data-testid="stButton"] {{
+            width: 100% !important;
+        }}
+        
+        /* Hardcoded height gives 5-buttons a square look, and 2-buttons a rectangle look */
+        div[data-testid="stButton"] > button {{
+            height: 55px !important;
+            min-height: 55px !important;
+            font-size: 7px !important;
             padding: 2px !important;
             white-space: normal !important;
-            line-height: 1.1 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-        }}
-
-        /* 2. TARGET ONLY 2-COLUMN ROWS (Short/Deep Buttons) */
-        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(2):last-child) {{
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            width: 100% !important;
-            gap: 10px !important;
-        }}
-        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(2):last-child) > div[data-testid="column"] {{
-            width: 50% !important;
-            min-width: 50% !important;
-            max-width: 50% !important;
-            flex: 1 1 50% !important;
-        }}
-        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(2):last-child) button {{
-            aspect-ratio: auto !important; /* Returns to normal rectangle */
-            min-height: 48px !important;
-            font-size: 11px !important;
-            padding: 10px !important;
+            line-height: 1.2 !important;
         }}
     }}
     
@@ -522,4 +506,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v108.0 | Surgical Mobile Grid Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v109.0 | Fluid Height Logic Fix</div>", unsafe_allow_html=True)
