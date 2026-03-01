@@ -75,44 +75,55 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* THE BULLETPROOF MOBILE GRID OVERRIDE */
+    /* THE SURGICAL MOBILE GRID FIX */
     @media (max-width: 600px) {{
-        div[data-testid="stHorizontalBlock"] {{
+        
+        /* 1. TARGET ONLY 5-COLUMN ROWS (Nav, Audio, Energy) */
+        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(5)) {{
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            gap: 2px !important;
             width: 100% !important;
-            padding: 0 !important;
-            overflow: visible !important;
+            gap: 4px !important;
         }}
-        div[data-testid="column"] {{
-            display: flex !important;
+        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(5)) > div[data-testid="column"] {{
             width: 20% !important;
             min-width: 20% !important;
             max-width: 20% !important;
             flex: 1 1 20% !important;
-            padding: 0 !important;
-            margin: 0 !important;
         }}
-        div[data-testid="stButton"] {{
-            width: 100% !important;
-            margin: 0 !important;
-        }}
-        div[data-testid="stButton"] > button {{
-            width: 100% !important;
-            font-size: 7px !important; /* Locked to 7px */
-            aspect-ratio: 1 / 1 !important; /* Perfect square */
+        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(5)) button {{
+            aspect-ratio: 1 / 1 !important; /* Forces the perfect square */
             min-height: 0 !important;
             height: auto !important;
-            padding: 1px !important;
-            margin: 0 !important;
+            font-size: 7px !important; /* Locked at 7px */
+            padding: 2px !important;
             white-space: normal !important;
+            line-height: 1.1 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            line-height: 1.1 !important;
-            border-radius: 4px !important;
+        }}
+
+        /* 2. TARGET ONLY 2-COLUMN ROWS (Short/Deep Buttons) */
+        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(2):last-child) {{
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            width: 100% !important;
+            gap: 10px !important;
+        }}
+        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(2):last-child) > div[data-testid="column"] {{
+            width: 50% !important;
+            min-width: 50% !important;
+            max-width: 50% !important;
+            flex: 1 1 50% !important;
+        }}
+        div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]:nth-child(2):last-child) button {{
+            aspect-ratio: auto !important; /* Returns to normal rectangle */
+            min-height: 48px !important;
+            font-size: 11px !important;
+            padding: 10px !important;
         }}
     }}
     
@@ -511,4 +522,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v107.0 | Bulletproof Mobile Grid</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v108.0 | Surgical Mobile Grid Fix</div>", unsafe_allow_html=True)
