@@ -45,7 +45,8 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    # FIX: Switched to the ultra-reliable 1.5-flash model which has the 1,500 daily quota
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
 # --- 5. DESIGN CSS ---
 st.markdown(f"""
@@ -148,7 +149,6 @@ if st.session_state.current_page == "Journal":
     voice_input = st.audio_input("Record your thoughts")
     text_msg = st.text_area("Or type your reflection...", height=150)
     
-    # NEW: Split buttons for Short and Deep responses
     c_short, c_deep = st.columns(2)
     with c_short:
         btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
@@ -158,8 +158,6 @@ if st.session_state.current_page == "Journal":
     if btn_short or btn_deep:
         if model:
             with st.spinner("Channeling Wisdom..."):
-                
-                # Dynamic instructions based on which button they tapped
                 length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
                 
                 context = f"""You are the Sukoon Mentor. 
@@ -432,4 +430,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v97.0 | Dynamic Guidance</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v98.0 | Unlimited Quota Engine</div>", unsafe_allow_html=True)
