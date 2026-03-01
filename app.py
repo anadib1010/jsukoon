@@ -75,22 +75,35 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* THE MOBILE OVERRIDE: Forces buttons into a BigBasket style horizontal row */
+    /* THE MOBILE OVERRIDE: Forces 5 perfect squares in a single row */
     @media (max-width: 600px) {{
         div[data-testid="stHorizontalBlock"] {{
+            flex-direction: row !important;
             flex-wrap: nowrap !important;
             gap: 4px !important;
+            width: 100% !important;
         }}
         div[data-testid="column"] {{
-            min-width: 0 !important;
             flex: 1 1 0 !important;
+            min-width: 0 !important;
+            width: auto !important;
             padding: 0 !important;
         }}
+        .stButton {{
+            width: 100% !important;
+        }}
         .stButton>button {{
-            font-size: 8.5px !important;
-            min-height: 45px !important;
-            padding: 0 !important;
+            font-size: 7px !important;
+            aspect-ratio: 1 / 1 !important; /* This creates the perfect square */
+            min-height: 0 !important; /* Removes Streamlit's default tall button height */
+            height: auto !important;
+            padding: 2px !important;
             word-wrap: break-word !important;
+            white-space: normal !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1.2 !important;
         }}
     }}
     
@@ -178,7 +191,6 @@ if st.session_state.current_page == "Journal":
             with st.spinner("Channeling Wisdom..."):
                 length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
                 
-                # WIRED: Inject the button click data into the AI's brain
                 energy_context = ""
                 if st.session_state.energy_history:
                     latest_energy = st.session_state.energy_history[-1]
@@ -263,7 +275,6 @@ if st.session_state.current_page == "Journal":
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
-    # ADDED: The UX Prompt
     st.markdown("<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px;'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
     
     m_cols = st.columns(5)
@@ -491,4 +502,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v105.0 | Mobile UI & Context Wired</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v106.0 | Hardcoded Flex Layout</div>", unsafe_allow_html=True)
