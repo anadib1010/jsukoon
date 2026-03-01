@@ -51,7 +51,7 @@ if api_key:
 st.markdown(f"""
     <style>
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
-    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; }}
+    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
     @keyframes pulse426 {{
         0%   {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
@@ -75,39 +75,46 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* THE BULLETPROOF FIX: NO ASPECT RATIO, JUST FLEX MATH */
+    /* THE ANTI-CAROUSEL FIX */
     @media (max-width: 600px) {{
         div[data-testid="stHorizontalBlock"] {{
             display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            gap: 4px !important;
             width: 100% !important;
+            max-width: 100vw !important; /* Prevents container from blowing up */
+            gap: 4px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
         }}
         
-        /* Forces every column to shrink and fit the screen without pushing off */
         div[data-testid="column"] {{
-            flex: 1 1 0px !important;
-            min-width: 0px !important; 
-            width: 100% !important;
+            flex: 1 1 0% !important; /* The magic bullet: Forces strict equal sharing */
+            min-width: 0px !important; /* Destroys Streamlit's invisible width limits */
             padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
         }}
         
         div[data-testid="stButton"] {{
             width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }}
         
-        /* Hardcoded height gives 5-buttons a square look, and 2-buttons a rectangle look */
         div[data-testid="stButton"] > button {{
             height: 55px !important;
             min-height: 55px !important;
             font-size: 7px !important;
             padding: 2px !important;
+            margin: 0 !important;
             white-space: normal !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             line-height: 1.2 !important;
+            box-sizing: border-box !important;
         }}
     }}
     
@@ -506,4 +513,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v109.0 | Fluid Height Logic Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v110.0 | Anti-Carousel Grid Lock</div>", unsafe_allow_html=True)
