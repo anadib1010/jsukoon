@@ -45,8 +45,8 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    # LOCKED ENGINE: 1,500 daily quota Lite model
-    model = genai.GenerativeModel("gemini-2.5-flash-lite")
+    # RESTORED: The flagship 2.5-flash model tied to your Jio 20-use quota
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
 # --- 5. DESIGN CSS ---
 st.markdown(f"""
@@ -160,7 +160,6 @@ if st.session_state.current_page == "Journal":
             with st.spinner("Channeling Wisdom..."):
                 length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
                 
-                # UPDATED: Strict Language Rule applied
                 context = f"""You are the Sukoon Mentor. 
                 1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
                 2. STRICT LANGUAGE RULE: If the user speaks or writes in pure English, you MUST respond in pure English. If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not mix them up.
@@ -431,4 +430,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v101.0 | Language Lock Engine</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v102.0 | Lean Founder Build</div>", unsafe_allow_html=True)
