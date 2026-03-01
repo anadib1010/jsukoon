@@ -45,8 +45,8 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    # FIX: Switched to the ultra-reliable 1.5-flash model which has the 1,500 daily quota
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    # FIX: Restored the active 2.5-flash model
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
 # --- 5. DESIGN CSS ---
 st.markdown(f"""
@@ -430,4 +430,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v98.0 | Unlimited Quota Engine</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v99.0 | Active Model Restored</div>", unsafe_allow_html=True)
