@@ -27,7 +27,8 @@ if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
-if "active_focus" not in st.session_state: st.session_state.active_focus = "Release"
+if "active_game" not in st.session_state: st.session_state.active_game = "Release"
+if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 
 # --- 3. GOOGLE ANALYTICS ---
 components.html(f"""
@@ -273,7 +274,7 @@ elif st.session_state.current_page == "Ether":
         </div>
 
         <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
-            </div>
+        </div>
     </div>
 
     <script>
@@ -377,17 +378,133 @@ elif st.session_state.current_page == "Ether":
     components.html(ether_html, height=450)
 
 elif st.session_state.current_page == "Focus":
+    
+    # --- TOP HALF: BREATH STUDIO ---
+    st.markdown("<div class='section-header'>BREATH STUDIO</div>", unsafe_allow_html=True)
+    
+    b_col1, b_col2, b_col3 = st.columns(3)
+    with b_col1:
+        if st.button("Anchor (4-2-6)"): st.session_state.active_breath = "Anchor"; st.rerun()
+    with b_col2:
+        if st.button("The Box (4-4-4-4)"): st.session_state.active_breath = "Box"; st.rerun()
+    with b_col3:
+        if st.button("Deep Sleep (4-7-8)"): 
+            if not st.session_state.active_breath.startswith("Sleep"):
+                st.session_state.active_breath = "Sleep_Wave"
+            st.rerun()
+
+    if st.session_state.active_breath.startswith("Sleep"):
+        st.markdown("<p style='font-size: 11px; opacity: 0.7; margin: 15px 0 5px 0; text-align: center; color: #5B96B2;'>CHOOSE YOUR VISUAL GUIDE</p>", unsafe_allow_html=True)
+        s_col1, s_col2, s_col3 = st.columns(3)
+        with s_col1:
+            if st.button("The Wave"): st.session_state.active_breath = "Sleep_Wave"; st.rerun()
+        with s_col2:
+            if st.button("The Moon"): st.session_state.active_breath = "Sleep_Moon"; st.rerun()
+        with s_col3:
+            if st.button("The Lotus"): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
+
+    # Base HTML template for breath canvas
+    base_breath_html = """
+    <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+        <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById('breathCanvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize();
+        const start = Date.now();
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width/2; const cy = canvas.height/2 - 10;
+            let t = ((Date.now() - start) / 1000);
+            [JS_INJECT]
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+    """
+
+    js_code = ""
+    if st.session_state.active_breath == "Anchor":
+        js_code = """
+        let cycle = t % 12; let text = ""; let scale = 1;
+        if(cycle < 4) { text = "INHALE (4)"; scale = 1 + (cycle/4); }
+        else if(cycle < 6) { text = "HOLD (2)"; scale = 2; }
+        else { text = "EXHALE (6)"; scale = 2 - ((cycle-6)/6); }
+        ctx.beginPath(); ctx.arc(cx, cy, 35 * scale, 0, Math.PI*2);
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.8)"; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = "rgba(91, 150, 178, 0.2)"; ctx.fill();
+        ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px";
+        ctx.fillText(text, cx, cy + 90);
+        """
+    elif st.session_state.active_breath == "Box":
+        js_code = """
+        let cycle = t % 16; let text = ""; let size = 100;
+        let x = cx - size/2; let y = cy - size/2;
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.strokeRect(x, y, size, size);
+        ctx.strokeStyle = "rgba(91, 150, 178, 1)"; ctx.lineWidth = 4; ctx.beginPath();
+        if(cycle < 4) { text = "INHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y+size - size*(cycle/4)); } 
+        else if(cycle < 8) { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x + size*((cycle-4)/4), y); } 
+        else if(cycle < 12) { text = "EXHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y + size*((cycle-8)/4)); } 
+        else { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x+size - size*((cycle-12)/4), y+size); }
+        ctx.stroke(); ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        """
+    elif st.session_state.active_breath == "Sleep_Wave":
+        js_code = """
+        let cycle = t % 19; let text = ""; let width = canvas.width * 0.7;
+        let startX = cx - width/2; let amp = 50; let pathX = 0; let pathY = 0;
+        if(cycle < 4) { text = "INHALE (4)"; pathX = startX + (width * 0.2 * (cycle/4)); pathY = cy + amp - (amp * 2 * (cycle/4)); } 
+        else if(cycle < 11) { text = "HOLD (7)"; pathX = startX + (width * 0.2) + (width * 0.4 * ((cycle-4)/7)); pathY = cy - amp; } 
+        else { text = "EXHALE (8)"; pathX = startX + (width * 0.6) + (width * 0.4 * ((cycle-11)/8)); pathY = cy - amp + (amp * 2 * ((cycle-11)/8)); }
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp);
+        ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
+        ctx.beginPath(); ctx.arc(pathX, pathY, 12, 0, Math.PI*2); ctx.fillStyle = "rgba(91, 150, 178, 1)"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2";
+        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        """
+    elif st.session_state.active_breath == "Sleep_Moon":
+        js_code = """
+        let cycle = t % 19; let text = ""; let opacity = 0.2; let yOffset = 0;
+        if(cycle < 4) { text = "INHALE (4)"; opacity = 0.2 + 0.8*(cycle/4); yOffset = -20 * (cycle/4); }
+        else if(cycle < 11) { text = "HOLD (7)"; opacity = 1.0; yOffset = -20; }
+        else { text = "EXHALE (8)"; opacity = 1.0 - 0.8*((cycle-11)/8); yOffset = -20 + 40*((cycle-11)/8); }
+        ctx.beginPath(); ctx.arc(cx, cy + yOffset, 40, 0, Math.PI*2); ctx.fillStyle = `rgba(255, 250, 240, ${opacity})`; ctx.fill();
+        ctx.shadowBlur = 30 * opacity; ctx.shadowColor = "#FFF";
+        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        """
+    elif st.session_state.active_breath == "Sleep_Lotus":
+        js_code = """
+        let cycle = t % 19; let text = ""; let spread = 0;
+        if(cycle < 4) { text = "INHALE (4)"; spread = cycle/4; }
+        else if(cycle < 11) { text = "HOLD (7)"; spread = 1; }
+        else { text = "EXHALE (8)"; spread = 1 - ((cycle-11)/8); }
+        for(let i=0; i<6; i++) {
+            let angle = i * (Math.PI*2/6) + (t * 0.1); 
+            let px = cx + Math.cos(angle) * (30 * spread); let py = cy + Math.sin(angle) * (30 * spread);
+            ctx.beginPath(); ctx.arc(px, py, 25, 0, Math.PI*2);
+            ctx.strokeStyle = "rgba(91, 150, 178, 0.6)"; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = "rgba(91, 150, 178, 0.1)"; ctx.fill();
+        }
+        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        """
+
+    final_breath_html = base_breath_html.replace("[JS_INJECT]", js_code)
+    components.html(final_breath_html, height=270)
+
+    # --- BOTTOM HALF: GROUNDING GAMES ---
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-header'>GROUNDING GAMES</div>", unsafe_allow_html=True)
+    
     g_col1, g_col2 = st.columns(2)
     with g_col1:
-        if st.button("The Release"): st.session_state.active_focus = "Release"; st.rerun()
+        if st.button("The Release"): st.session_state.active_game = "Release"; st.rerun()
     with g_col2:
-        if st.button("The Bloom"): st.session_state.active_focus = "Bloom"; st.rerun()
+        if st.button("The Bloom"): st.session_state.active_game = "Bloom"; st.rerun()
 
-    if st.session_state.active_focus == "Release":
-        st.markdown("<div class='section-header'>THE RELEASE</div>", unsafe_allow_html=True)
+    if st.session_state.active_game == "Release":
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
         game_html = """
-        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden;">
+        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
             <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
                 THOUGHTS RELEASED: <span id="scoreVal">0</span>
             </div>
@@ -427,13 +544,12 @@ elif st.session_state.current_page == "Focus":
             draw();
         </script>
         """
-        components.html(game_html, height=470)
+        components.html(game_html, height=370)
 
-    elif st.session_state.active_focus == "Bloom":
-        st.markdown("<div class='section-header'>THE BLOOM</div>", unsafe_allow_html=True)
+    elif st.session_state.active_game == "Bloom":
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the center slowly to grow your light.</p>", unsafe_allow_html=True)
         bloom_html = """
-        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:450px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
             <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
             <div id="bloomMessage" style="position:absolute; z-index:10; color:#FFFFFF; font-family:sans-serif; font-size:14px; letter-spacing:3px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:4px; border:1px solid #5B96B2;"></div>
         </div>
@@ -465,7 +581,7 @@ elif st.session_state.current_page == "Focus":
             resize();
         </script>
         """
-        components.html(bloom_html, height=470)
+        components.html(bloom_html, height=370)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
@@ -511,4 +627,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v113.0 | Legal Safety Text Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v114.0 | Breath Studio UI</div>", unsafe_allow_html=True)
