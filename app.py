@@ -148,13 +148,24 @@ if st.session_state.current_page == "Journal":
     voice_input = st.audio_input("Record your thoughts")
     text_msg = st.text_area("Or type your reflection...", height=150)
     
-    if st.button("CONSULT GUIDE", key="brain_btn", use_container_width=True):
+    # NEW: Split buttons for Short and Deep responses
+    c_short, c_deep = st.columns(2)
+    with c_short:
+        btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
+    with c_deep:
+        btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
+    
+    if btn_short or btn_deep:
         if model:
             with st.spinner("Channeling Wisdom..."):
-                context = """You are the Sukoon Mentor. 
+                
+                # Dynamic instructions based on which button they tapped
+                length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
+                
+                context = f"""You are the Sukoon Mentor. 
                 1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
                 2. IMPORTANT: If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not reply in pure English.
-                3. Keep the response short: maximum 2 paragraphs. Use simple, easy-to-understand words.
+                3. {length_instruction} Use simple, easy-to-understand words.
                 4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
                 5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their language/Hinglish, then give your advice."""
                 
@@ -185,7 +196,6 @@ if st.session_state.current_page == "Journal":
     
     for entry in reversed(st.session_state.core_journal):
         safe_speech_text = urllib.parse.quote(entry['ai'])
-        # UPDATED: The script now rigorously hunts for local voices and waits for them to load.
         html_button = f"""
         <style>
             .listen-btn {{
@@ -203,7 +213,7 @@ if st.session_state.current_page == "Journal":
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 m.rate = 0.85;
-                m.lang = 'hi-IN'; // Force a Hindi/Indian hint to the browser natively
+                m.lang = 'hi-IN'; 
                 
                 function setVoiceAndSpeak() {{
                     var voices = window.speechSynthesis.getVoices();
@@ -422,4 +432,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v96.0 | Robust Accent Loader</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v97.0 | Dynamic Guidance</div>", unsafe_allow_html=True)
