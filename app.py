@@ -265,10 +265,10 @@ elif st.session_state.current_page == "Ether":
         
         <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 1s;">
             <button id="releaseBtn" style="background: linear-gradient(180deg, #3a1c1c 0%, #1a0b0b 100%); color: #ffbba6; border: 1px solid #5a2a2a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1;">
-                BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.6;">(Anger, Grief, Stress)</span>
+                BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.6;">(Negative Thoughts)</span>
             </button>
             <button id="manifestBtn" style="background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%); color: #a6d8ff; border: 1px solid #2a415a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1;">
-                MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.6;">(Wish, Prayer, Intent)</span>
+                MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.6;">(Positive Thoughts)</span>
             </button>
         </div>
 
@@ -289,7 +289,7 @@ elif st.session_state.current_page == "Ether":
         
         let particles = [];
         let animating = false;
-        let currentMode = 'star'; // 'fire' or 'star'
+        let currentMode = 'star';
 
         function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
@@ -301,20 +301,18 @@ elif st.session_state.current_page == "Ether":
             
             for (let i = 0; i < 120; i++) {
                 if (mode === 'fire') {
-                    // Fire/Ash Particles
                     particles.push({
                         x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
-                        vx: (Math.random() - 0.5) * 4, vy: (Math.random() * -5) - 1, // Faster upward
+                        vx: (Math.random() - 0.5) * 4, vy: (Math.random() * -5) - 1, 
                         radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.02 + 0.01,
-                        color: `rgba(${255}, ${Math.random() * 100 + 50}, 0, ` // Orange/Red
+                        color: `rgba(${255}, ${Math.random() * 100 + 50}, 0, ` 
                     });
                 } else {
-                    // Star/Glow Particles
                     particles.push({
                         x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
-                        vx: (Math.random() - 0.5) * 2, vy: (Math.random() * -2) - 0.2, // Slower upward float
+                        vx: (Math.random() - 0.5) * 2, vy: (Math.random() * -2) - 0.2, 
                         radius: Math.random() * 2 + 0.5, alpha: 1, decay: Math.random() * 0.01 + 0.005,
-                        color: `rgba(255, 255, 255, ` // White/Gold
+                        color: `rgba(255, 255, 255, ` 
                     });
                 }
             }
@@ -343,15 +341,14 @@ elif st.session_state.current_page == "Ether":
             if(input.value.trim() === '') return;
             currentMode = mode;
             
-            // Set message and animation style
             if (mode === 'fire') {
                 msg.innerHTML = "THE ETHER HAS BURNED IT.<br>IT IS NO LONGER YOURS TO CARRY.";
                 input.style.filter = "blur(15px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
-                input.style.transform = "translateY(30px) scale(0.9)"; // Sinks down
+                input.style.transform = "translateY(30px) scale(0.9)"; 
             } else {
                 msg.innerHTML = "THE UNIVERSE HAS RECEIVED IT.<br>YOUR INTENTION IS NOW IN MOTION.";
                 input.style.filter = "blur(12px) brightness(200%)"; 
-                input.style.transform = "translateY(-60px) scale(1.05)"; // Floats up
+                input.style.transform = "translateY(-60px) scale(1.05)"; 
             }
 
             createParticles(mode);
@@ -514,4 +511,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v112.0 | Dual Ether Paths</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v113.0 | Legal Safety Text Update</div>", unsafe_allow_html=True)
