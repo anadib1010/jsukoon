@@ -75,49 +75,6 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* THE ANTI-CAROUSEL FIX */
-    @media (max-width: 600px) {{
-        div[data-testid="stHorizontalBlock"] {{
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            width: 100% !important;
-            max-width: 100vw !important; /* Prevents container from blowing up */
-            gap: 4px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-        }}
-        
-        div[data-testid="column"] {{
-            flex: 1 1 0% !important; /* The magic bullet: Forces strict equal sharing */
-            min-width: 0px !important; /* Destroys Streamlit's invisible width limits */
-            padding: 0 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-        }}
-        
-        div[data-testid="stButton"] {{
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }}
-        
-        div[data-testid="stButton"] > button {{
-            height: 55px !important;
-            min-height: 55px !important;
-            font-size: 7px !important;
-            padding: 2px !important;
-            margin: 0 !important;
-            white-space: normal !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            line-height: 1.2 !important;
-            box-sizing: border-box !important;
-        }}
-    }}
-    
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
     .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
     .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
@@ -513,4 +470,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v110.0 | Anti-Carousel Grid Lock</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v111.0 | Stable Foundation</div>", unsafe_allow_html=True)
