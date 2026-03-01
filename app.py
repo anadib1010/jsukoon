@@ -45,7 +45,7 @@ api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
-    # FIX: Switched to the high-speed, 1,500-limit Lite model
+    # LOCKED ENGINE: 1,500 daily quota Lite model
     model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 # --- 5. DESIGN CSS ---
@@ -160,12 +160,13 @@ if st.session_state.current_page == "Journal":
             with st.spinner("Channeling Wisdom..."):
                 length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
                 
+                # UPDATED: Strict Language Rule applied
                 context = f"""You are the Sukoon Mentor. 
                 1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
-                2. IMPORTANT: If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not reply in pure English.
+                2. STRICT LANGUAGE RULE: If the user speaks or writes in pure English, you MUST respond in pure English. If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not mix them up.
                 3. {length_instruction} Use simple, easy-to-understand words.
                 4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
-                5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their language/Hinglish, then give your advice."""
+                5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their exact language, then give your advice."""
                 
                 try:
                     if voice_input:
@@ -430,4 +431,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v100.0 | High-Speed Lite Engine</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v101.0 | Language Lock Engine</div>", unsafe_allow_html=True)
