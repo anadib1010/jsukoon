@@ -94,8 +94,8 @@ st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
-nav_row = st.columns(4)
-nav_list = [("Journal", "Journal"), ("Focus", "Focus"), ("Market", "Market"), ("Info", "Info")]
+nav_row = st.columns(5)
+nav_list = [("Journal", "Journal"), ("Ether", "Ether"), ("Focus", "Focus"), ("Market", "Market"), ("Info", "Info")]
 for i, (lab, tar) in enumerate(nav_list):
     with nav_row[i]:
         if st.button(lab, key=f"nav_{lab}"): st.session_state.current_page = tar; st.rerun()
@@ -242,6 +242,85 @@ if st.session_state.current_page == "Journal":
     for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
         with m_cols[i]:
             if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
+
+elif st.session_state.current_page == "Ether":
+    st.markdown("<div class='section-header'>THE ETHER</div>", unsafe_allow_html=True)
+    
+    ether_html = """
+    <div id="ether-container" style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
+        
+        <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s;">
+            WHAT IS WEIGHING ON YOUR SOUL?<br>TYPE IT HERE, AND LET IT GO.
+        </p>
+        
+        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1);"></textarea>
+        
+        <div style="height: 30px;"></div>
+        
+        <button id="releaseBtn" style="background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%); color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 15px; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; width: 100%; transition: opacity 1s;">
+            RELEASE TO THE ETHER
+        </button>
+
+        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8;">
+            THE ETHER HAS ABSORBED IT.<br>IT IS NO LONGER YOURS TO CARRY.
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('releaseBtn');
+        const input = document.getElementById('etherInput');
+        const promptText = document.getElementById('promptText');
+        const msg = document.getElementById('messageText');
+
+        btn.addEventListener('click', () => {
+            if(input.value.trim() === '') return;
+
+            // Trigger the dissolving animation on the text box
+            input.style.filter = "blur(12px)";
+            input.style.transform = "translateY(-80px) scale(1.1)";
+            input.style.opacity = "0";
+
+            // Fade out the surrounding elements
+            btn.style.opacity = "0";
+            promptText.style.opacity = "0";
+            
+            // Disable button to prevent double-clicks
+            btn.style.pointerEvents = "none";
+            input.style.pointerEvents = "none";
+
+            // Fade in the comforting message
+            setTimeout(() => {
+                msg.style.opacity = "1";
+            }, 2000);
+
+            // Reset the entire UI for the next thought
+            setTimeout(() => {
+                msg.style.opacity = "0";
+                
+                setTimeout(() => {
+                    input.value = '';
+                    input.style.transition = "none"; // Temporarily remove transition to snap back
+                    input.style.filter = "none";
+                    input.style.transform = "none";
+                    input.style.opacity = "1";
+                    
+                    // Force a reflow so the transition removal takes effect instantly
+                    void input.offsetWidth; 
+                    
+                    // Restore transitions
+                    input.style.transition = "all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)";
+                    btn.style.opacity = "1";
+                    promptText.style.opacity = "1";
+                    
+                    btn.style.pointerEvents = "auto";
+                    input.style.pointerEvents = "auto";
+                }, 2000); // Wait for message to fade out before snapping UI back
+                
+            }, 6000); // How long the comforting message stays on screen
+        });
+    </script>
+    """
+    components.html(ether_html, height=450)
 
 elif st.session_state.current_page == "Focus":
     g_col1, g_col2 = st.columns(2)
@@ -430,4 +509,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v102.0 | Lean Founder Build</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v103.0 | Ether Integration</div>", unsafe_allow_html=True)
