@@ -257,47 +257,71 @@ elif st.session_state.current_page == "Ether":
     <div id="ether-container" style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
         <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
-            WHAT IS WEIGHING ON YOUR SOUL?<br>TYPE IT HERE, AND LET IT GO.
+            PLACE YOUR THOUGHT IN THE ETHER
         </p>
         <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
-        <div style="height: 30px; z-index: 10;"></div>
-        <button id="releaseBtn" style="background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%); color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 15px; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; width: 100%; transition: opacity 1s; z-index: 10;">
-            RELEASE TO THE ETHER
-        </button>
-        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
-            THE ETHER HAS ABSORBED IT.<br>IT IS NO LONGER YOURS TO CARRY.
+        
+        <div style="height: 25px; z-index: 10;"></div>
+        
+        <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 1s;">
+            <button id="releaseBtn" style="background: linear-gradient(180deg, #3a1c1c 0%, #1a0b0b 100%); color: #ffbba6; border: 1px solid #5a2a2a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1;">
+                BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.6;">(Anger, Grief, Stress)</span>
+            </button>
+            <button id="manifestBtn" style="background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%); color: #a6d8ff; border: 1px solid #2a415a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1;">
+                MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.6;">(Wish, Prayer, Intent)</span>
+            </button>
         </div>
+
+        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
+            </div>
     </div>
 
     <script>
-        const btn = document.getElementById('releaseBtn');
+        const btnRelease = document.getElementById('releaseBtn');
+        const btnManifest = document.getElementById('manifestBtn');
+        const btnRow = document.getElementById('buttonRow');
         const input = document.getElementById('etherInput');
         const promptText = document.getElementById('promptText');
         const msg = document.getElementById('messageText');
         const container = document.getElementById('ether-container');
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
+        
         let particles = [];
         let animating = false;
+        let currentMode = 'star'; // 'fire' or 'star'
 
         function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
-        function createStars() {
+        function createParticles(mode) {
             const rect = input.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
             const top = rect.top - containerRect.top; const left = rect.left - containerRect.left;
-            for (let i = 0; i < 100; i++) {
-                particles.push({
-                    x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
-                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -3) - 0.5,
-                    radius: Math.random() * 2 + 0.5, alpha: 1, decay: Math.random() * 0.015 + 0.005
-                });
+            
+            for (let i = 0; i < 120; i++) {
+                if (mode === 'fire') {
+                    // Fire/Ash Particles
+                    particles.push({
+                        x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
+                        vx: (Math.random() - 0.5) * 4, vy: (Math.random() * -5) - 1, // Faster upward
+                        radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.02 + 0.01,
+                        color: `rgba(${255}, ${Math.random() * 100 + 50}, 0, ` // Orange/Red
+                    });
+                } else {
+                    // Star/Glow Particles
+                    particles.push({
+                        x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
+                        vx: (Math.random() - 0.5) * 2, vy: (Math.random() * -2) - 0.2, // Slower upward float
+                        radius: Math.random() * 2 + 0.5, alpha: 1, decay: Math.random() * 0.01 + 0.005,
+                        color: `rgba(255, 255, 255, ` // White/Gold
+                    });
+                }
             }
-            if (!animating) { animating = true; animateStars(); }
+            if (!animating) { animating = true; animateParticles(); }
         }
 
-        function animateStars() {
+        function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             let active = false;
             for (let i = 0; i < particles.length; i++) {
@@ -305,32 +329,52 @@ elif st.session_state.current_page == "Ether":
                 if (p.alpha > 0) {
                     active = true; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, p.alpha)})`;
-                    ctx.shadowBlur = 12; ctx.shadowColor = "#FFF"; ctx.fill();
+                    ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`;
+                    ctx.shadowBlur = currentMode === 'fire' ? 8 : 15; 
+                    ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "#FFF"; 
+                    ctx.fill();
                 }
             }
-            if (active) { requestAnimationFrame(animateStars); } 
+            if (active) { requestAnimationFrame(animateParticles); } 
             else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
         }
 
-        btn.addEventListener('click', () => {
+        function triggerEther(mode) {
             if(input.value.trim() === '') return;
-            createStars();
-            input.style.filter = "blur(12px)"; input.style.transform = "translateY(-60px) scale(1.05)"; input.style.opacity = "0";
-            btn.style.opacity = "0"; promptText.style.opacity = "0";
-            btn.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+            currentMode = mode;
+            
+            // Set message and animation style
+            if (mode === 'fire') {
+                msg.innerHTML = "THE ETHER HAS BURNED IT.<br>IT IS NO LONGER YOURS TO CARRY.";
+                input.style.filter = "blur(15px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
+                input.style.transform = "translateY(30px) scale(0.9)"; // Sinks down
+            } else {
+                msg.innerHTML = "THE UNIVERSE HAS RECEIVED IT.<br>YOUR INTENTION IS NOW IN MOTION.";
+                input.style.filter = "blur(12px) brightness(200%)"; 
+                input.style.transform = "translateY(-60px) scale(1.05)"; // Floats up
+            }
+
+            createParticles(mode);
+            input.style.opacity = "0";
+            btnRow.style.opacity = "0"; promptText.style.opacity = "0";
+            btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+            
             setTimeout(() => { msg.style.opacity = "1"; }, 2000);
+            
             setTimeout(() => {
                 msg.style.opacity = "0";
                 setTimeout(() => {
                     input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1";
                     void input.offsetWidth; 
                     input.style.transition = "all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)";
-                    btn.style.opacity = "1"; promptText.style.opacity = "1";
-                    btn.style.pointerEvents = "auto"; input.style.pointerEvents = "auto";
+                    btnRow.style.opacity = "1"; promptText.style.opacity = "1";
+                    btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto";
                 }, 2000);
             }, 6500); 
-        });
+        }
+
+        btnRelease.addEventListener('click', () => triggerEther('fire'));
+        btnManifest.addEventListener('click', () => triggerEther('star'));
     </script>
     """
     components.html(ether_html, height=450)
@@ -470,4 +514,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v111.0 | Stable Foundation</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v112.0 | Dual Ether Paths</div>", unsafe_allow_html=True)
