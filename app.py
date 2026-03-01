@@ -249,19 +249,21 @@ elif st.session_state.current_page == "Ether":
     ether_html = """
     <div id="ether-container" style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         
-        <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s;">
+        <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+
+        <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
             WHAT IS WEIGHING ON YOUR SOUL?<br>TYPE IT HERE, AND LET IT GO.
         </p>
         
-        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1);"></textarea>
+        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
         
-        <div style="height: 30px;"></div>
+        <div style="height: 30px; z-index: 10;"></div>
         
-        <button id="releaseBtn" style="background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%); color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 15px; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; width: 100%; transition: opacity 1s;">
+        <button id="releaseBtn" style="background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%); color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 15px; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; width: 100%; transition: opacity 1s; z-index: 10;">
             RELEASE TO THE ETHER
         </button>
 
-        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8;">
+        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
             THE ETHER HAS ABSORBED IT.<br>IT IS NO LONGER YOURS TO CARRY.
         </div>
     </div>
@@ -271,13 +273,85 @@ elif st.session_state.current_page == "Ether":
         const input = document.getElementById('etherInput');
         const promptText = document.getElementById('promptText');
         const msg = document.getElementById('messageText');
+        const container = document.getElementById('ether-container');
+
+        // Star Animation Setup
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animating = false;
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createStars() {
+            // Get dimensions relative to the container
+            const rect = input.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const top = rect.top - containerRect.top;
+            const left = rect.left - containerRect.left;
+
+            // Spawn 100 glowing stars over the text box
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: left + Math.random() * rect.width,
+                    y: top + Math.random() * rect.height,
+                    vx: (Math.random() - 0.5) * 3, // drift horizontally
+                    vy: (Math.random() * -3) - 0.5, // float upwards
+                    radius: Math.random() * 2 + 0.5, // star size
+                    alpha: 1, // starting opacity
+                    decay: Math.random() * 0.015 + 0.005 // fade out speed
+                });
+            }
+            if (!animating) {
+                animating = true;
+                animateStars();
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                if (p.alpha > 0) {
+                    active = true;
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= p.decay;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, p.alpha)})`;
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = "#FFF";
+                    ctx.fill();
+                }
+            }
+
+            if (active) {
+                requestAnimationFrame(animateStars);
+            } else {
+                animating = false;
+                particles = [];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
 
         btn.addEventListener('click', () => {
             if(input.value.trim() === '') return;
 
+            // Trigger the star explosion
+            createStars();
+
             // Trigger the dissolving animation on the text box
             input.style.filter = "blur(12px)";
-            input.style.transform = "translateY(-80px) scale(1.1)";
+            input.style.transform = "translateY(-60px) scale(1.05)";
             input.style.opacity = "0";
 
             // Fade out the surrounding elements
@@ -316,7 +390,7 @@ elif st.session_state.current_page == "Ether":
                     input.style.pointerEvents = "auto";
                 }, 2000); // Wait for message to fade out before snapping UI back
                 
-            }, 6000); // How long the comforting message stays on screen
+            }, 6500); // How long the comforting message stays on screen
         });
     </script>
     """
@@ -509,4 +583,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v103.0 | Ether Integration</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v104.0 | Star Dust Ether</div>", unsafe_allow_html=True)
