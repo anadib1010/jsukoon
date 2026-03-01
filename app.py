@@ -75,35 +75,44 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    /* THE MOBILE OVERRIDE: Forces 5 perfect squares in a single row */
+    /* THE BULLETPROOF MOBILE GRID OVERRIDE */
     @media (max-width: 600px) {{
         div[data-testid="stHorizontalBlock"] {{
+            display: flex !important;
             flex-direction: row !important;
             flex-wrap: nowrap !important;
-            gap: 4px !important;
+            gap: 2px !important;
             width: 100% !important;
+            padding: 0 !important;
+            overflow: visible !important;
         }}
         div[data-testid="column"] {{
-            flex: 1 1 0 !important;
-            min-width: 0 !important;
-            width: auto !important;
+            display: flex !important;
+            width: 20% !important;
+            min-width: 20% !important;
+            max-width: 20% !important;
+            flex: 1 1 20% !important;
             padding: 0 !important;
+            margin: 0 !important;
         }}
-        .stButton {{
+        div[data-testid="stButton"] {{
             width: 100% !important;
+            margin: 0 !important;
         }}
-        .stButton>button {{
-            font-size: 7px !important;
-            aspect-ratio: 1 / 1 !important; /* This creates the perfect square */
-            min-height: 0 !important; /* Removes Streamlit's default tall button height */
+        div[data-testid="stButton"] > button {{
+            width: 100% !important;
+            font-size: 7px !important; /* Locked to 7px */
+            aspect-ratio: 1 / 1 !important; /* Perfect square */
+            min-height: 0 !important;
             height: auto !important;
-            padding: 2px !important;
-            word-wrap: break-word !important;
+            padding: 1px !important;
+            margin: 0 !important;
             white-space: normal !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            line-height: 1.2 !important;
+            line-height: 1.1 !important;
+            border-radius: 4px !important;
         }}
     }}
     
@@ -502,4 +511,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v106.0 | Hardcoded Flex Layout</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v107.0 | Bulletproof Mobile Grid</div>", unsafe_allow_html=True)
