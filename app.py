@@ -4,6 +4,8 @@ from datetime import datetime
 import os
 import google.generativeai as genai
 import urllib.parse
+import json
+import gspread
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -110,7 +112,7 @@ for i, (lab, tar) in enumerate(nav_list):
 if st.session_state.current_page == "Journal":
     
     if not st.session_state.journal_unlocked:
-        # --- FREEMIUM EMAIL GATE ---
+        # --- FREEMIUM EMAIL GATE WITH DATABASE LOGGING ---
         st.markdown("<div class='section-header'>PRIVATE MENTOR</div>", unsafe_allow_html=True)
         st.markdown("<div class='market-slab' style='padding: 40px 20px;'>", unsafe_allow_html=True)
         st.markdown("<p style='font-size: 14px; opacity: 0.8; margin-bottom: 25px; line-height: 1.6;'>To start a private, guided session with the AI Mentor, please provide your email to unlock the Sanctuary.</p>", unsafe_allow_html=True)
@@ -121,6 +123,19 @@ if st.session_state.current_page == "Journal":
         
         if st.button("UNLOCK JOURNAL"):
             if "@" in user_email and "." in user_email:
+                # Secretly log to Google Sheets
+                try:
+                    if "GCP_CREDENTIALS" in st.secrets:
+                        creds_dict = json.loads(st.secrets["GCP_CREDENTIALS"], strict=False)
+                        gc = gspread.service_account_from_dict(creds_dict)
+                        sh = gc.open("jsukoon_users")
+                        sheet = sh.sheet1
+                        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        sheet.append_row([user_email, current_time])
+                except Exception as e:
+                    pass # Keep the error hidden so the user experience stays peaceful
+                
+                # Unlock the app regardless
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -686,4 +701,4 @@ elif st.session_state.current_page == "Info":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v122.0 | Freemium Email Gate</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v123.0 | Cloud Ledger Active</div>", unsafe_allow_html=True)
