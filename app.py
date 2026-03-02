@@ -604,6 +604,7 @@ elif st.session_state.current_page == "Market":
         {"name": "Master Sanctuary", "file": "sanctuary.png", "price": "6,000"}
     ]
 
+    # Replacing components.html with direct st.markdown for perfect responsiveness
     products_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">'
     for p in products:
         img_url = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
@@ -623,7 +624,9 @@ elif st.session_state.current_page == "Market":
         products_html += card
         
     products_html += '</div>'
-    components.html(products_html, height=1200)
+    
+    # Render purely through markdown so it expands dynamically based on screen width
+    st.markdown(products_html, unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
@@ -654,4 +657,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v118.0 | Phygital Storefront</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v119.0 | Responsive Storefront</div>", unsafe_allow_html=True)
