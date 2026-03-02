@@ -512,29 +512,40 @@ elif st.session_state.current_page == "Focus":
         </div>
         <script>
             const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-            let bubbles = []; let score = 0;
+            let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
             function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
             window.addEventListener('resize', resize); resize();
             function createBubble() {
                 bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false });
             }
-            setInterval(createBubble, 1200);
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = bubbles.length - 1; i >= 0; i--) {
-                    let b = bubbles[i];
-                    ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                    if (b.popping) {
-                        b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke();
-                        if (b.alpha <= 0) bubbles.splice(i, 1);
-                    } else {
-                        b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
-                        if (b.y < -50) bubbles.splice(i, 1);
+                if (!gameStarted) {
+                    ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; 
+                    ctx.textAlign = "center"; ctx.letterSpacing = "2px"; 
+                    ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2);
+                    ctx.globalAlpha = 1.0;
+                } else {
+                    for (let i = bubbles.length - 1; i >= 0; i--) {
+                        let b = bubbles[i];
+                        ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                        if (b.popping) {
+                            b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke();
+                            if (b.alpha <= 0) bubbles.splice(i, 1);
+                        } else {
+                            b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
+                            if (b.y < -50) bubbles.splice(i, 1);
+                        }
                     }
                 }
                 requestAnimationFrame(draw);
             }
             canvas.addEventListener('pointerdown', (e) => {
+                if (!gameStarted) {
+                    gameStarted = true;
+                    bubbleInterval = setInterval(createBubble, 1200);
+                    return;
+                }
                 const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
                 for (let i = 0; i < bubbles.length; i++) {
                     let b = bubbles[i];
@@ -627,4 +638,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v116.0 | Legal Intention Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v117.0 | User Control Update</div>", unsafe_allow_html=True)
