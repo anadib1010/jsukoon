@@ -24,7 +24,7 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # --- 3. SESSION STATE INITIALIZATION ---
-if "logged_in" not in st.session_state: st.session_state.logged_in = False
+if "journal_unlocked" not in st.session_state: st.session_state.journal_unlocked = False
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
@@ -78,42 +78,21 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
+    .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
+    .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
+    .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
+    
     .disclaimer-box {{ text-align: left; font-size: 12px; opacity: 0.7; line-height: 1.8; background: #1A1A1A; padding: 20px; border-radius: 8px; border-left: 3px solid {soft_blue}; }}
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
     
     textarea, input {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
     .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 5px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
-    
-    /* Login Box Styling */
-    .login-container {{ background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 12px; padding: 40px 25px; margin-top: 50px; text-align: center; }}
-    .login-subtitle {{ font-size: 12px; letter-spacing: 2px; color: {soft_blue}; opacity: 0.8; margin-bottom: 30px; text-transform: uppercase; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 7. THE AUTHENTICATION GATEWAY ---
-if not st.session_state.logged_in:
-    st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-    st.markdown("<div class='login-subtitle'>A PRIVATE SANCTUARY</div>", unsafe_allow_html=True)
-    
-    st.markdown("<div class='login-container'>", unsafe_allow_html=True)
-    username = st.text_input("Username", key="auth_user")
-    password = st.text_input("Password", type="password", key="auth_pass")
-    
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-    
-    if st.button("ENTER SANCTUARY"):
-        if username.strip().lower() == "beta" and password == "breathe":
-            st.session_state.logged_in = True
-            st.rerun()
-        else:
-            st.error("Incorrect credentials. The sanctuary remains closed.")
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    st.stop() # This prevents the rest of the app from loading until logged in.
-
 # ==========================================
-# --- 8. MAIN APP (ONLY SHOWS IF LOGGED IN) ---
+# --- 7. MAIN APP HEADER ---
 # ==========================================
 
 st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
@@ -129,153 +108,174 @@ for i, (lab, tar) in enumerate(nav_list):
 # --- PAGES ---
 
 if st.session_state.current_page == "Journal":
-    st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
-    aud_cols = st.columns(5)
-    sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
-    for i, name in enumerate(sounds.keys()):
-        with aud_cols[i]:
-            if st.button(name, key=f"aud_{name}"): st.session_state.active_audio = sounds[name]
-    if st.session_state.active_audio:
-        st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
+    
+    if not st.session_state.journal_unlocked:
+        # --- FREEMIUM EMAIL GATE ---
+        st.markdown("<div class='section-header'>PRIVATE MENTOR</div>", unsafe_allow_html=True)
+        st.markdown("<div class='market-slab' style='padding: 40px 20px;'>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 14px; opacity: 0.8; margin-bottom: 25px; line-height: 1.6;'>To start a private, guided session with the AI Mentor, please provide your email to unlock the Sanctuary.</p>", unsafe_allow_html=True)
+        
+        user_email = st.text_input("Your Email Address", placeholder="name@example.com")
+        
+        st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+        
+        if st.button("UNLOCK JOURNAL"):
+            if "@" in user_email and "." in user_email:
+                st.session_state.journal_unlocked = True
+                st.rerun()
+            else:
+                st.error("Please enter a valid email address.")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
-    components.html("""
-        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.4; pointer-events:none; text-align:center;">
-                TOUCH THE SURFACE<br>TO GROUND YOURSELF
+    else:
+        # --- FULL JOURNAL UI (UNLOCKED) ---
+        st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
+        aud_cols = st.columns(5)
+        sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
+        for i, name in enumerate(sounds.keys()):
+            with aud_cols[i]:
+                if st.button(name, key=f"aud_{name}"): st.session_state.active_audio = sounds[name]
+        if st.session_state.active_audio:
+            st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
+
+        st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+        components.html("""
+            <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.4; pointer-events:none; text-align:center;">
+                    TOUCH THE SURFACE<br>TO GROUND YOURSELF
+                </div>
+                <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
             </div>
-            <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
-        </div>
-        <script>
-            const canvas = document.getElementById('zenCanvas');
-            const ctx = canvas.getContext('2d');
-            let ripples = [];
-            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-            window.addEventListener('resize', resize); resize();
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < ripples.length; i++) {
-                    let r = ripples[i];
-                    ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`; ctx.lineWidth = 2; ctx.stroke();
-                    r.radius += 0.8; r.alpha -= 0.01;
+            <script>
+                const canvas = document.getElementById('zenCanvas');
+                const ctx = canvas.getContext('2d');
+                let ripples = [];
+                function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+                window.addEventListener('resize', resize); resize();
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    for (let i = 0; i < ripples.length; i++) {
+                        let r = ripples[i];
+                        ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`; ctx.lineWidth = 2; ctx.stroke();
+                        r.radius += 0.8; r.alpha -= 0.01;
+                    }
+                    ripples = ripples.filter(r => r.alpha > 0); requestAnimationFrame(draw);
                 }
-                ripples = ripples.filter(r => r.alpha > 0); requestAnimationFrame(draw);
-            }
-            document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 5, alpha: 0.8 });
-            });
-            draw();
-        </script>
-    """, height=135)
+                document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 5, alpha: 0.8 });
+                });
+                draw();
+            </script>
+        """, height=135)
 
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    
-    voice_input = st.audio_input("Record your thoughts")
-    text_msg = st.text_area("Or type your reflection...", height=150)
-    
-    c_short, c_deep = st.columns(2)
-    with c_short:
-        btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
-    with c_deep:
-        btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
-    
-    if btn_short or btn_deep:
-        if model:
-            with st.spinner("Channeling Wisdom..."):
-                length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
-                
-                energy_context = ""
-                if st.session_state.energy_history:
-                    latest_energy = st.session_state.energy_history[-1]
-                    energy_context = f"\n\nSECRET CONTEXT: The user clicked a button indicating their physical energy state is currently '{latest_energy}'. Softly acknowledge this in your response or adapt your tone to match this specific energy."
-
-                context = f"""You are the Sukoon Mentor. 
-                1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
-                2. STRICT LANGUAGE RULE: If the user speaks or writes in pure English, you MUST respond in pure English. If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not mix them up.
-                3. {length_instruction} Use simple, easy-to-understand words.
-                4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
-                5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their exact language, then give your advice.
-                {energy_context}"""
-                
-                try:
-                    if voice_input:
-                        audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                        prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond."]
-                    elif text_msg:
-                        prompt_parts = [context, text_msg]
-                    else:
-                        prompt_parts = [context, "I am seeking silence."]
-                        
-                    resp = model.generate_content(prompt_parts)
-                    unique_id = str(datetime.now().timestamp()).replace('.', '')
-                    
-                    st.session_state.core_journal.append({
-                        "time": datetime.now().strftime("%H:%M"), 
-                        "ai": resp.text,
-                        "id": unique_id
-                    })
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Technical Error: {str(e)}")
-        else:
-            st.warning("The Mentor is resting. Please try again in an hour.")
-
-    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
-    
-    for entry in reversed(st.session_state.core_journal):
-        safe_speech_text = urllib.parse.quote(entry['ai'])
-        html_button = f"""
-        <style>
-            .listen-btn {{
-                background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%);
-                color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 12px;
-                font-size: 11px; font-family: sans-serif; cursor: pointer; width: 100%; text-transform: uppercase;
-                margin-bottom: 5px;
-            }}
-            .listen-btn:active {{ background: #333; }}
-        </style>
-        <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
-        <script>
-            function playVoice() {{
-                window.speechSynthesis.cancel();
-                var decodedText = decodeURIComponent("{safe_speech_text}");
-                var m = new SpeechSynthesisUtterance(decodedText);
-                m.rate = 0.85;
-                m.lang = 'hi-IN'; 
-                
-                function setVoiceAndSpeak() {{
-                    var voices = window.speechSynthesis.getVoices();
-                    var localVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.name.includes('India') || v.name.includes('Hindi'));
-                    
-                    if (localVoice) {{
-                        m.voice = localVoice;
-                    }}
-                    window.speechSynthesis.speak(m);
-                }}
-
-                if (window.speechSynthesis.getVoices().length === 0) {{
-                    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
-                }} else {{
-                    setVoiceAndSpeak();
-                }}
-            }}
-        </script>
-        """
-        components.html(html_button, height=50)
-
-        formatted_text = entry['ai'].replace('\n', '<br>')
-        st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+        
+        voice_input = st.audio_input("Record your thoughts")
+        text_msg = st.text_area("Or type your reflection...", height=150)
+        
+        c_short, c_deep = st.columns(2)
+        with c_short:
+            btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
+        with c_deep:
+            btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
+        
+        if btn_short or btn_deep:
+            if model:
+                with st.spinner("Channeling Wisdom..."):
+                    length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
+                    
+                    energy_context = ""
+                    if st.session_state.energy_history:
+                        latest_energy = st.session_state.energy_history[-1]
+                        energy_context = f"\n\nSECRET CONTEXT: The user clicked a button indicating their physical energy state is currently '{latest_energy}'. Softly acknowledge this in your response or adapt your tone to match this specific energy."
 
-    st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px;'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
-    
-    m_cols = st.columns(5)
-    for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
-        with m_cols[i]:
-            if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
+                    context = f"""You are the Sukoon Mentor. 
+                    1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
+                    2. STRICT LANGUAGE RULE: If the user speaks or writes in pure English, you MUST respond in pure English. If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not mix them up.
+                    3. {length_instruction} Use simple, easy-to-understand words.
+                    4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
+                    5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their exact language, then give your advice.
+                    {energy_context}"""
+                    
+                    try:
+                        if voice_input:
+                            audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
+                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond."]
+                        elif text_msg:
+                            prompt_parts = [context, text_msg]
+                        else:
+                            prompt_parts = [context, "I am seeking silence."]
+                            
+                        resp = model.generate_content(prompt_parts)
+                        unique_id = str(datetime.now().timestamp()).replace('.', '')
+                        
+                        st.session_state.core_journal.append({
+                            "time": datetime.now().strftime("%H:%M"), 
+                            "ai": resp.text,
+                            "id": unique_id
+                        })
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Technical Error: {str(e)}")
+            else:
+                st.warning("The Mentor is resting. Please try again in an hour.")
+
+        st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+        
+        for entry in reversed(st.session_state.core_journal):
+            safe_speech_text = urllib.parse.quote(entry['ai'])
+            html_button = f"""
+            <style>
+                .listen-btn {{
+                    background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%);
+                    color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 12px;
+                    font-size: 11px; font-family: sans-serif; cursor: pointer; width: 100%; text-transform: uppercase;
+                    margin-bottom: 5px;
+                }}
+                .listen-btn:active {{ background: #333; }}
+            </style>
+            <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
+            <script>
+                function playVoice() {{
+                    window.speechSynthesis.cancel();
+                    var decodedText = decodeURIComponent("{safe_speech_text}");
+                    var m = new SpeechSynthesisUtterance(decodedText);
+                    m.rate = 0.85;
+                    m.lang = 'hi-IN'; 
+                    
+                    function setVoiceAndSpeak() {{
+                        var voices = window.speechSynthesis.getVoices();
+                        var localVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.name.includes('India') || v.name.includes('Hindi'));
+                        
+                        if (localVoice) {{
+                            m.voice = localVoice;
+                        }}
+                        window.speechSynthesis.speak(m);
+                    }}
+
+                    if (window.speechSynthesis.getVoices().length === 0) {{
+                        window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+                    }} else {{
+                        setVoiceAndSpeak();
+                    }}
+                }}
+            </script>
+            """
+            components.html(html_button, height=50)
+
+            formatted_text = entry['ai'].replace('\n', '<br>')
+            st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+        st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px;'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
+        
+        m_cols = st.columns(5)
+        for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
+            with m_cols[i]:
+                if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
 elif st.session_state.current_page == "Ether":
     st.markdown("<div class='section-header'>THE ETHER</div>", unsafe_allow_html=True)
@@ -681,9 +681,9 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
     
     st.markdown("<div class='section-header'>ACCOUNT</div>", unsafe_allow_html=True)
-    if st.button("LOG OUT OF SANCTUARY"):
-        st.session_state.logged_in = False
+    if st.button("LOCK JOURNAL"):
+        st.session_state.journal_unlocked = False
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v121.0 | Private Beta Gateway</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v122.0 | Freemium Email Gate</div>", unsafe_allow_html=True)
