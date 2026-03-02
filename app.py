@@ -343,11 +343,11 @@ elif st.session_state.current_page == "Ether":
             currentMode = mode;
             
             if (mode === 'fire') {
-                msg.innerHTML = "THE ETHER HAS BURNED IT.<br>IT IS NO LONGER YOURS TO CARRY.";
+                msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO.";
                 input.style.filter = "blur(15px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
                 input.style.transform = "translateY(30px) scale(0.9)"; 
             } else {
-                msg.innerHTML = "THE UNIVERSE HAS RECEIVED IT.<br>YOUR INTENTION IS NOW IN MOTION.";
+                msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET.";
                 input.style.filter = "blur(12px) brightness(200%)"; 
                 input.style.transform = "translateY(-60px) scale(1.05)"; 
             }
@@ -627,4 +627,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v115.0 | UX Text Clarification</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v116.0 | Legal Intention Update</div>", unsafe_allow_html=True)
