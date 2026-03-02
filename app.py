@@ -76,10 +76,6 @@ st.markdown(f"""
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
     }}
     
-    .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
-    .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
-    .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
-    
     .disclaimer-box {{ text-align: left; font-size: 12px; opacity: 0.7; line-height: 1.8; background: #1A1A1A; padding: 20px; border-radius: 8px; border-left: 3px solid {soft_blue}; }}
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
@@ -595,19 +591,39 @@ elif st.session_state.current_page == "Focus":
         components.html(bloom_html, height=370)
 
 elif st.session_state.current_page == "Market":
-    st.markdown("<div class='section-header'>RITUAL BUNDLES</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab'>
-        <div class='bundle-title'>Starter Ritual</div>
-        <div class='bundle-desc'>Selection of Grounding Stones, Buddha Sculpture, and Hand-crafted Beads.</div>
-        <div class='price-tag'>₹2,499</div>
-        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Starter Ritual' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
-    </div>""", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab'>
-        <div class='bundle-title'>Master Sanctuary</div>
-        <div class='bundle-desc'>Full 5-Item Set including Art pieces and premium ritual objects.</div>
-        <div class='price-tag'>₹4,999</div>
-        <a href='https://wa.me/{MY_PHONE}?text=I am interested in the Master Sanctuary' style='text-decoration:none;'><div style='background:{soft_blue}; color:white; padding:12px; border-radius:5px; font-weight:bold;'>ORDER VIA WHATSAPP</div></a>
-    </div>""", unsafe_allow_html=True)
+    st.markdown("<div class='section-header'>RITUAL BUNDLES & TOOLS</div>", unsafe_allow_html=True)
+    
+    products = [
+        {"name": "Laughing Buddha", "file": "laughingbuddha.png", "price": "650"},
+        {"name": "Focus Beads", "file": "beads.png", "price": "250"},
+        {"name": "Buddha Sculpture", "file": "buddha.png", "price": "750"},
+        {"name": "Thumb Stone", "file": "thumbstone.png", "price": "300"},
+        {"name": "Wish Candle", "file": "wishcandle.png", "price": "500"},
+        {"name": "Grounding Stones", "file": "stones.png", "price": "1,000"},
+        {"name": "Starter Ritual", "file": "ritual.png", "price": "2,999"},
+        {"name": "Master Sanctuary", "file": "sanctuary.png", "price": "6,000"}
+    ]
+
+    products_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">'
+    for p in products:
+        img_url = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
+        wa_text = urllib.parse.quote(f"I am interested in the {p['name']}")
+        wa_link = f"https://wa.me/{MY_PHONE}?text={wa_text}"
+        
+        card = f"""
+        <div style="background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid #222;"></div>
+            <div style="color: #FFF; font-size: 13px; letter-spacing: 1px; margin-bottom: 5px; min-height: 35px; display: flex; align-items: center; justify-content: center; line-height: 1.3;">{p['name']}</div>
+            <div style="color: {soft_blue}; font-weight: bold; font-size: 15px; margin-bottom: 12px;">₹{p['price']}</div>
+            <a href="{wa_link}" target="_blank" style="text-decoration: none; width: 100%;">
+                <div style="background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%); color: #E0E0E0; border: 1px solid #444; padding: 10px 0; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%; cursor: pointer;">ORDER VIA WA</div>
+            </a>
+        </div>
+        """
+        products_html += card
+        
+    products_html += '</div>'
+    components.html(products_html, height=1200)
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
@@ -638,4 +654,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v117.0 | User Control Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v118.0 | Phygital Storefront</div>", unsafe_allow_html=True)
