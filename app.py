@@ -604,28 +604,23 @@ elif st.session_state.current_page == "Market":
         {"name": "Master Sanctuary", "file": "sanctuary.png", "price": "6,000"}
     ]
 
-    # Replacing components.html with direct st.markdown for perfect responsiveness
     products_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">'
     for p in products:
         img_url = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
         wa_text = urllib.parse.quote(f"I am interested in the {p['name']}")
         wa_link = f"https://wa.me/{MY_PHONE}?text={wa_text}"
         
-        card = f"""
-        <div style="background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid #222;"></div>
-            <div style="color: #FFF; font-size: 13px; letter-spacing: 1px; margin-bottom: 5px; min-height: 35px; display: flex; align-items: center; justify-content: center; line-height: 1.3;">{p['name']}</div>
-            <div style="color: {soft_blue}; font-weight: bold; font-size: 15px; margin-bottom: 12px;">₹{p['price']}</div>
-            <a href="{wa_link}" target="_blank" style="text-decoration: none; width: 100%;">
-                <div style="background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%); color: #E0E0E0; border: 1px solid #444; padding: 10px 0; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%; cursor: pointer;">ORDER VIA WA</div>
-            </a>
-        </div>
-        """
-        products_html += card
+        products_html += f"""<div style="background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+<div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid #222;"></div>
+<div style="color: #FFF; font-size: 13px; letter-spacing: 1px; margin-bottom: 5px; min-height: 35px; display: flex; align-items: center; justify-content: center; line-height: 1.3;">{p['name']}</div>
+<div style="color: {soft_blue}; font-weight: bold; font-size: 15px; margin-bottom: 12px;">₹{p['price']}</div>
+<a href="{wa_link}" target="_blank" style="text-decoration: none; width: 100%;">
+<div style="background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%); color: #E0E0E0; border: 1px solid #444; padding: 10px 0; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%; cursor: pointer;">ORDER VIA WA</div>
+</a>
+</div>"""
         
     products_html += '</div>'
     
-    # Render purely through markdown so it expands dynamically based on screen width
     st.markdown(products_html, unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
@@ -657,4 +652,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v119.0 | Responsive Storefront</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v120.0 | Storefront Rendering Fix</div>", unsafe_allow_html=True)
