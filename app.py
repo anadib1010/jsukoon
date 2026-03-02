@@ -258,7 +258,7 @@ elif st.session_state.current_page == "Ether":
     <div id="ether-container" style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
         <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
-            PLACE YOUR THOUGHT IN THE ETHER
+            WRITE YOUR THOUGHTS INTO THE ETHER
         </p>
         <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
         
@@ -627,4 +627,4 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v114.0 | Breath Studio UI</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v115.0 | UX Text Clarification</div>", unsafe_allow_html=True)
