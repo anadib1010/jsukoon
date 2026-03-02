@@ -94,18 +94,32 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# --- 7. MAIN APP HEADER ---
+# --- 7. MAIN APP HEADER & 2x3 NAV GRID ---
 # ==========================================
 
 st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px; margin-bottom: 20px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
-nav_row = st.columns(5)
-nav_list = [("Journal", "Journal"), ("Ether", "Ether"), ("Focus", "Focus"), ("Market", "Market"), ("Info", "Info")]
-for i, (lab, tar) in enumerate(nav_list):
-    with nav_row[i]:
-        if st.button(lab, key=f"nav_{lab}"): st.session_state.current_page = tar; st.rerun()
+# Row 1 of Navigation
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button("Journal"): st.session_state.current_page = "Journal"; st.rerun()
+with col2:
+    if st.button("Ether"): st.session_state.current_page = "Ether"; st.rerun()
+with col3:
+    if st.button("Focus"): st.session_state.current_page = "Focus"; st.rerun()
+
+# Row 2 of Navigation
+col4, col5, col6 = st.columns(3)
+with col4:
+    if st.button("Market"): st.session_state.current_page = "Market"; st.rerun()
+with col5:
+    if st.button("Info"): st.session_state.current_page = "Info"; st.rerun()
+with col6:
+    if st.button("Settings"): st.session_state.current_page = "Settings"; st.rerun()
+
+st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
 # --- PAGES ---
 
@@ -694,11 +708,20 @@ elif st.session_state.current_page == "Info":
         <b>4. DATA PRIVACY:</b> Your journal entries and voice recordings are session-based and are not permanently stored on our servers. <br><br>
         <b>5. COMMERCE & TAXES:</b> Physical bundle sales are initiated via WhatsApp and are subject to standard shipping timelines and applicable state taxes (including GST).
     </div>""", unsafe_allow_html=True)
+
+elif st.session_state.current_page == "Settings":
+    st.markdown("<div class='section-header'>ACCOUNT & SECURITY</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='text-align:center; padding: 30px 20px;'>", unsafe_allow_html=True)
     
-    st.markdown("<div class='section-header'>ACCOUNT</div>", unsafe_allow_html=True)
-    if st.button("LOCK JOURNAL"):
-        st.session_state.journal_unlocked = False
-        st.rerun()
+    if st.session_state.journal_unlocked:
+        st.markdown("<p style='font-size: 14px; color: #FFF; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
+        if st.button("LOCK JOURNAL", key="btn_lock"):
+            st.session_state.journal_unlocked = False
+            st.rerun()
+    else:
+        st.markdown(f"<p style='font-size: 14px; color: {soft_blue}; margin-bottom: 0;'>Your private Sanctuary Journal is secured.</p>", unsafe_allow_html=True)
+        
+    st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v123.0 | Cloud Ledger Active</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v124.0 | 2x3 Navigation Grid</div>", unsafe_allow_html=True)
