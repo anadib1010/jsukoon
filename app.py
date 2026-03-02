@@ -23,6 +23,8 @@ st.markdown(f"""
     </head>
     """, unsafe_allow_html=True)
 
+# --- 3. SESSION STATE INITIALIZATION ---
+if "logged_in" not in st.session_state: st.session_state.logged_in = False
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
@@ -30,7 +32,7 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 if "active_game" not in st.session_state: st.session_state.active_game = "Release"
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 
-# --- 3. GOOGLE ANALYTICS ---
+# --- 4. GOOGLE ANALYTICS ---
 components.html(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
     <script>
@@ -41,14 +43,14 @@ components.html(f"""
     </script>
     """, height=0)
 
-# --- 4. THE BRAIN SETUP ---
+# --- 5. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel("gemini-2.5-flash")
 
-# --- 5. DESIGN CSS ---
+# --- 6. DESIGN CSS ---
 st.markdown(f"""
     <style>
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
@@ -80,12 +82,40 @@ st.markdown(f"""
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
     .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
     
-    textarea {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
+    textarea, input {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
     .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 5px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
+    
+    /* Login Box Styling */
+    .login-container {{ background: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 12px; padding: 40px 25px; margin-top: 50px; text-align: center; }}
+    .login-subtitle {{ font-size: 12px; letter-spacing: 2px; color: {soft_blue}; opacity: 0.8; margin-bottom: 30px; text-transform: uppercase; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. HEADER ---
+# --- 7. THE AUTHENTICATION GATEWAY ---
+if not st.session_state.logged_in:
+    st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
+    st.markdown("<div class='login-subtitle'>A PRIVATE SANCTUARY</div>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='login-container'>", unsafe_allow_html=True)
+    username = st.text_input("Username", key="auth_user")
+    password = st.text_input("Password", type="password", key="auth_pass")
+    
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+    
+    if st.button("ENTER SANCTUARY"):
+        if username.strip().lower() == "beta" and password == "breathe":
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error("Incorrect credentials. The sanctuary remains closed.")
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.stop() # This prevents the rest of the app from loading until logged in.
+
+# ==========================================
+# --- 8. MAIN APP (ONLY SHOWS IF LOGGED IN) ---
+# ==========================================
+
 st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
@@ -96,7 +126,7 @@ for i, (lab, tar) in enumerate(nav_list):
     with nav_row[i]:
         if st.button(lab, key=f"nav_{lab}"): st.session_state.current_page = tar; st.rerun()
 
-# --- 7. PAGES ---
+# --- PAGES ---
 
 if st.session_state.current_page == "Journal":
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
@@ -620,7 +650,6 @@ elif st.session_state.current_page == "Market":
 </div>"""
         
     products_html += '</div>'
-    
     st.markdown(products_html, unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
@@ -650,6 +679,11 @@ elif st.session_state.current_page == "Info":
         <b>4. DATA PRIVACY:</b> Your journal entries and voice recordings are session-based and are not permanently stored on our servers. <br><br>
         <b>5. COMMERCE & TAXES:</b> Physical bundle sales are initiated via WhatsApp and are subject to standard shipping timelines and applicable state taxes (including GST).
     </div>""", unsafe_allow_html=True)
+    
+    st.markdown("<div class='section-header'>ACCOUNT</div>", unsafe_allow_html=True)
+    if st.button("LOG OUT OF SANCTUARY"):
+        st.session_state.logged_in = False
+        st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v120.0 | Storefront Rendering Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v121.0 | Private Beta Gateway</div>", unsafe_allow_html=True)
