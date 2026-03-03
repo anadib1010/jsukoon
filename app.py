@@ -25,8 +25,14 @@ st.markdown(f"""
     </head>
     """, unsafe_allow_html=True)
 
-# --- 3. SESSION STATE INITIALIZATION ---
-if "journal_unlocked" not in st.session_state: st.session_state.journal_unlocked = False
+# --- 3. SESSION STATE INITIALIZATION (WITH MEMORY FIX) ---
+if "journal_unlocked" not in st.session_state: 
+    # Check if they have the digital hand stamp in their URL
+    if st.query_params.get("access") == "granted":
+        st.session_state.journal_unlocked = True
+    else:
+        st.session_state.journal_unlocked = False
+
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
@@ -34,7 +40,6 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 if "active_game" not in st.session_state: st.session_state.active_game = "Release"
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 
-# Variables strictly for the AI Agent's Smart Room
 if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.mp3"
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
 if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
@@ -180,7 +185,6 @@ base_breath_html = """
 </script>
 """
 
-# Store the JS snippets in a dictionary so we can call them easily
 breath_js_dict = {
     "Anchor": """
         let cycle = t % 12; let text = ""; let scale = 1;
@@ -295,6 +299,10 @@ if st.session_state.current_page == "Journal":
                         sheet.append_row([user_email, current_time])
                 except Exception as e:
                     pass 
+                
+                # --- APPLY THE DIGITAL HAND STAMP ---
+                st.query_params["access"] = "granted"
+                
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -355,7 +363,6 @@ if st.session_state.current_page == "Journal":
         with c_deep:
             btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
             
-        # The Triage Buttons
         st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
         st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
         if st.button("⚡ AUTO-PILOT (INSTANT SOS) ⚡", use_container_width=True):
@@ -412,7 +419,6 @@ if st.session_state.current_page == "Journal":
                                 clean_text = resp.text.strip().replace('```json', '').replace('```', '')
                                 agent_command = json.loads(clean_text)
                                 
-                                # Let the Agent set up the Smart Room variables safely
                                 st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
                                 st.session_state.agent_breath = agent_command.get("breath", "Box")
                                 raw_audio = str(agent_command.get("audio", "flute")).lower()
@@ -421,7 +427,6 @@ if st.session_state.current_page == "Journal":
                                 st.session_state.current_page = "AgentSanctuary"
                                 
                             except Exception as e:
-                                # The Safety Net: Default to Flute and Box if the AI makes a typo
                                 st.session_state.agent_message = "I am here. Let us breathe together."
                                 st.session_state.agent_breath = "Box"
                                 st.session_state.agent_audio = "flute.mp3"
@@ -494,7 +499,6 @@ if st.session_state.current_page == "Journal":
             with m_cols[i]:
                 if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
-# --- THE FIRE ALARM (STATIC) ---
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
     st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>I have taken over. Let the sound wash over you. Tap the screen to pop your thoughts, and breathe with the box.</p>", unsafe_allow_html=True)
@@ -505,20 +509,16 @@ elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     components.html(release_game_html, height=370)
 
-# --- THE DOCTOR (DYNAMIC SMART ROOM) ---
 elif st.session_state.current_page == "AgentSanctuary":
     st.markdown("<div class='section-header' style='color: #b25b96;'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>{st.session_state.agent_message}</p>", unsafe_allow_html=True)
     
-    # Play the exact audio the AI chose
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.agent_audio}", format="audio/mp3", autoplay=True)
     
-    # Render the exact breathing exercise the AI chose
     selected_js = breath_js_dict.get(st.session_state.agent_breath, breath_js_dict["Box"])
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     components.html(base_breath_html.replace("[JS_INJECT]", selected_js), height=270)
     
-    # Always include the game for tactile relief
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     components.html(release_game_html, height=370)
 
@@ -797,6 +797,8 @@ elif st.session_state.current_page == "Settings":
     if st.session_state.journal_unlocked:
         st.markdown("<p style='font-size: 14px; color: #FFF; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
         if st.button("LOCK JOURNAL", key="btn_lock"):
+            # --- WASH OFF THE HAND STAMP ---
+            st.query_params.clear() 
             st.session_state.journal_unlocked = False
             st.rerun()
     else:
@@ -805,4 +807,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v128.0 | Triage System Active</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v129.0 | Persistent Memory Fix</div>", unsafe_allow_html=True)
