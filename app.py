@@ -148,6 +148,73 @@ with col6:
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
+# --- REUSABLE HTML COMPONENTS ---
+base_breath_html = """
+<div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+    <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
+</div>
+<script>
+    const canvas = document.getElementById('breathCanvas'); const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    window.addEventListener('resize', resize); resize(); const start = Date.now();
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cx = canvas.width/2; const cy = canvas.height/2 - 10;
+        let t = ((Date.now() - start) / 1000);
+        [JS_INJECT]
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
+"""
+
+box_breath_js = """
+let cycle = t % 16; let text = ""; let size = 100;
+let x = cx - size/2; let y = cy - size/2;
+ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.strokeRect(x, y, size, size);
+ctx.strokeStyle = "rgba(91, 150, 178, 1)"; ctx.lineWidth = 4; ctx.beginPath();
+if(cycle < 4) { text = "INHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y+size - size*(cycle/4)); } 
+else if(cycle < 8) { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x + size*((cycle-4)/4), y); } 
+else if(cycle < 12) { text = "EXHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y + size*((cycle-8)/4)); } 
+else { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x+size - size*((cycle-12)/4), y+size); }
+ctx.stroke(); ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+"""
+
+release_game_html = """
+<div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
+    <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
+        THOUGHTS RELEASED: <span id="scoreVal">0</span>
+    </div>
+    <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+</div>
+<script>
+    const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+    let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
+    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    window.addEventListener('resize', resize); resize();
+    function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!gameStarted) {
+            ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0;
+        } else {
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1);
+                } else { b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)"; if (b.y < -50) bubbles.splice(i, 1); }
+            }
+        }
+        requestAnimationFrame(draw);
+    }
+    canvas.addEventListener('pointerdown', (e) => {
+        if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
+        const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+        for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
+    });
+    draw();
+</script>
+"""
+
 # --- PAGES ---
 
 if st.session_state.current_page == "Journal":
@@ -234,37 +301,25 @@ if st.session_state.current_page == "Journal":
             btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
             
         st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
-        btn_autopilot = st.button("⚡ AUTO-PILOT (AI TAKEOVER) ⚡", use_container_width=True)
+        # --- NO MORE AI FOR AUTO-PILOT. IT IS INSTANT TELEPORTATION ---
+        if st.button("⚡ AUTO-PILOT (AI TAKEOVER) ⚡", use_container_width=True):
+            st.session_state.current_page = "AutoPilot"
+            st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
         
-        if btn_short or btn_deep or btn_autopilot:
+        if btn_short or btn_deep:
             if model:
-                with st.spinner("Channeling Wisdom..." if not btn_autopilot else "AI Agent Analyzing State..."):
+                with st.spinner("Channeling Wisdom..."):
                     energy_context = ""
                     if st.session_state.energy_history:
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
-                    if btn_autopilot:
-                        context = f"""You are the Sukoon AI Agent. The user wants you to take over their app to calm them down.
-                        Analyze their message and decide which breathing exercise and ambient sound will help them most.
-                        {energy_context}
-                        
-                        CRITICAL INSTRUCTION: You must respond ONLY with a raw JSON object. Do not include markdown like ```json. Do not say hello.
-                        
-                        Your JSON must look exactly like this:
-                        {{
-                            "reply": "A very short, 2-sentence comforting message telling them you are setting up a sanctuary for them.",
-                            "breath": "Choose exactly one: Anchor, Box, Sleep_Wave, Sleep_Moon, or Sleep_Lotus",
-                            "audio": "Choose exactly one: Birds, Flute, Forest, Waves, or Wind"
-                        }}
-                        """
-                    else:
-                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
-                        context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
-                        {length_instruction}
-                        End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
-                        {energy_context}"""
+                    length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
+                    context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
+                    {length_instruction}
+                    End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
+                    {energy_context}"""
                     
                     try:
                         if voice_input:
@@ -276,28 +331,7 @@ if st.session_state.current_page == "Journal":
                             prompt_parts = [context, "I am seeking silence."]
                             
                         resp = model.generate_content(prompt_parts)
-                        
-                        if btn_autopilot:
-                            try:
-                                clean_text = resp.text.strip().replace('```json', '').replace('```', '')
-                                agent_command = json.loads(clean_text)
-                                
-                                ai_reply = agent_command.get("reply", "I am taking over. Let's breathe.")
-                                st.session_state.active_breath = agent_command.get("breath", "Anchor")
-                                
-                                # --- THE FIX: FORCE THE WORD TO BE LOWERCASE ---
-                                raw_audio_word = str(agent_command.get("audio", "waves"))
-                                st.session_state.active_audio = raw_audio_word.lower() + ".mp3"
-                                # -----------------------------------------------
-                                
-                                st.session_state.current_page = "Focus"
-                                
-                            except Exception as e:
-                                ai_reply = "I am here. Let us focus on the breath together."
-                                st.session_state.active_breath = "Anchor"
-                                st.session_state.current_page = "Focus"
-                        else:
-                            ai_reply = resp.text
+                        ai_reply = resp.text
 
                         unique_id = str(datetime.now().timestamp()).replace('.', '')
                         st.session_state.core_journal.append({
@@ -363,6 +397,22 @@ if st.session_state.current_page == "Journal":
         for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
             with m_cols[i]:
                 if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
+
+# --- THE BRAND NEW "AUTO PILOT" SOS PAGE ---
+elif st.session_state.current_page == "AutoPilot":
+    st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>I have taken over. Let the sound wash over you. Tap the screen to pop your thoughts, and breathe with the box.</p>", unsafe_allow_html=True)
+    
+    # Auto-play Waves
+    st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
+    
+    # The 4-4-4 Box Breathing
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    components.html(base_breath_html.replace("[JS_INJECT]", box_breath_js), height=270)
+    
+    # The Release Game
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    components.html(release_game_html, height=370)
 
 elif st.session_state.current_page == "Ether":
     st.markdown("<div class='section-header'>THE ETHER</div>", unsafe_allow_html=True)
@@ -495,8 +545,7 @@ elif st.session_state.current_page == "Focus":
     st.markdown("<div class='section-header'>BREATH STUDIO</div>", unsafe_allow_html=True)
     
     if st.session_state.active_audio:
-        st.audio(f"[https://cdn.jsdelivr.net/gh/](https://cdn.jsdelivr.net/gh/){GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
-        st.markdown(f"<p style='font-size: 11px; opacity: 0.5; margin-top: -10px; color: {soft_blue};'>AI Ambient Sound Active</p>", unsafe_allow_html=True)
+        st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
@@ -519,27 +568,6 @@ elif st.session_state.current_page == "Focus":
         with s_col3:
             if st.button("The Lotus"): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
-    base_breath_html = """
-    <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
-        <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
-    </div>
-    <script>
-        const canvas = document.getElementById('breathCanvas');
-        const ctx = canvas.getContext('2d');
-        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-        window.addEventListener('resize', resize); resize();
-        const start = Date.now();
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width/2; const cy = canvas.height/2 - 10;
-            let t = ((Date.now() - start) / 1000);
-            [JS_INJECT]
-            requestAnimationFrame(draw);
-        }
-        draw();
-    </script>
-    """
-
     js_code = ""
     if st.session_state.active_breath == "Anchor":
         js_code = """
@@ -554,17 +582,7 @@ elif st.session_state.current_page == "Focus":
         ctx.fillText(text, cx, cy + 90);
         """
     elif st.session_state.active_breath == "Box":
-        js_code = """
-        let cycle = t % 16; let text = ""; let size = 100;
-        let x = cx - size/2; let y = cy - size/2;
-        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.strokeRect(x, y, size, size);
-        ctx.strokeStyle = "rgba(91, 150, 178, 1)"; ctx.lineWidth = 4; ctx.beginPath();
-        if(cycle < 4) { text = "INHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y+size - size*(cycle/4)); } 
-        else if(cycle < 8) { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x + size*((cycle-4)/4), y); } 
-        else if(cycle < 12) { text = "EXHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y + size*((cycle-8)/4)); } 
-        else { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x+size - size*((cycle-12)/4), y+size); }
-        ctx.stroke(); ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
-        """
+        js_code = box_breath_js
     elif st.session_state.active_breath == "Sleep_Wave":
         js_code = """
         let cycle = t % 19; let text = ""; let width = canvas.width * 0.7;
@@ -617,59 +635,7 @@ elif st.session_state.current_page == "Focus":
 
     if st.session_state.active_game == "Release":
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
-        game_html = """
-        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
-            <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
-                THOUGHTS RELEASED: <span id="scoreVal">0</span>
-            </div>
-            <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-        </div>
-        <script>
-            const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-            let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
-            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-            window.addEventListener('resize', resize); resize();
-            function createBubble() {
-                bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false });
-            }
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if (!gameStarted) {
-                    ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; 
-                    ctx.textAlign = "center"; ctx.letterSpacing = "2px"; 
-                    ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2);
-                    ctx.globalAlpha = 1.0;
-                } else {
-                    for (let i = bubbles.length - 1; i >= 0; i--) {
-                        let b = bubbles[i];
-                        ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                        if (b.popping) {
-                            b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke();
-                            if (b.alpha <= 0) bubbles.splice(i, 1);
-                        } else {
-                            b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)";
-                            if (b.y < -50) bubbles.splice(i, 1);
-                        }
-                    }
-                }
-                requestAnimationFrame(draw);
-            }
-            canvas.addEventListener('pointerdown', (e) => {
-                if (!gameStarted) {
-                    gameStarted = true;
-                    bubbleInterval = setInterval(createBubble, 1200);
-                    return;
-                }
-                const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
-                for (let i = 0; i < bubbles.length; i++) {
-                    let b = bubbles[i];
-                    if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; }
-                }
-            });
-            draw();
-        </script>
-        """
-        components.html(game_html, height=370)
+        components.html(release_game_html, height=370)
 
     elif st.session_state.active_game == "Bloom":
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the center slowly to grow your light.</p>", unsafe_allow_html=True)
@@ -724,9 +690,9 @@ elif st.session_state.current_page == "Market":
 
     products_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">'
     for p in products:
-        img_url = f"[https://cdn.jsdelivr.net/gh/](https://cdn.jsdelivr.net/gh/){GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
+        img_url = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
         wa_text = urllib.parse.quote(f"I am interested in the {p['name']}")
-        wa_link = f"[https://wa.me/](https://wa.me/){MY_PHONE}?text={wa_text}"
+        wa_link = f"https://wa.me/{MY_PHONE}?text={wa_text}"
         
         products_html += f"""<div style="background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
 <div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid #222;"></div>
@@ -783,4 +749,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v126.2 | Case-Sensitivity Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v127.0 | Instant SOS Auto-Pilot</div>", unsafe_allow_html=True)
