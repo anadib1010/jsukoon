@@ -42,7 +42,6 @@ if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
 if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
 
-# 🚨 NEW: THE THEME MEMORY 🚨
 if "theme" not in st.session_state: st.session_state.theme = "Midnight"
 
 # --- 4. THEME ENGINE VARIABLES ---
@@ -55,14 +54,13 @@ if st.session_state.theme == "Midnight":
     input_bg = "#1A1A1A"
     title_color = "#FFFFFF"
     
-    # Canvas Specifics
     c_bg = "#1A1A1A"
     c_text = "#FFFFFF"
     c_border = "#333"
     c_msg_bg = "rgba(0,0,0,0.5)"
     c_star = "255, 255, 255"
     c_moon = "255, 250, 240"
-else: # Peaceful Sky Theme
+else: 
     app_bg = "#F4FAFF"
     app_text = "#1A2530"
     btn_bg = "linear-gradient(180deg, #FFFFFF 0%, #E6F0F9 100%)"
@@ -71,16 +69,14 @@ else: # Peaceful Sky Theme
     input_bg = "#FFFFFF"
     title_color = soft_blue
     
-    # Canvas Specifics (Inverted for light mode)
     c_bg = "#FFFFFF"
     c_text = "#1A2530"
     c_border = "#C0D6E4"
     c_msg_bg = "rgba(255,255,255,0.85)"
-    c_star = "91, 150, 178" # Blue stars
-    c_moon = "91, 150, 178" # Blue moon so it's visible on white
+    c_star = "91, 150, 178" 
+    c_moon = "91, 150, 178" 
 
 def theme_it(html_str):
-    """Automatically swaps colors in JavaScript animations based on the current theme."""
     return html_str.replace("[C_BG]", c_bg).replace("[C_BORDER]", c_border).replace("[C_TEXT]", c_text).replace("[C_MSG_BG]", c_msg_bg).replace("[C_STAR]", c_star).replace("[C_MOON]", c_moon)
 
 # --- 5. GOOGLE ANALYTICS ---
@@ -209,7 +205,7 @@ with col6:
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-# --- REUSABLE HTML COMPONENTS (PRE-THEMED) ---
+# --- REUSABLE HTML COMPONENTS ---
 base_breath_html = """
 <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
     <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
@@ -808,11 +804,15 @@ elif st.session_state.current_page == "Market":
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
+    
+    # 🚨 NEW: EXPLICIT INSTALLATION INSTRUCTIONS FOR THE HOME SCREEN FIX 🚨
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; color: {app_text};'>
+        <b>CRITICAL FIRST STEP:</b> Unlock your Journal with your email so the app remembers you.<br><br>
         1. Open this link in <b>Safari (iPhone)</b> or <b>Chrome (Android)</b>.<br><br>
-        2. Tap the <b>Share</b> or <b>Menu (⋮)</b> icon.<br><br>
-        3. Select <b>'Add to Home Screen'</b>.<br><br>
-        4. Open Sukoon from your home screen for a <b>Full-Screen experience</b>.
+        2. Enter your email and <b>Unlock the Journal</b>.<br><br>
+        3. Tap the <b>Share</b> or <b>Menu (⋮)</b> icon.<br><br>
+        4. Select <b>'Add to Home Screen'</b>.<br><br>
+        5. Open Sukoon from your home screen for a Full-Screen, always-unlocked experience.
     </div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
@@ -835,7 +835,6 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Settings":
-    # --- 🚨 NEW: THE THEME TOGGLE 🚨 ---
     st.markdown("<div class='section-header'>APP THEME</div>", unsafe_allow_html=True)
     st.markdown("<div class='market-slab' style='padding: 20px;'>", unsafe_allow_html=True)
     t_col1, t_col2 = st.columns(2)
@@ -862,4 +861,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v133.0 | Global Theme Engine</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v134.0 | Onboarding Instructions</div>", unsafe_allow_html=True)
