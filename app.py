@@ -25,9 +25,8 @@ st.markdown(f"""
     </head>
     """, unsafe_allow_html=True)
 
-# --- 3. SESSION STATE INITIALIZATION (WITH MEMORY FIX) ---
+# --- 3. SESSION STATE INITIALIZATION ---
 if "journal_unlocked" not in st.session_state: 
-    # Check if they have the digital hand stamp in their URL
     if st.query_params.get("access") == "granted":
         st.session_state.journal_unlocked = True
     else:
@@ -68,12 +67,11 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
-    /* 🚨 GRID CENTERING FIX (Forces the whole row to the middle) 🚨 */
+    /* Center the grid items on all screens */
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
         justify-content: center !important; 
-        align-items: center !important;
         gap: 10px !important; 
     }}
     
@@ -110,27 +108,11 @@ st.markdown(f"""
     .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; }}
     .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
     
-    /* 🚨 BUTTON UNIFORM RECTANGLE FIX 🚨 */
-    div.stButton {{
-        width: 100% !important;
-    }}
-
     .stButton>button {{ 
-        width: 100% !important; 
-        min-width: 100% !important;
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
-        color: #E0E0E0 !important; 
-        border: 1px solid #444 !important; 
-        border-radius: 4px !important; 
-        min-height: 48px !important; 
-        height: 100% !important;
-        font-size: 11px !important;
+        color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
+        min-height: 48px !important; font-size: 11px !important;
         padding: 0px 2px !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
-        box-sizing: border-box !important;
     }}
     
     .autopilot-btn>button {{
@@ -170,19 +152,19 @@ st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px; margin
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    if st.button("Journal"): st.session_state.current_page = "Journal"; st.rerun()
+    if st.button("Journal", use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
 with col2:
-    if st.button("Ether"): st.session_state.current_page = "Ether"; st.rerun()
+    if st.button("Ether", use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
 with col3:
-    if st.button("Focus"): st.session_state.current_page = "Focus"; st.rerun()
+    if st.button("Focus", use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
 
 col4, col5, col6 = st.columns(3)
 with col4:
-    if st.button("Market"): st.session_state.current_page = "Market"; st.rerun()
+    if st.button("Market", use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
 with col5:
-    if st.button("Info"): st.session_state.current_page = "Info"; st.rerun()
+    if st.button("Info", use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
 with col6:
-    if st.button("Settings"): st.session_state.current_page = "Settings"; st.rerun()
+    if st.button("Settings", use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
@@ -308,7 +290,7 @@ if st.session_state.current_page == "Journal":
         user_email = st.text_input("Your Email Address", placeholder="name@example.com")
         st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
         
-        if st.button("UNLOCK JOURNAL"):
+        if st.button("UNLOCK JOURNAL", use_container_width=True):
             if "@" in user_email and "." in user_email:
                 try:
                     if "GCP_CREDENTIALS" in st.secrets:
@@ -321,9 +303,7 @@ if st.session_state.current_page == "Journal":
                 except Exception as e:
                     pass 
                 
-                # --- APPLY THE DIGITAL HAND STAMP ---
                 st.query_params["access"] = "granted"
-                
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -336,7 +316,8 @@ if st.session_state.current_page == "Journal":
         sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
         for i, name in enumerate(sounds.keys()):
             with aud_cols[i]:
-                if st.button(name, key=f"aud_{name}"): st.session_state.active_audio = sounds[name]
+                # NATIVE SWITCH APPLIED HERE
+                if st.button(name, key=f"aud_{name}", use_container_width=True): st.session_state.active_audio = sounds[name]
         
         if st.session_state.active_audio:
             st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
@@ -518,7 +499,8 @@ if st.session_state.current_page == "Journal":
         m_cols = st.columns(5)
         for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
             with m_cols[i]:
-                if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
+                # NATIVE SWITCH APPLIED HERE
+                if st.button(m, key=f"m_{m}", use_container_width=True): st.session_state.energy_history.append(m); st.rerun()
 
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
@@ -678,11 +660,12 @@ elif st.session_state.current_page == "Focus":
 
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
-        if st.button("Anchor (4-2-6)"): st.session_state.active_breath = "Anchor"; st.rerun()
+        # NATIVE SWITCH APPLIED HERE
+        if st.button("Anchor (4-2-6)", use_container_width=True): st.session_state.active_breath = "Anchor"; st.rerun()
     with b_col2:
-        if st.button("The Box (4-4-4-4)"): st.session_state.active_breath = "Box"; st.rerun()
+        if st.button("The Box (4-4-4-4)", use_container_width=True): st.session_state.active_breath = "Box"; st.rerun()
     with b_col3:
-        if st.button("Deep Sleep (4-7-8)"): 
+        if st.button("Deep Sleep (4-7-8)", use_container_width=True): 
             if not st.session_state.active_breath.startswith("Sleep"):
                 st.session_state.active_breath = "Sleep_Wave"
             st.rerun()
@@ -691,11 +674,11 @@ elif st.session_state.current_page == "Focus":
         st.markdown("<p style='font-size: 11px; opacity: 0.7; margin: 15px 0 5px 0; text-align: center; color: #5B96B2;'>CHOOSE YOUR VISUAL GUIDE</p>", unsafe_allow_html=True)
         s_col1, s_col2, s_col3 = st.columns(3)
         with s_col1:
-            if st.button("The Wave"): st.session_state.active_breath = "Sleep_Wave"; st.rerun()
+            if st.button("The Wave", use_container_width=True): st.session_state.active_breath = "Sleep_Wave"; st.rerun()
         with s_col2:
-            if st.button("The Moon"): st.session_state.active_breath = "Sleep_Moon"; st.rerun()
+            if st.button("The Moon", use_container_width=True): st.session_state.active_breath = "Sleep_Moon"; st.rerun()
         with s_col3:
-            if st.button("The Lotus"): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
+            if st.button("The Lotus", use_container_width=True): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
     selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
     final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
@@ -706,9 +689,9 @@ elif st.session_state.current_page == "Focus":
     
     g_col1, g_col2 = st.columns(2)
     with g_col1:
-        if st.button("The Release"): st.session_state.active_game = "Release"; st.rerun()
+        if st.button("The Release", use_container_width=True): st.session_state.active_game = "Release"; st.rerun()
     with g_col2:
-        if st.button("The Bloom"): st.session_state.active_game = "Bloom"; st.rerun()
+        if st.button("The Bloom", use_container_width=True): st.session_state.active_game = "Bloom"; st.rerun()
 
     if st.session_state.active_game == "Release":
         st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
@@ -817,8 +800,7 @@ elif st.session_state.current_page == "Settings":
     
     if st.session_state.journal_unlocked:
         st.markdown("<p style='font-size: 14px; color: #FFF; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
-        if st.button("LOCK JOURNAL", key="btn_lock"):
-            # --- WASH OFF THE HAND STAMP ---
+        if st.button("LOCK JOURNAL", key="btn_lock", use_container_width=True):
             st.query_params.clear() 
             st.session_state.journal_unlocked = False
             st.rerun()
@@ -828,4 +810,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v129.0 | Persistent Memory Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v132.0 | Native UI Centering</div>", unsafe_allow_html=True)
