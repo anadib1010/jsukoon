@@ -58,17 +58,28 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
-    /* THE BIG HAMMER: Forcing Streamlit to keep the grid on all screens */
+    /* 🚨 THE RULE BREAKER: Forcing the Grid 🚨 */
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
-        justify-content: center !important;
     }}
-    div[data-testid="column"] {{
-        width: 30% !important;
-        flex: 1 1 30% !important;
-        min-width: 30% !important;
-        margin-bottom: 5px !important;
+    
+    /* Force columns to act like small blocks, not long lines */
+    div[data-testid="column"], div[data-testid="stColumn"] {{
+        width: 31% !important;
+        min-width: 31% !important;
+        max-width: 31% !important;
+        flex: 1 1 31% !important;
+        display: inline-block !important;
+    }}
+    
+    /* Make sure the 2-button rows (like the Short/Deep Guide) split the screen in half */
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"], 
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="stColumn"] {{
+        width: 48% !important;
+        min-width: 48% !important;
+        max-width: 48% !important;
+        flex: 1 1 48% !important;
     }}
     
     @keyframes pulse426 {{
@@ -91,7 +102,7 @@ st.markdown(f"""
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
         color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
-        padding: 0px 5px !important;
+        padding: 0px 2px !important;
     }}
     
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
