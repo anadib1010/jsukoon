@@ -1,12 +1,11 @@
 import streamlit as st
 import streamlit.components.v1 as components
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import google.generativeai as genai
 import urllib.parse
 import json
 import gspread
-import extra_streamlit_components as stx
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -26,18 +25,8 @@ st.markdown(f"""
     </head>
     """, unsafe_allow_html=True)
 
-# --- 3. THE IRONCLAD COOKIE MEMORY ---
-# We removed the cache here to satisfy Streamlit's new strict rules!
-cookie_manager = stx.CookieManager(key="cookie_manager")
-
-if "journal_unlocked" not in st.session_state: 
-    st.session_state.journal_unlocked = False
-
-# Read the permanent cookie
-cookie_status = cookie_manager.get(cookie="sukoon_access")
-if cookie_status == "granted":
-    st.session_state.journal_unlocked = True
-
+# --- 3. SESSION STATE INITIALIZATION (BUG-FREE) ---
+if "journal_unlocked" not in st.session_state: st.session_state.journal_unlocked = False
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
@@ -325,15 +314,71 @@ release_game_html = """
 
 if st.session_state.current_page == "Journal":
     
+    # 🚨 STEP 1: FREE AMBIENCE & ZEN TOOLS AT THE TOP 🚨
+    st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
+    aud_cols = st.columns(5)
+    sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
+    for i, name in enumerate(sounds.keys()):
+        with aud_cols[i]:
+            if st.button(name, key=f"aud_{name}", use_container_width=True): st.session_state.active_audio = sounds[name]
+    
+    if st.session_state.active_audio:
+        st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
+
+    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+    
+    zen_html = """
+        <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.6; pointer-events:none; text-align:center;">
+                TOUCH THE SURFACE<br>TO GROUND YOURSELF
+            </div>
+            <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
+        </div>
+        <script>
+            const canvas = document.getElementById('zenCanvas');
+            const ctx = canvas.getContext('2d');
+            let ripples = [];
+            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+            window.addEventListener('resize', resize); resize();
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < ripples.length; i++) {
+                    let r = ripples[i];
+                    ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`; ctx.lineWidth = 2; ctx.stroke();
+                    r.radius += 0.8; r.alpha -= 0.01;
+                }
+                ripples = ripples.filter(r => r.alpha > 0); requestAnimationFrame(draw);
+            }
+            document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 5, alpha: 0.8 });
+            });
+            draw();
+        </script>
+    """
+    components.html(theme_it(zen_html), height=135)
+
+    # 🚨 STEP 2: FREE EMERGENCY FIRE ALARM 🚨
+    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
+    if st.button("⚡ AUTO-PILOT (INSTANT SOS) ⚡", use_container_width=True):
+        st.session_state.current_page = "AutoPilot"
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 🚨 STEP 3: THE PREMIUM AI WALL 🚨
+    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-header'>PRIVATE AI MENTOR</div>", unsafe_allow_html=True)
+
     if not st.session_state.journal_unlocked:
-        st.markdown("<div class='section-header'>PRIVATE MENTOR</div>", unsafe_allow_html=True)
-        st.markdown("<div class='market-slab' style='padding: 40px 20px;'>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size: 14px; opacity: 0.8; margin-bottom: 25px; line-height: 1.6; color: {app_text};'>To start a private, guided session with the AI Mentor, please provide your email to unlock the Sanctuary.</p>", unsafe_allow_html=True)
-        
-        user_email = st.text_input("Your Email Address", placeholder="name@example.com")
+        # THE LOCK BOX
+        st.markdown("<div class='market-slab' style='padding: 30px 20px;'>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color: {app_text}; line-height: 1.6;'>Unlock the AI Agent and Guided Reflections by entering your email.</p>", unsafe_allow_html=True)
+        user_email = st.text_input("Your Email Address", placeholder="name@example.com", key="ai_email_input")
         st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
         
-        if st.button("UNLOCK JOURNAL", use_container_width=True):
+        if st.button("UNLOCK AI MENTOR", use_container_width=True):
             if "@" in user_email and "." in user_email:
                 try:
                     if "GCP_CREDENTIALS" in st.secrets:
@@ -346,10 +391,6 @@ if st.session_state.current_page == "Journal":
                 except Exception as e:
                     pass 
                 
-                # --- 🚨 BAKE THE IRONCLAD COOKIE (Valid for 30 Days) 🚨 ---
-                expires = datetime.now() + timedelta(days=30)
-                cookie_manager.set("sukoon_access", "granted", expires_at=expires)
-                
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -357,52 +398,7 @@ if st.session_state.current_page == "Journal":
         st.markdown("</div>", unsafe_allow_html=True)
 
     else:
-        st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
-        aud_cols = st.columns(5)
-        sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
-        for i, name in enumerate(sounds.keys()):
-            with aud_cols[i]:
-                if st.button(name, key=f"aud_{name}", use_container_width=True): st.session_state.active_audio = sounds[name]
-        
-        if st.session_state.active_audio:
-            st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
-
-        st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
-        
-        zen_html = """
-            <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.6; pointer-events:none; text-align:center;">
-                    TOUCH THE SURFACE<br>TO GROUND YOURSELF
-                </div>
-                <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
-            </div>
-            <script>
-                const canvas = document.getElementById('zenCanvas');
-                const ctx = canvas.getContext('2d');
-                let ripples = [];
-                function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-                window.addEventListener('resize', resize); resize();
-                function draw() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    for (let i = 0; i < ripples.length; i++) {
-                        let r = ripples[i];
-                        ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`; ctx.lineWidth = 2; ctx.stroke();
-                        r.radius += 0.8; r.alpha -= 0.01;
-                    }
-                    ripples = ripples.filter(r => r.alpha > 0); requestAnimationFrame(draw);
-                }
-                document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
-                    const rect = canvas.getBoundingClientRect();
-                    ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 5, alpha: 0.8 });
-                });
-                draw();
-            </script>
-        """
-        components.html(theme_it(zen_html), height=135)
-
-        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-        
+        # UNLOCKED AI TOOLS
         voice_input = st.audio_input("Record your thoughts")
         text_msg = st.text_area("Or type your reflection...", height=150)
         
@@ -412,13 +408,6 @@ if st.session_state.current_page == "Journal":
         with c_deep:
             btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
             
-        st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
-        st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
-        if st.button("⚡ AUTO-PILOT (INSTANT SOS) ⚡", use_container_width=True):
-            st.session_state.current_page = "AutoPilot"
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-        
         st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
         st.markdown("<div class='agent-btn'>", unsafe_allow_html=True)
         btn_agent = st.button("🤖 AI AGENT (SMART SANCTUARY) 🤖", use_container_width=True)
@@ -815,10 +804,9 @@ elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; color: {app_text};'>
         <b>1.</b> Open this link in Safari (iPhone) or Chrome (Android).<br><br>
-        <b>2.</b> Unlock your Journal with your email.<br><br>
-        <b>3.</b> Tap the Share or Menu (⋮) icon.<br><br>
-        <b>4.</b> Select 'Add to Home Screen'.<br><br>
-        <b>5.</b> Open Sukoon from your home screen.
+        <b>2.</b> Tap the Share or Menu (⋮) icon.<br><br>
+        <b>3.</b> Select 'Add to Home Screen'.<br><br>
+        <b>4.</b> Open Sukoon directly from your home screen.
     </div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
@@ -856,15 +844,14 @@ elif st.session_state.current_page == "Settings":
     st.markdown("<div class='market-slab' style='text-align:center; padding: 30px 20px;'>", unsafe_allow_html=True)
     
     if st.session_state.journal_unlocked:
-        st.markdown(f"<p style='font-size: 14px; color: {app_text}; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
-        if st.button("LOCK JOURNAL", key="btn_lock", use_container_width=True):
-            cookie_manager.delete("sukoon_access")
+        st.markdown(f"<p style='font-size: 14px; color: {app_text}; margin-bottom: 20px;'>Your Private AI Mentor is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
+        if st.button("LOCK AI MENTOR", key="btn_lock", use_container_width=True):
             st.session_state.journal_unlocked = False
             st.rerun()
     else:
-        st.markdown(f"<p style='font-size: 14px; color: {soft_blue}; margin-bottom: 0;'>Your private Sanctuary Journal is secured.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 14px; color: {soft_blue}; margin-bottom: 0;'>Your Private AI Mentor is secured.</p>", unsafe_allow_html=True)
         
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v135.1 | Ironclad Cookie Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v136.0 | Frictionless Freemium Model</div>", unsafe_allow_html=True)
