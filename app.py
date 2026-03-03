@@ -38,12 +38,52 @@ if "energy_history" not in st.session_state: st.session_state.energy_history = [
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
 if "active_game" not in st.session_state: st.session_state.active_game = "Release"
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
-
 if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.mp3"
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
 if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
 
-# --- 4. GOOGLE ANALYTICS ---
+# 🚨 NEW: THE THEME MEMORY 🚨
+if "theme" not in st.session_state: st.session_state.theme = "Midnight"
+
+# --- 4. THEME ENGINE VARIABLES ---
+if st.session_state.theme == "Midnight":
+    app_bg = "#121212"
+    app_text = "#E0E0E0"
+    btn_bg = "linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%)"
+    btn_border = "#444"
+    slab_bg = "rgba(255,255,255,0.05)"
+    input_bg = "#1A1A1A"
+    title_color = "#FFFFFF"
+    
+    # Canvas Specifics
+    c_bg = "#1A1A1A"
+    c_text = "#FFFFFF"
+    c_border = "#333"
+    c_msg_bg = "rgba(0,0,0,0.5)"
+    c_star = "255, 255, 255"
+    c_moon = "255, 250, 240"
+else: # Peaceful Sky Theme
+    app_bg = "#F4FAFF"
+    app_text = "#1A2530"
+    btn_bg = "linear-gradient(180deg, #FFFFFF 0%, #E6F0F9 100%)"
+    btn_border = "#C0D6E4"
+    slab_bg = "#FFFFFF"
+    input_bg = "#FFFFFF"
+    title_color = soft_blue
+    
+    # Canvas Specifics (Inverted for light mode)
+    c_bg = "#FFFFFF"
+    c_text = "#1A2530"
+    c_border = "#C0D6E4"
+    c_msg_bg = "rgba(255,255,255,0.85)"
+    c_star = "91, 150, 178" # Blue stars
+    c_moon = "91, 150, 178" # Blue moon so it's visible on white
+
+def theme_it(html_str):
+    """Automatically swaps colors in JavaScript animations based on the current theme."""
+    return html_str.replace("[C_BG]", c_bg).replace("[C_BORDER]", c_border).replace("[C_TEXT]", c_text).replace("[C_MSG_BG]", c_msg_bg).replace("[C_STAR]", c_star).replace("[C_MOON]", c_moon)
+
+# --- 5. GOOGLE ANALYTICS ---
 components.html(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
     <script>
@@ -54,20 +94,19 @@ components.html(f"""
     </script>
     """, height=0)
 
-# --- 5. THE BRAIN SETUP ---
+# --- 6. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
 model = None
 if api_key:
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel("gemini-2.5-flash")
 
-# --- 6. DESIGN CSS ---
+# --- 7. DYNAMIC DESIGN CSS ---
 st.markdown(f"""
     <style>
-    .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
+    .stApp {{ background-color: {app_bg} !important; color: {app_text} !important; transition: all 0.5s ease-in-out; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
-    /* Center the grid items on all screens */
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
@@ -105,45 +144,47 @@ st.markdown(f"""
         box-shadow: 0 0 25px rgba(91, 150, 178, 0.5);
     }}
 
-    .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; }}
-    .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
+    .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: {title_color}; text-transform: uppercase; transition: color 0.5s ease; }}
+    .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid {btn_border}; padding-bottom: 8px; }}
     
+    div.stButton {{ width: 100% !important; }}
+
     .stButton>button {{ 
-        background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
-        color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
-        min-height: 48px !important; font-size: 11px !important;
-        padding: 0px 2px !important;
+        width: 100% !important; min-width: 100% !important;
+        background: {btn_bg} !important; 
+        color: {app_text} !important; border: 1px solid {btn_border} !important; 
+        border-radius: 4px !important; min-height: 48px !important; height: 100% !important;
+        font-size: 11px !important; padding: 0px 2px !important;
+        display: flex !important; justify-content: center !important; align-items: center !important;
+        text-align: center !important; box-sizing: border-box !important;
+        transition: all 0.3s ease;
     }}
     
     .autopilot-btn>button {{
         background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%) !important;
-        border: 1px solid {soft_blue} !important;
-        color: {soft_blue} !important;
-        letter-spacing: 1px;
+        border: 1px solid {soft_blue} !important; color: {soft_blue} !important; letter-spacing: 1px;
     }}
 
     .agent-btn>button {{
         background: linear-gradient(180deg, #2a1a3a 0%, #150b1a 100%) !important;
-        border: 1px solid #b25b96 !important;
-        color: #b25b96 !important;
-        letter-spacing: 1px;
+        border: 1px solid #b25b96 !important; color: #b25b96 !important; letter-spacing: 1px;
     }}
     
-    .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
-    .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
+    .market-slab {{ background: {slab_bg}; border: 1px solid {btn_border}; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; transition: all 0.3s ease; }}
+    .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: {app_text}; margin-bottom: 10px; }}
     .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
     
-    .disclaimer-box {{ text-align: left; font-size: 12px; opacity: 0.7; line-height: 1.8; background: #1A1A1A; padding: 20px; border-radius: 8px; border-left: 3px solid {soft_blue}; }}
+    .disclaimer-box {{ text-align: left; font-size: 12px; opacity: 0.7; line-height: 1.8; background: {input_bg}; padding: 20px; border-radius: 8px; border-left: 3px solid {soft_blue}; }}
     .faq-q {{ font-weight: bold; color: {soft_blue}; margin-top: 15px; text-align: left; }}
-    .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 10px; }}
+    .faq-a {{ font-size: 13px; opacity: 0.8; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 10px; color: {app_text}; }}
     
-    textarea, input {{ background: #1A1A1A !important; color: #E0E0E0 !important; border: 1px solid #333 !important; text-align: center !important; font-size: 15px !important; }}
-    .journal-entry {{ background: #1A1A1A; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 5px; border-radius: 6px; color: #FFFFFF; text-align: left; font-size: 15px; line-height: 1.6; }}
+    textarea, input {{ background: {input_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; text-align: center !important; font-size: 15px !important; }}
+    .journal-entry {{ background: {input_bg}; border-left: 3px solid {soft_blue}; padding: 18px; margin-bottom: 5px; border-radius: 6px; color: {app_text}; text-align: left; font-size: 15px; line-height: 1.6; }}
     </style>
     """, unsafe_allow_html=True)
 
 # ==========================================
-# --- 7. MAIN APP HEADER & 2x3 NAV GRID ---
+# --- 8. MAIN APP HEADER & NAV GRID ---
 # ==========================================
 
 st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
@@ -168,9 +209,9 @@ with col6:
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-# --- REUSABLE HTML COMPONENTS ---
+# --- REUSABLE HTML COMPONENTS (PRE-THEMED) ---
 base_breath_html = """
-<div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+<div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
     <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
 </div>
 <script>
@@ -197,7 +238,7 @@ breath_js_dict = {
         ctx.beginPath(); ctx.arc(cx, cy, 35 * scale, 0, Math.PI*2);
         ctx.strokeStyle = "rgba(91, 150, 178, 0.8)"; ctx.lineWidth = 3; ctx.stroke();
         ctx.fillStyle = "rgba(91, 150, 178, 0.2)"; ctx.fill();
-        ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px";
+        ctx.fillStyle = "[C_TEXT]"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px";
         ctx.fillText(text, cx, cy + 90);
     """,
     "Box": """
@@ -208,7 +249,7 @@ breath_js_dict = {
         else if(cycle < 8) { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x + size*((cycle-4)/4), y); } 
         else if(cycle < 12) { text = "EXHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y + size*((cycle-8)/4)); } 
         else { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x+size - size*((cycle-12)/4), y+size); }
-        ctx.stroke(); ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        ctx.stroke(); ctx.fillStyle = "[C_TEXT]"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """,
     "Sleep_Wave": """
         let cycle = t % 19; let text = ""; let width = canvas.width * 0.7; let startX = cx - width/2; let amp = 50; let pathX = 0; let pathY = 0;
@@ -218,16 +259,16 @@ breath_js_dict = {
         ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp);
         ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
         ctx.beginPath(); ctx.arc(pathX, pathY, 12, 0, Math.PI*2); ctx.fillStyle = "rgba(91, 150, 178, 1)"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2";
-        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """,
     "Sleep_Moon": """
         let cycle = t % 19; let text = ""; let opacity = 0.2; let yOffset = 0;
         if(cycle < 4) { text = "INHALE (4)"; opacity = 0.2 + 0.8*(cycle/4); yOffset = -20 * (cycle/4); }
         else if(cycle < 11) { text = "HOLD (7)"; opacity = 1.0; yOffset = -20; }
         else { text = "EXHALE (8)"; opacity = 1.0 - 0.8*((cycle-11)/8); yOffset = -20 + 40*((cycle-11)/8); }
-        ctx.beginPath(); ctx.arc(cx, cy + yOffset, 40, 0, Math.PI*2); ctx.fillStyle = `rgba(255, 250, 240, ${opacity})`; ctx.fill();
-        ctx.shadowBlur = 30 * opacity; ctx.shadowColor = "#FFF";
-        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        ctx.beginPath(); ctx.arc(cx, cy + yOffset, 40, 0, Math.PI*2); ctx.fillStyle = `rgba([C_MOON], ${opacity})`; ctx.fill();
+        ctx.shadowBlur = 30 * opacity; ctx.shadowColor = "[C_TEXT]";
+        ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """,
     "Sleep_Lotus": """
         let cycle = t % 19; let text = ""; let spread = 0;
@@ -239,12 +280,12 @@ breath_js_dict = {
             ctx.beginPath(); ctx.arc(px, py, 25, 0, Math.PI*2); ctx.strokeStyle = "rgba(91, 150, 178, 0.6)"; ctx.lineWidth = 1.5; ctx.stroke();
             ctx.fillStyle = "rgba(91, 150, 178, 0.1)"; ctx.fill();
         }
-        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+        ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """
 }
 
 release_game_html = """
-<div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
+<div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
     <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
         THOUGHTS RELEASED: <span id="scoreVal">0</span>
     </div>
@@ -285,7 +326,7 @@ if st.session_state.current_page == "Journal":
     if not st.session_state.journal_unlocked:
         st.markdown("<div class='section-header'>PRIVATE MENTOR</div>", unsafe_allow_html=True)
         st.markdown("<div class='market-slab' style='padding: 40px 20px;'>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size: 14px; opacity: 0.8; margin-bottom: 25px; line-height: 1.6;'>To start a private, guided session with the AI Mentor, please provide your email to unlock the Sanctuary.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 14px; opacity: 0.8; margin-bottom: 25px; line-height: 1.6; color: {app_text};'>To start a private, guided session with the AI Mentor, please provide your email to unlock the Sanctuary.</p>", unsafe_allow_html=True)
         
         user_email = st.text_input("Your Email Address", placeholder="name@example.com")
         st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
@@ -316,16 +357,16 @@ if st.session_state.current_page == "Journal":
         sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
         for i, name in enumerate(sounds.keys()):
             with aud_cols[i]:
-                # NATIVE SWITCH APPLIED HERE
                 if st.button(name, key=f"aud_{name}", use_container_width=True): st.session_state.active_audio = sounds[name]
         
         if st.session_state.active_audio:
             st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
         st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
-        components.html("""
-            <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.4; pointer-events:none; text-align:center;">
+        
+        zen_html = """
+            <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.6; pointer-events:none; text-align:center;">
                     TOUCH THE SURFACE<br>TO GROUND YOURSELF
                 </div>
                 <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
@@ -352,7 +393,8 @@ if st.session_state.current_page == "Journal":
                 });
                 draw();
             </script>
-        """, height=135)
+        """
+        components.html(theme_it(zen_html), height=135)
 
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
         
@@ -456,12 +498,12 @@ if st.session_state.current_page == "Journal":
             html_button = f"""
             <style>
                 .listen-btn {{
-                    background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%);
-                    color: #E0E0E0; border: 1px solid #444; border-radius: 4px; padding: 12px;
+                    background: {btn_bg};
+                    color: {app_text}; border: 1px solid {btn_border}; border-radius: 4px; padding: 12px;
                     font-size: 11px; font-family: sans-serif; cursor: pointer; width: 100%; text-transform: uppercase;
                     margin-bottom: 5px;
                 }}
-                .listen-btn:active {{ background: #333; }}
+                .listen-btn:active {{ filter: brightness(0.8); }}
             </style>
             <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
             <script>
@@ -494,47 +536,46 @@ if st.session_state.current_page == "Journal":
             st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
         st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px;'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px; color:{app_text};'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
         
         m_cols = st.columns(5)
         for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
             with m_cols[i]:
-                # NATIVE SWITCH APPLIED HERE
                 if st.button(m, key=f"m_{m}", use_container_width=True): st.session_state.energy_history.append(m); st.rerun()
 
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>I have taken over. Let the sound wash over you. Tap the screen to pop your thoughts, and breathe with the box.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px; color:{app_text};'>I have taken over. Let the sound wash over you. Tap the screen to pop your thoughts, and breathe with the box.</p>", unsafe_allow_html=True)
     
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(base_breath_html.replace("[JS_INJECT]", breath_js_dict["Box"]), height=270)
+    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(release_game_html, height=370)
+    components.html(theme_it(release_game_html), height=370)
 
 elif st.session_state.current_page == "AgentSanctuary":
     st.markdown("<div class='section-header' style='color: #b25b96;'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>{st.session_state.agent_message}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px; color:{app_text};'>{st.session_state.agent_message}</p>", unsafe_allow_html=True)
     
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.agent_audio}", format="audio/mp3", autoplay=True)
     
     selected_js = breath_js_dict.get(st.session_state.agent_breath, breath_js_dict["Box"])
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(base_breath_html.replace("[JS_INJECT]", selected_js), height=270)
+    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", selected_js)), height=270)
     
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(release_game_html, height=370)
+    components.html(theme_it(release_game_html), height=370)
 
 elif st.session_state.current_page == "Ether":
     st.markdown("<div class='section-header'>THE ETHER</div>", unsafe_allow_html=True)
     
     ether_html = """
-    <div id="ether-container" style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
+    <div id="ether-container" style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
         <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
             WRITE YOUR THOUGHTS INTO THE ETHER
         </p>
-        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:#FFF; border:1px solid #444; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
+        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:[C_TEXT]; border:1px solid [C_BORDER]; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
         
         <div style="height: 25px; z-index: 10;"></div>
         
@@ -547,7 +588,7 @@ elif st.session_state.current_page == "Ether":
             </button>
         </div>
 
-        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFFFFF; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
+        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: [C_TEXT]; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;">
         </div>
     </div>
 
@@ -587,7 +628,7 @@ elif st.session_state.current_page == "Ether":
                         x: left + Math.random() * rect.width, y: top + Math.random() * rect.height,
                         vx: (Math.random() - 0.5) * 2, vy: (Math.random() * -2) - 0.2, 
                         radius: Math.random() * 2 + 0.5, alpha: 1, decay: Math.random() * 0.01 + 0.005,
-                        color: `rgba(255, 255, 255, ` 
+                        color: `rgba([C_STAR], ` 
                     });
                 }
             }
@@ -604,7 +645,7 @@ elif st.session_state.current_page == "Ether":
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                     ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`;
                     ctx.shadowBlur = currentMode === 'fire' ? 8 : 15; 
-                    ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "#FFF"; 
+                    ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "[C_TEXT]"; 
                     ctx.fill();
                 }
             }
@@ -649,7 +690,7 @@ elif st.session_state.current_page == "Ether":
         btnManifest.addEventListener('click', () => triggerEther('star'));
     </script>
     """
-    components.html(ether_html, height=450)
+    components.html(theme_it(ether_html), height=450)
 
 elif st.session_state.current_page == "Focus":
     
@@ -660,7 +701,6 @@ elif st.session_state.current_page == "Focus":
 
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
-        # NATIVE SWITCH APPLIED HERE
         if st.button("Anchor (4-2-6)", use_container_width=True): st.session_state.active_breath = "Anchor"; st.rerun()
     with b_col2:
         if st.button("The Box (4-4-4-4)", use_container_width=True): st.session_state.active_breath = "Box"; st.rerun()
@@ -682,7 +722,7 @@ elif st.session_state.current_page == "Focus":
 
     selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
     final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
-    components.html(final_breath_html, height=270)
+    components.html(theme_it(final_breath_html), height=270)
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown("<div class='section-header'>GROUNDING GAMES</div>", unsafe_allow_html=True)
@@ -694,15 +734,15 @@ elif st.session_state.current_page == "Focus":
         if st.button("The Bloom", use_container_width=True): st.session_state.active_game = "Bloom"; st.rerun()
 
     if st.session_state.active_game == "Release":
-        st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
-        components.html(release_game_html, height=370)
+        st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color:{app_text};'>Tap the rising thoughts to release them.</p>", unsafe_allow_html=True)
+        components.html(theme_it(release_game_html), height=370)
 
     elif st.session_state.active_game == "Bloom":
-        st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px;'>Tap the center slowly to grow your light.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color:{app_text};'>Tap the center slowly to grow your light.</p>", unsafe_allow_html=True)
         bloom_html = """
-        <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+        <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
             <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-            <div id="bloomMessage" style="position:absolute; z-index:10; color:#FFFFFF; font-family:sans-serif; font-size:14px; letter-spacing:3px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:4px; border:1px solid #5B96B2;"></div>
+            <div id="bloomMessage" style="position:absolute; z-index:10; color:[C_TEXT]; font-family:sans-serif; font-size:14px; letter-spacing:3px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:[C_MSG_BG]; padding:10px 20px; border-radius:4px; border:1px solid #5B96B2;"></div>
         </div>
         <script>
             const c = document.getElementById('bloomCanvas'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage');
@@ -732,7 +772,7 @@ elif st.session_state.current_page == "Focus":
             resize();
         </script>
         """
-        components.html(bloom_html, height=370)
+        components.html(theme_it(bloom_html), height=370)
 
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES & TOOLS</div>", unsafe_allow_html=True)
@@ -754,12 +794,12 @@ elif st.session_state.current_page == "Market":
         wa_text = urllib.parse.quote(f"I am interested in the {p['name']}")
         wa_link = f"https://wa.me/{MY_PHONE}?text={wa_text}"
         
-        products_html += f"""<div style="background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
-<div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid #222;"></div>
-<div style="color: #FFF; font-size: 13px; letter-spacing: 1px; margin-bottom: 5px; min-height: 35px; display: flex; align-items: center; justify-content: center; line-height: 1.3;">{p['name']}</div>
+        products_html += f"""<div style="background: {input_bg}; border: 1px solid {btn_border}; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;">
+<div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid {btn_border};"></div>
+<div style="color: {app_text}; font-size: 13px; letter-spacing: 1px; margin-bottom: 5px; min-height: 35px; display: flex; align-items: center; justify-content: center; line-height: 1.3;">{p['name']}</div>
 <div style="color: {soft_blue}; font-weight: bold; font-size: 15px; margin-bottom: 12px;">₹{p['price']}</div>
 <a href="{wa_link}" target="_blank" style="text-decoration: none; width: 100%;">
-<div style="background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%); color: #E0E0E0; border: 1px solid #444; padding: 10px 0; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%; cursor: pointer;">ORDER VIA WA</div>
+<div style="background: {btn_bg}; color: {app_text}; border: 1px solid {btn_border}; padding: 10px 0; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%; cursor: pointer; transition: all 0.3s ease;">ORDER VIA WA</div>
 </a>
 </div>"""
         
@@ -768,7 +808,7 @@ elif st.session_state.current_page == "Market":
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px;'>
+    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; color: {app_text};'>
         1. Open this link in <b>Safari (iPhone)</b> or <b>Chrome (Android)</b>.<br><br>
         2. Tap the <b>Share</b> or <b>Menu (⋮)</b> icon.<br><br>
         3. Select <b>'Add to Home Screen'</b>.<br><br>
@@ -786,7 +826,7 @@ elif st.session_state.current_page == "Info":
         st.markdown(f"<div class='faq-q'>{q}</div><div class='faq-a'>{a}</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>LEGAL & ETHICAL DISCLAIMER</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='disclaimer-box'>
+    st.markdown(f"""<div class='disclaimer-box' style='color:{app_text};'>
         <b>1. SECULAR PRACTICE:</b> The term 'Ritual' refers to secular mindfulness practices for wellness. <br><br>
         <b>2. NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual claims regarding physical objects. They are strictly tactile tools for focus. <br><br>
         <b>3. NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. Not intended to diagnose or treat medical conditions. <br><br>
@@ -795,11 +835,23 @@ elif st.session_state.current_page == "Info":
     </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Settings":
+    # --- 🚨 NEW: THE THEME TOGGLE 🚨 ---
+    st.markdown("<div class='section-header'>APP THEME</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='padding: 20px;'>", unsafe_allow_html=True)
+    t_col1, t_col2 = st.columns(2)
+    with t_col1:
+        if st.button("🌙 Midnight (Dark)", use_container_width=True): 
+            st.session_state.theme = "Midnight"; st.rerun()
+    with t_col2:
+        if st.button("☁️ Peaceful Sky (Light)", use_container_width=True): 
+            st.session_state.theme = "Sky"; st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+    
     st.markdown("<div class='section-header'>ACCOUNT & SECURITY</div>", unsafe_allow_html=True)
     st.markdown("<div class='market-slab' style='text-align:center; padding: 30px 20px;'>", unsafe_allow_html=True)
     
     if st.session_state.journal_unlocked:
-        st.markdown("<p style='font-size: 14px; color: #FFF; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 14px; color: {app_text}; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
         if st.button("LOCK JOURNAL", key="btn_lock", use_container_width=True):
             st.query_params.clear() 
             st.session_state.journal_unlocked = False
@@ -810,4 +862,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v132.0 | Native UI Centering</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v133.0 | Global Theme Engine</div>", unsafe_allow_html=True)
