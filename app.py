@@ -58,7 +58,6 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
-    /* 🚨 THE PRECISION SCALPEL: Exact Math for the Grid 🚨 */
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
@@ -103,7 +102,6 @@ st.markdown(f"""
         padding: 0px 2px !important;
     }}
     
-    /* Special styling for the Auto-Pilot button to make it stand out */
     .autopilot-btn>button {{
         background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%) !important;
         border: 1px solid {soft_blue} !important;
@@ -189,7 +187,6 @@ if st.session_state.current_page == "Journal":
             with aud_cols[i]:
                 if st.button(name, key=f"aud_{name}"): st.session_state.active_audio = sounds[name]
         
-        # The Radio is plugged in here on the Journal Page
         if st.session_state.active_audio:
             st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
@@ -287,7 +284,11 @@ if st.session_state.current_page == "Journal":
                                 
                                 ai_reply = agent_command.get("reply", "I am taking over. Let's breathe.")
                                 st.session_state.active_breath = agent_command.get("breath", "Anchor")
-                                st.session_state.active_audio = agent_command.get("audio", "Waves") + ".mp3"
+                                
+                                # --- THE FIX: FORCE THE WORD TO BE LOWERCASE ---
+                                raw_audio_word = str(agent_command.get("audio", "waves"))
+                                st.session_state.active_audio = raw_audio_word.lower() + ".mp3"
+                                # -----------------------------------------------
                                 
                                 st.session_state.current_page = "Focus"
                                 
@@ -493,11 +494,9 @@ elif st.session_state.current_page == "Focus":
     
     st.markdown("<div class='section-header'>BREATH STUDIO</div>", unsafe_allow_html=True)
     
-    # --- HERE IS THE FIX! I PLUGGED THE RADIO INTO THE FOCUS ROOM ---
     if st.session_state.active_audio:
         st.audio(f"[https://cdn.jsdelivr.net/gh/](https://cdn.jsdelivr.net/gh/){GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
         st.markdown(f"<p style='font-size: 11px; opacity: 0.5; margin-top: -10px; color: {soft_blue};'>AI Ambient Sound Active</p>", unsafe_allow_html=True)
-    # -----------------------------------------------------------------
 
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
@@ -784,4 +783,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v126.1 | Agent Takeover Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v126.2 | Case-Sensitivity Fix</div>", unsafe_allow_html=True)
