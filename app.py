@@ -62,10 +62,9 @@ st.markdown(f"""
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
-        gap: 10px !important; /* Force a predictable gap */
+        gap: 10px !important; 
     }}
     
-    /* 3-Column Math */
     div[data-testid="column"], div[data-testid="stColumn"] {{
         width: calc(33.333% - 10px) !important;
         min-width: calc(33.333% - 10px) !important;
@@ -74,7 +73,6 @@ st.markdown(f"""
         margin-bottom: 5px !important;
     }}
     
-    /* 2-Column Math (For the Short/Deep Guide and the 2 Games) */
     div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"] {{
         width: calc(50% - 10px) !important;
         min-width: calc(50% - 10px) !important;
@@ -105,6 +103,14 @@ st.markdown(f"""
         padding: 0px 2px !important;
     }}
     
+    /* Special styling for the Auto-Pilot button to make it stand out */
+    .autopilot-btn>button {{
+        background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%) !important;
+        border: 1px solid {soft_blue} !important;
+        color: {soft_blue} !important;
+        letter-spacing: 2px;
+    }}
+    
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
     .bundle-title {{ font-size: 22px; letter-spacing: 2px; color: #FFF; margin-bottom: 10px; }}
     .price-tag {{ font-size: 20px; color: {soft_blue}; font-weight: 600; margin-bottom: 15px; }}
@@ -126,7 +132,6 @@ st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 st.markdown("<div style='font-size:10px; opacity:0.5; letter-spacing:3px; margin-bottom: 20px;'>INHALE 4 • HOLD 2 • EXHALE 6</div>", unsafe_allow_html=True)
 
-# Row 1 of Navigation
 col1, col2, col3 = st.columns(3)
 with col1:
     if st.button("Journal"): st.session_state.current_page = "Journal"; st.rerun()
@@ -135,7 +140,6 @@ with col2:
 with col3:
     if st.button("Focus"): st.session_state.current_page = "Focus"; st.rerun()
 
-# Row 2 of Navigation
 col4, col5, col6 = st.columns(3)
 with col4:
     if st.button("Market"): st.session_state.current_page = "Market"; st.rerun()
@@ -151,18 +155,15 @@ st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 if st.session_state.current_page == "Journal":
     
     if not st.session_state.journal_unlocked:
-        # --- FREEMIUM EMAIL GATE WITH DATABASE LOGGING ---
         st.markdown("<div class='section-header'>PRIVATE MENTOR</div>", unsafe_allow_html=True)
         st.markdown("<div class='market-slab' style='padding: 40px 20px;'>", unsafe_allow_html=True)
         st.markdown("<p style='font-size: 14px; opacity: 0.8; margin-bottom: 25px; line-height: 1.6;'>To start a private, guided session with the AI Mentor, please provide your email to unlock the Sanctuary.</p>", unsafe_allow_html=True)
         
         user_email = st.text_input("Your Email Address", placeholder="name@example.com")
-        
         st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
         
         if st.button("UNLOCK JOURNAL"):
             if "@" in user_email and "." in user_email:
-                # Secretly log to Google Sheets
                 try:
                     if "GCP_CREDENTIALS" in st.secrets:
                         creds_dict = json.loads(st.secrets["GCP_CREDENTIALS"], strict=False)
@@ -172,9 +173,8 @@ if st.session_state.current_page == "Journal":
                         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         sheet.append_row([user_email, current_time])
                 except Exception as e:
-                    pass # Keep the error hidden so the user experience stays peaceful
+                    pass 
                 
-                # Unlock the app regardless
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -182,7 +182,6 @@ if st.session_state.current_page == "Journal":
         st.markdown("</div>", unsafe_allow_html=True)
 
     else:
-        # --- FULL JOURNAL UI (UNLOCKED) ---
         st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
         aud_cols = st.columns(5)
         sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -234,24 +233,41 @@ if st.session_state.current_page == "Journal":
             btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
         with c_deep:
             btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
+            
+        st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
+        btn_autopilot = st.button("⚡ AUTO-PILOT (AI TAKEOVER) ⚡", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
         
-        if btn_short or btn_deep:
+        if btn_short or btn_deep or btn_autopilot:
             if model:
-                with st.spinner("Channeling Wisdom..."):
-                    length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response. Take your time to thoroughly explain and explore their feelings."
-                    
+                with st.spinner("Channeling Wisdom..." if not btn_autopilot else "AI Agent Analyzing State..."):
                     energy_context = ""
                     if st.session_state.energy_history:
                         latest_energy = st.session_state.energy_history[-1]
-                        energy_context = f"\n\nSECRET CONTEXT: The user clicked a button indicating their physical energy state is currently '{latest_energy}'. Softly acknowledge this in your response or adapt your tone to match this specific energy."
+                        energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
-                    context = f"""You are the Sukoon Mentor. 
-                    1. Detect the language the user is speaking or typing. You MUST respond in that exact same language.
-                    2. STRICT LANGUAGE RULE: If the user speaks or writes in pure English, you MUST respond in pure English. If the user speaks or writes in 'Hinglish' (Hindi words using the English alphabet), you MUST respond entirely in Hinglish. Do not mix them up.
-                    3. {length_instruction} Use simple, easy-to-understand words.
-                    4. End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder, translated perfectly into their language/Hinglish.
-                    5. If the user provides an audio recording, start with 'You said: [their transcribed words]' in their exact language, then give your advice.
-                    {energy_context}"""
+                    if btn_autopilot:
+                        # --- THE AI AGENT PROMPT (SECRET CODE MODE) ---
+                        context = f"""You are the Sukoon AI Agent. The user wants you to take over their app to calm them down.
+                        Analyze their message and decide which breathing exercise and ambient sound will help them most.
+                        {energy_context}
+                        
+                        CRITICAL INSTRUCTION: You must respond ONLY with a raw JSON object. Do not include markdown like ```json. Do not say hello.
+                        
+                        Your JSON must look exactly like this:
+                        {{
+                            "reply": "A very short, 2-sentence comforting message telling them you are setting up a sanctuary for them.",
+                            "breath": "Choose exactly one: Anchor, Box, Sleep_Wave, Sleep_Moon, or Sleep_Lotus",
+                            "audio": "Choose exactly one: Birds, Flute, Forest, Waves, or Wind"
+                        }}
+                        """
+                    else:
+                        # --- NORMAL CHAT PROMPT ---
+                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
+                        context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
+                        {length_instruction}
+                        End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
+                        {energy_context}"""
                     
                     try:
                         if voice_input:
@@ -263,16 +279,40 @@ if st.session_state.current_page == "Journal":
                             prompt_parts = [context, "I am seeking silence."]
                             
                         resp = model.generate_content(prompt_parts)
-                        unique_id = str(datetime.now().timestamp()).replace('.', '')
                         
+                        if btn_autopilot:
+                            # --- THE SAFETY NET ---
+                            # Try to read the secret note. If it fails, catch the error so it doesn't crash!
+                            try:
+                                clean_text = resp.text.strip().replace('```json', '').replace('```', '')
+                                agent_command = json.loads(clean_text)
+                                
+                                # Let the Agent take the steering wheel!
+                                ai_reply = agent_command.get("reply", "I am taking over. Let's breathe.")
+                                st.session_state.active_breath = agent_command.get("breath", "Anchor")
+                                st.session_state.active_audio = agent_command.get("audio", "Waves") + ".mp3"
+                                
+                                # Move the user instantly to the Focus page
+                                st.session_state.current_page = "Focus"
+                                
+                            except Exception as e:
+                                # If the note was messy, default to a safe setting instead of crashing.
+                                ai_reply = "I am here. Let us focus on the breath together."
+                                st.session_state.active_breath = "Anchor"
+                                st.session_state.current_page = "Focus"
+                        else:
+                            ai_reply = resp.text
+
+                        unique_id = str(datetime.now().timestamp()).replace('.', '')
                         st.session_state.core_journal.append({
                             "time": datetime.now().strftime("%H:%M"), 
-                            "ai": resp.text,
+                            "ai": ai_reply,
                             "id": unique_id
                         })
                         st.rerun()
+                        
                     except Exception as e:
-                        st.error(f"Technical Error: {str(e)}")
+                        st.error("The Mentor needs a moment of quiet. Please try again.")
             else:
                 st.warning("The Mentor is resting. Please try again in an hour.")
 
@@ -302,10 +342,7 @@ if st.session_state.current_page == "Journal":
                     function setVoiceAndSpeak() {{
                         var voices = window.speechSynthesis.getVoices();
                         var localVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.name.includes('India') || v.name.includes('Hindi'));
-                        
-                        if (localVoice) {{
-                            m.voice = localVoice;
-                        }}
+                        if (localVoice) {{ m.voice = localVoice; }}
                         window.speechSynthesis.speak(m);
                     }}
 
@@ -459,7 +496,6 @@ elif st.session_state.current_page == "Ether":
 
 elif st.session_state.current_page == "Focus":
     
-    # --- TOP HALF: BREATH STUDIO ---
     st.markdown("<div class='section-header'>BREATH STUDIO</div>", unsafe_allow_html=True)
     
     b_col1, b_col2, b_col3 = st.columns(3)
@@ -483,7 +519,6 @@ elif st.session_state.current_page == "Focus":
         with s_col3:
             if st.button("The Lotus"): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
-    # Base HTML template for breath canvas
     base_breath_html = """
     <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
         <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
@@ -571,7 +606,6 @@ elif st.session_state.current_page == "Focus":
     final_breath_html = base_breath_html.replace("[JS_INJECT]", js_code)
     components.html(final_breath_html, height=270)
 
-    # --- BOTTOM HALF: GROUNDING GAMES ---
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown("<div class='section-header'>GROUNDING GAMES</div>", unsafe_allow_html=True)
     
@@ -690,9 +724,9 @@ elif st.session_state.current_page == "Market":
 
     products_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">'
     for p in products:
-        img_url = f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
+        img_url = f"[https://cdn.jsdelivr.net/gh/](https://cdn.jsdelivr.net/gh/){GITHUB_USER}/{REPO_NAME}@main/{p['file']}"
         wa_text = urllib.parse.quote(f"I am interested in the {p['name']}")
-        wa_link = f"https://wa.me/{MY_PHONE}?text={wa_text}"
+        wa_link = f"[https://wa.me/](https://wa.me/){MY_PHONE}?text={wa_text}"
         
         products_html += f"""<div style="background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
 <div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid #222;"></div>
@@ -749,4 +783,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v124.0 | 2x3 Navigation Grid</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v126.0 | AI Auto-Pilot Agent</div>", unsafe_allow_html=True)
