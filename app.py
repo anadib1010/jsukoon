@@ -68,9 +68,12 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
+    /* 🚨 GRID CENTERING FIX (Forces the whole row to the middle) 🚨 */
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
+        justify-content: center !important; 
+        align-items: center !important;
         gap: 10px !important; 
     }}
     
@@ -79,6 +82,8 @@ st.markdown(f"""
         min-width: calc(33.333% - 10px) !important;
         max-width: calc(33.333% - 10px) !important;
         flex: 1 1 calc(33.333% - 10px) !important;
+        display: flex !important;
+        justify-content: center !important;
         margin-bottom: 5px !important;
     }}
     
@@ -105,22 +110,27 @@ st.markdown(f"""
     .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; }}
     .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
     
-    /* 🚨 NEW: FORCE ALL BUTTONS TO BE UNIFORM SIZE AND CENTERED 🚨 */
+    /* 🚨 BUTTON UNIFORM RECTANGLE FIX 🚨 */
     div.stButton {{
         width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
     }}
 
     .stButton>button {{ 
+        width: 100% !important; 
+        min-width: 100% !important;
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
-        color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
-        min-height: 48px !important; width: 100% !important; font-size: 11px !important;
+        color: #E0E0E0 !important; 
+        border: 1px solid #444 !important; 
+        border-radius: 4px !important; 
+        min-height: 48px !important; 
+        height: 100% !important;
+        font-size: 11px !important;
         padding: 0px 2px !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
         text-align: center !important;
+        box-sizing: border-box !important;
     }}
     
     .autopilot-btn>button {{
