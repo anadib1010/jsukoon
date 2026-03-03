@@ -314,7 +314,7 @@ release_game_html = """
 
 if st.session_state.current_page == "Journal":
     
-    # 🚨 STEP 1: FREE AMBIENCE & ZEN TOOLS AT THE TOP 🚨
+    # 🚨 STEP 1: FREE AMBIENCE & NEW ZEN TOOLS AT THE TOP 🚨
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     aud_cols = st.columns(5)
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -327,9 +327,10 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
+    # 🚨 NEW: 60px HEIGHT, 12 COLORS, 4 RANDOM ANIMATIONS 🚨
     zen_html = """
-        <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:120px; overflow:hidden; cursor:crosshair;" id="zen-box">
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:2px; opacity:0.6; pointer-events:none; text-align:center;">
+        <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:60px; overflow:hidden; cursor:crosshair;" id="zen-box">
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:10px; letter-spacing:2px; opacity:0.7; pointer-events:none; text-align:center; width: 100%; line-height: 1.3;">
                 TOUCH THE SURFACE<br>TO GROUND YOURSELF
             </div>
             <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
@@ -337,27 +338,73 @@ if st.session_state.current_page == "Journal":
         <script>
             const canvas = document.getElementById('zenCanvas');
             const ctx = canvas.getContext('2d');
-            let ripples = [];
+            let shapes = [];
+            
+            // 12 distinct, beautiful colors for the mind
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#6A0572', '#A8E6CF', '#FDFFAB', '#FF8C94', '#82B1FF', '#B9F2FF', '#F9F871', '#D4A5A5', '#9B59B6'];
+            // 4 different tactile geometric responses
+            const types = ['circle', 'square', 'spots', 'bird'];
+
             function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
             window.addEventListener('resize', resize); resize();
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < ripples.length; i++) {
-                    let r = ripples[i];
-                    ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-                    ctx.strokeStyle = `rgba(91, 150, 178, ${r.alpha})`; ctx.lineWidth = 2; ctx.stroke();
-                    r.radius += 0.8; r.alpha -= 0.01;
+                for (let i = 0; i < shapes.length; i++) {
+                    let s = shapes[i];
+                    ctx.globalAlpha = s.alpha;
+                    ctx.strokeStyle = s.color;
+                    ctx.fillStyle = s.color;
+                    ctx.lineWidth = 2;
+
+                    if (s.type === 'circle') {
+                        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.stroke();
+                        s.radius += 1; s.alpha -= 0.02;
+                    } else if (s.type === 'square') {
+                        ctx.strokeRect(s.x - s.radius, s.y - s.radius, s.radius * 2, s.radius * 2);
+                        s.radius += 1; s.alpha -= 0.02;
+                    } else if (s.type === 'spot') {
+                        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
+                        s.x += s.vx; s.y += s.vy; s.alpha -= 0.02;
+                    } else if (s.type === 'bird') {
+                        ctx.beginPath();
+                        ctx.moveTo(s.x - s.radius, s.y - s.radius/2);
+                        ctx.lineTo(s.x, s.y);
+                        ctx.lineTo(s.x + s.radius, s.y - s.radius/2);
+                        ctx.stroke();
+                        s.y -= 0.8; s.radius += 0.3; s.alpha -= 0.02;
+                    }
                 }
-                ripples = ripples.filter(r => r.alpha > 0); requestAnimationFrame(draw);
+                shapes = shapes.filter(s => s.alpha > 0); 
+                ctx.globalAlpha = 1.0;
+                requestAnimationFrame(draw);
             }
+
             document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
                 const rect = canvas.getBoundingClientRect();
-                ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 5, alpha: 0.8 });
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                const randomType = types[Math.floor(Math.random() * types.length)];
+
+                if (randomType === 'spots') {
+                    // Create a burst of 6 small particles
+                    for(let i=0; i<6; i++) {
+                        shapes.push({
+                            type: 'spot', x: clickX, y: clickY,
+                            vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3,
+                            radius: Math.random() * 3 + 1.5, alpha: 1, color: randomColor
+                        });
+                    }
+                } else {
+                    shapes.push({ type: randomType, x: clickX, y: clickY, radius: 5, alpha: 1, color: randomColor });
+                }
             });
             draw();
         </script>
     """
-    components.html(theme_it(zen_html), height=135)
+    components.html(theme_it(zen_html), height=75)
 
     # 🚨 STEP 2: FREE EMERGENCY FIRE ALARM 🚨
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
@@ -854,4 +901,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v136.0 | Frictionless Freemium Model</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v137.0 | Tactile Zen Box Update</div>", unsafe_allow_html=True)
