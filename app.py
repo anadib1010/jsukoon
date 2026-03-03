@@ -188,6 +188,8 @@ if st.session_state.current_page == "Journal":
         for i, name in enumerate(sounds.keys()):
             with aud_cols[i]:
                 if st.button(name, key=f"aud_{name}"): st.session_state.active_audio = sounds[name]
+        
+        # The Radio is plugged in here on the Journal Page
         if st.session_state.active_audio:
             st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
@@ -247,7 +249,6 @@ if st.session_state.current_page == "Journal":
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
                     if btn_autopilot:
-                        # --- THE AI AGENT PROMPT (SECRET CODE MODE) ---
                         context = f"""You are the Sukoon AI Agent. The user wants you to take over their app to calm them down.
                         Analyze their message and decide which breathing exercise and ambient sound will help them most.
                         {energy_context}
@@ -262,7 +263,6 @@ if st.session_state.current_page == "Journal":
                         }}
                         """
                     else:
-                        # --- NORMAL CHAT PROMPT ---
                         length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
                         context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
                         {length_instruction}
@@ -281,22 +281,17 @@ if st.session_state.current_page == "Journal":
                         resp = model.generate_content(prompt_parts)
                         
                         if btn_autopilot:
-                            # --- THE SAFETY NET ---
-                            # Try to read the secret note. If it fails, catch the error so it doesn't crash!
                             try:
                                 clean_text = resp.text.strip().replace('```json', '').replace('```', '')
                                 agent_command = json.loads(clean_text)
                                 
-                                # Let the Agent take the steering wheel!
                                 ai_reply = agent_command.get("reply", "I am taking over. Let's breathe.")
                                 st.session_state.active_breath = agent_command.get("breath", "Anchor")
                                 st.session_state.active_audio = agent_command.get("audio", "Waves") + ".mp3"
                                 
-                                # Move the user instantly to the Focus page
                                 st.session_state.current_page = "Focus"
                                 
                             except Exception as e:
-                                # If the note was messy, default to a safe setting instead of crashing.
                                 ai_reply = "I am here. Let us focus on the breath together."
                                 st.session_state.active_breath = "Anchor"
                                 st.session_state.current_page = "Focus"
@@ -498,6 +493,12 @@ elif st.session_state.current_page == "Focus":
     
     st.markdown("<div class='section-header'>BREATH STUDIO</div>", unsafe_allow_html=True)
     
+    # --- HERE IS THE FIX! I PLUGGED THE RADIO INTO THE FOCUS ROOM ---
+    if st.session_state.active_audio:
+        st.audio(f"[https://cdn.jsdelivr.net/gh/](https://cdn.jsdelivr.net/gh/){GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
+        st.markdown(f"<p style='font-size: 11px; opacity: 0.5; margin-top: -10px; color: {soft_blue};'>AI Ambient Sound Active</p>", unsafe_allow_html=True)
+    # -----------------------------------------------------------------
+
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
         if st.button("Anchor (4-2-6)"): st.session_state.active_breath = "Anchor"; st.rerun()
@@ -783,4 +784,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v126.0 | AI Auto-Pilot Agent</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v126.1 | Agent Takeover Fix</div>", unsafe_allow_html=True)
