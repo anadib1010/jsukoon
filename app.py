@@ -34,6 +34,11 @@ if "active_audio" not in st.session_state: st.session_state.active_audio = None
 if "active_game" not in st.session_state: st.session_state.active_game = "Release"
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 
+# Variables strictly for the AI Agent's Smart Room
+if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.mp3"
+if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
+if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
+
 # --- 4. GOOGLE ANALYTICS ---
 components.html(f"""
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
@@ -106,7 +111,14 @@ st.markdown(f"""
         background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%) !important;
         border: 1px solid {soft_blue} !important;
         color: {soft_blue} !important;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
+    }}
+
+    .agent-btn>button {{
+        background: linear-gradient(180deg, #2a1a3a 0%, #150b1a 100%) !important;
+        border: 1px solid #b25b96 !important;
+        color: #b25b96 !important;
+        letter-spacing: 1px;
     }}
     
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
@@ -168,17 +180,61 @@ base_breath_html = """
 </script>
 """
 
-box_breath_js = """
-let cycle = t % 16; let text = ""; let size = 100;
-let x = cx - size/2; let y = cy - size/2;
-ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.strokeRect(x, y, size, size);
-ctx.strokeStyle = "rgba(91, 150, 178, 1)"; ctx.lineWidth = 4; ctx.beginPath();
-if(cycle < 4) { text = "INHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y+size - size*(cycle/4)); } 
-else if(cycle < 8) { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x + size*((cycle-4)/4), y); } 
-else if(cycle < 12) { text = "EXHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y + size*((cycle-8)/4)); } 
-else { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x+size - size*((cycle-12)/4), y+size); }
-ctx.stroke(); ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
-"""
+# Store the JS snippets in a dictionary so we can call them easily
+breath_js_dict = {
+    "Anchor": """
+        let cycle = t % 12; let text = ""; let scale = 1;
+        if(cycle < 4) { text = "INHALE (4)"; scale = 1 + (cycle/4); }
+        else if(cycle < 6) { text = "HOLD (2)"; scale = 2; }
+        else { text = "EXHALE (6)"; scale = 2 - ((cycle-6)/6); }
+        ctx.beginPath(); ctx.arc(cx, cy, 35 * scale, 0, Math.PI*2);
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.8)"; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = "rgba(91, 150, 178, 0.2)"; ctx.fill();
+        ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px";
+        ctx.fillText(text, cx, cy + 90);
+    """,
+    "Box": """
+        let cycle = t % 16; let text = ""; let size = 100; let x = cx - size/2; let y = cy - size/2;
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.strokeRect(x, y, size, size);
+        ctx.strokeStyle = "rgba(91, 150, 178, 1)"; ctx.lineWidth = 4; ctx.beginPath();
+        if(cycle < 4) { text = "INHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y+size - size*(cycle/4)); } 
+        else if(cycle < 8) { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x + size*((cycle-4)/4), y); } 
+        else if(cycle < 12) { text = "EXHALE (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y + size*((cycle-8)/4)); } 
+        else { text = "HOLD (4)"; ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); ctx.lineTo(x+size, y+size); ctx.lineTo(x+size - size*((cycle-12)/4), y+size); }
+        ctx.stroke(); ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+    """,
+    "Sleep_Wave": """
+        let cycle = t % 19; let text = ""; let width = canvas.width * 0.7; let startX = cx - width/2; let amp = 50; let pathX = 0; let pathY = 0;
+        if(cycle < 4) { text = "INHALE (4)"; pathX = startX + (width * 0.2 * (cycle/4)); pathY = cy + amp - (amp * 2 * (cycle/4)); } 
+        else if(cycle < 11) { text = "HOLD (7)"; pathX = startX + (width * 0.2) + (width * 0.4 * ((cycle-4)/7)); pathY = cy - amp; } 
+        else { text = "EXHALE (8)"; pathX = startX + (width * 0.6) + (width * 0.4 * ((cycle-11)/8)); pathY = cy - amp + (amp * 2 * ((cycle-11)/8)); }
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp);
+        ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
+        ctx.beginPath(); ctx.arc(pathX, pathY, 12, 0, Math.PI*2); ctx.fillStyle = "rgba(91, 150, 178, 1)"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2";
+        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+    """,
+    "Sleep_Moon": """
+        let cycle = t % 19; let text = ""; let opacity = 0.2; let yOffset = 0;
+        if(cycle < 4) { text = "INHALE (4)"; opacity = 0.2 + 0.8*(cycle/4); yOffset = -20 * (cycle/4); }
+        else if(cycle < 11) { text = "HOLD (7)"; opacity = 1.0; yOffset = -20; }
+        else { text = "EXHALE (8)"; opacity = 1.0 - 0.8*((cycle-11)/8); yOffset = -20 + 40*((cycle-11)/8); }
+        ctx.beginPath(); ctx.arc(cx, cy + yOffset, 40, 0, Math.PI*2); ctx.fillStyle = `rgba(255, 250, 240, ${opacity})`; ctx.fill();
+        ctx.shadowBlur = 30 * opacity; ctx.shadowColor = "#FFF";
+        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+    """,
+    "Sleep_Lotus": """
+        let cycle = t % 19; let text = ""; let spread = 0;
+        if(cycle < 4) { text = "INHALE (4)"; spread = cycle/4; }
+        else if(cycle < 11) { text = "HOLD (7)"; spread = 1; }
+        else { text = "EXHALE (8)"; spread = 1 - ((cycle-11)/8); }
+        for(let i=0; i<6; i++) {
+            let angle = i * (Math.PI*2/6) + (t * 0.1); let px = cx + Math.cos(angle) * (30 * spread); let py = cy + Math.sin(angle) * (30 * spread);
+            ctx.beginPath(); ctx.arc(px, py, 25, 0, Math.PI*2); ctx.strokeStyle = "rgba(91, 150, 178, 0.6)"; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = "rgba(91, 150, 178, 0.1)"; ctx.fill();
+        }
+        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+    """
+}
 
 release_game_html = """
 <div style="background:#1A1A1A; border: 1px solid #333; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
@@ -239,7 +295,6 @@ if st.session_state.current_page == "Journal":
                         sheet.append_row([user_email, current_time])
                 except Exception as e:
                     pass 
-                
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -300,26 +355,46 @@ if st.session_state.current_page == "Journal":
         with c_deep:
             btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
             
+        # The Triage Buttons
+        st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
         st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
-        # --- NO MORE AI FOR AUTO-PILOT. IT IS INSTANT TELEPORTATION ---
-        if st.button("⚡ AUTO-PILOT (AI TAKEOVER) ⚡", use_container_width=True):
+        if st.button("⚡ AUTO-PILOT (INSTANT SOS) ⚡", use_container_width=True):
             st.session_state.current_page = "AutoPilot"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
         
-        if btn_short or btn_deep:
+        st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='agent-btn'>", unsafe_allow_html=True)
+        btn_agent = st.button("🤖 AI AGENT (SMART SANCTUARY) 🤖", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        if btn_short or btn_deep or btn_agent:
             if model:
-                with st.spinner("Channeling Wisdom..."):
+                with st.spinner("Channeling Wisdom..." if not btn_agent else "Agent Analyzing Symptoms..."):
                     energy_context = ""
                     if st.session_state.energy_history:
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
-                    length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
-                    context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
-                    {length_instruction}
-                    End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
-                    {energy_context}"""
+                    if btn_agent:
+                        context = f"""You are the Sukoon AI Agent. The user needs a custom sanctuary.
+                        Analyze their text. If they can't sleep, select 'Sleep_Lotus' and 'waves'. 
+                        If they are anxious, select 'Box' and 'forest'.
+                        {energy_context}
+                        
+                        CRITICAL INSTRUCTION: Respond ONLY with a raw JSON object. No markdown.
+                        {{
+                            "reply": "A very short, 1-sentence comforting message.",
+                            "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus",
+                            "audio": "birds", "flute", "forest", "waves", or "wind"
+                        }}
+                        """
+                    else:
+                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
+                        context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
+                        {length_instruction}
+                        End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
+                        {energy_context}"""
                     
                     try:
                         if voice_input:
@@ -331,14 +406,35 @@ if st.session_state.current_page == "Journal":
                             prompt_parts = [context, "I am seeking silence."]
                             
                         resp = model.generate_content(prompt_parts)
-                        ai_reply = resp.text
-
-                        unique_id = str(datetime.now().timestamp()).replace('.', '')
-                        st.session_state.core_journal.append({
-                            "time": datetime.now().strftime("%H:%M"), 
-                            "ai": ai_reply,
-                            "id": unique_id
-                        })
+                        
+                        if btn_agent:
+                            try:
+                                clean_text = resp.text.strip().replace('```json', '').replace('```', '')
+                                agent_command = json.loads(clean_text)
+                                
+                                # Let the Agent set up the Smart Room variables safely
+                                st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
+                                st.session_state.agent_breath = agent_command.get("breath", "Box")
+                                raw_audio = str(agent_command.get("audio", "flute")).lower()
+                                st.session_state.agent_audio = f"{raw_audio}.mp3"
+                                
+                                st.session_state.current_page = "AgentSanctuary"
+                                
+                            except Exception as e:
+                                # The Safety Net: Default to Flute and Box if the AI makes a typo
+                                st.session_state.agent_message = "I am here. Let us breathe together."
+                                st.session_state.agent_breath = "Box"
+                                st.session_state.agent_audio = "flute.mp3"
+                                st.session_state.current_page = "AgentSanctuary"
+                                
+                        else:
+                            ai_reply = resp.text
+                            unique_id = str(datetime.now().timestamp()).replace('.', '')
+                            st.session_state.core_journal.append({
+                                "time": datetime.now().strftime("%H:%M"), 
+                                "ai": ai_reply,
+                                "id": unique_id
+                            })
                         st.rerun()
                         
                     except Exception as e:
@@ -398,19 +494,31 @@ if st.session_state.current_page == "Journal":
             with m_cols[i]:
                 if st.button(m, key=f"m_{m}"): st.session_state.energy_history.append(m); st.rerun()
 
-# --- THE BRAND NEW "AUTO PILOT" SOS PAGE ---
+# --- THE FIRE ALARM (STATIC) ---
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
     st.markdown("<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>I have taken over. Let the sound wash over you. Tap the screen to pop your thoughts, and breathe with the box.</p>", unsafe_allow_html=True)
     
-    # Auto-play Waves
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
-    
-    # The 4-4-4 Box Breathing
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(base_breath_html.replace("[JS_INJECT]", box_breath_js), height=270)
+    components.html(base_breath_html.replace("[JS_INJECT]", breath_js_dict["Box"]), height=270)
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    components.html(release_game_html, height=370)
+
+# --- THE DOCTOR (DYNAMIC SMART ROOM) ---
+elif st.session_state.current_page == "AgentSanctuary":
+    st.markdown("<div class='section-header' style='color: #b25b96;'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px;'>{st.session_state.agent_message}</p>", unsafe_allow_html=True)
     
-    # The Release Game
+    # Play the exact audio the AI chose
+    st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.agent_audio}", format="audio/mp3", autoplay=True)
+    
+    # Render the exact breathing exercise the AI chose
+    selected_js = breath_js_dict.get(st.session_state.agent_breath, breath_js_dict["Box"])
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    components.html(base_breath_html.replace("[JS_INJECT]", selected_js), height=270)
+    
+    # Always include the game for tactile relief
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     components.html(release_game_html, height=370)
 
@@ -568,60 +676,8 @@ elif st.session_state.current_page == "Focus":
         with s_col3:
             if st.button("The Lotus"): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
-    js_code = ""
-    if st.session_state.active_breath == "Anchor":
-        js_code = """
-        let cycle = t % 12; let text = ""; let scale = 1;
-        if(cycle < 4) { text = "INHALE (4)"; scale = 1 + (cycle/4); }
-        else if(cycle < 6) { text = "HOLD (2)"; scale = 2; }
-        else { text = "EXHALE (6)"; scale = 2 - ((cycle-6)/6); }
-        ctx.beginPath(); ctx.arc(cx, cy, 35 * scale, 0, Math.PI*2);
-        ctx.strokeStyle = "rgba(91, 150, 178, 0.8)"; ctx.lineWidth = 3; ctx.stroke();
-        ctx.fillStyle = "rgba(91, 150, 178, 0.2)"; ctx.fill();
-        ctx.fillStyle = "#FFF"; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px";
-        ctx.fillText(text, cx, cy + 90);
-        """
-    elif st.session_state.active_breath == "Box":
-        js_code = box_breath_js
-    elif st.session_state.active_breath == "Sleep_Wave":
-        js_code = """
-        let cycle = t % 19; let text = ""; let width = canvas.width * 0.7;
-        let startX = cx - width/2; let amp = 50; let pathX = 0; let pathY = 0;
-        if(cycle < 4) { text = "INHALE (4)"; pathX = startX + (width * 0.2 * (cycle/4)); pathY = cy + amp - (amp * 2 * (cycle/4)); } 
-        else if(cycle < 11) { text = "HOLD (7)"; pathX = startX + (width * 0.2) + (width * 0.4 * ((cycle-4)/7)); pathY = cy - amp; } 
-        else { text = "EXHALE (8)"; pathX = startX + (width * 0.6) + (width * 0.4 * ((cycle-11)/8)); pathY = cy - amp + (amp * 2 * ((cycle-11)/8)); }
-        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp);
-        ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
-        ctx.beginPath(); ctx.arc(pathX, pathY, 12, 0, Math.PI*2); ctx.fillStyle = "rgba(91, 150, 178, 1)"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2";
-        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
-        """
-    elif st.session_state.active_breath == "Sleep_Moon":
-        js_code = """
-        let cycle = t % 19; let text = ""; let opacity = 0.2; let yOffset = 0;
-        if(cycle < 4) { text = "INHALE (4)"; opacity = 0.2 + 0.8*(cycle/4); yOffset = -20 * (cycle/4); }
-        else if(cycle < 11) { text = "HOLD (7)"; opacity = 1.0; yOffset = -20; }
-        else { text = "EXHALE (8)"; opacity = 1.0 - 0.8*((cycle-11)/8); yOffset = -20 + 40*((cycle-11)/8); }
-        ctx.beginPath(); ctx.arc(cx, cy + yOffset, 40, 0, Math.PI*2); ctx.fillStyle = `rgba(255, 250, 240, ${opacity})`; ctx.fill();
-        ctx.shadowBlur = 30 * opacity; ctx.shadowColor = "#FFF";
-        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
-        """
-    elif st.session_state.active_breath == "Sleep_Lotus":
-        js_code = """
-        let cycle = t % 19; let text = ""; let spread = 0;
-        if(cycle < 4) { text = "INHALE (4)"; spread = cycle/4; }
-        else if(cycle < 11) { text = "HOLD (7)"; spread = 1; }
-        else { text = "EXHALE (8)"; spread = 1 - ((cycle-11)/8); }
-        for(let i=0; i<6; i++) {
-            let angle = i * (Math.PI*2/6) + (t * 0.1); 
-            let px = cx + Math.cos(angle) * (30 * spread); let py = cy + Math.sin(angle) * (30 * spread);
-            ctx.beginPath(); ctx.arc(px, py, 25, 0, Math.PI*2);
-            ctx.strokeStyle = "rgba(91, 150, 178, 0.6)"; ctx.lineWidth = 1.5; ctx.stroke();
-            ctx.fillStyle = "rgba(91, 150, 178, 0.1)"; ctx.fill();
-        }
-        ctx.fillStyle = "#FFF"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
-        """
-
-    final_breath_html = base_breath_html.replace("[JS_INJECT]", js_code)
+    selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
+    final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
     components.html(final_breath_html, height=270)
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
@@ -749,4 +805,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v127.0 | Instant SOS Auto-Pilot</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3;'>Sukoon Sanctuary v128.0 | Triage System Active</div>", unsafe_allow_html=True)
