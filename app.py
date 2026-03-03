@@ -58,6 +58,21 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
+    /* CRITICAL MOBILE GRID FIX */
+    @media (max-width: 640px) {{
+        [data-testid="stHorizontalBlock"] {{
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+        }}
+        [data-testid="column"] {{
+            width: fit-content !important;
+            flex: 1 1 auto !important;
+            min-width: 28% !important; /* Forces max 3 items per row */
+            margin-bottom: 5px !important;
+        }}
+    }}
+    
     @keyframes pulse426 {{
         0%   {{ transform: scale(1); opacity: 0.3; border-width: 2px; }}
         33%  {{ transform: scale(1.8); opacity: 1; border-width: 4px; }}
@@ -78,6 +93,7 @@ st.markdown(f"""
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
         color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
+        padding: 0px 5px !important;
     }}
     
     .market-slab {{ background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 20px; text-align: center; }}
