@@ -1,11 +1,12 @@
 import streamlit as st
 import streamlit.components.v1 as components
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import google.generativeai as genai
 import urllib.parse
 import json
 import gspread
+import extra_streamlit_components as stx # 🚨 THE NEW COOKIE MAKER 🚨
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -25,12 +26,20 @@ st.markdown(f"""
     </head>
     """, unsafe_allow_html=True)
 
-# --- 3. SESSION STATE INITIALIZATION ---
+# --- 3. THE IRONCLAD COOKIE MEMORY ---
+@st.cache_resource
+def get_cookie_manager():
+    return stx.CookieManager()
+
+cookie_manager = get_cookie_manager()
+
 if "journal_unlocked" not in st.session_state: 
-    if st.query_params.get("access") == "granted":
-        st.session_state.journal_unlocked = True
-    else:
-        st.session_state.journal_unlocked = False
+    st.session_state.journal_unlocked = False
+
+# Read the permanent cookie
+cookie_status = cookie_manager.get(cookie="sukoon_access")
+if cookie_status == "granted":
+    st.session_state.journal_unlocked = True
 
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
@@ -340,7 +349,10 @@ if st.session_state.current_page == "Journal":
                 except Exception as e:
                     pass 
                 
-                st.query_params["access"] = "granted"
+                # --- 🚨 BAKE THE IRONCLAD COOKIE (Valid for 30 Days) 🚨 ---
+                expires = datetime.now() + timedelta(days=30)
+                cookie_manager.set("sukoon_access", "granted", expires_at=expires)
+                
                 st.session_state.journal_unlocked = True
                 st.rerun()
             else:
@@ -804,15 +816,12 @@ elif st.session_state.current_page == "Market":
 
 elif st.session_state.current_page == "Info":
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
-    
-    # 🚨 NEW: EXPLICIT INSTALLATION INSTRUCTIONS FOR THE HOME SCREEN FIX 🚨
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; color: {app_text};'>
-        <b>CRITICAL FIRST STEP:</b> Unlock your Journal with your email so the app remembers you.<br><br>
-        1. Open this link in <b>Safari (iPhone)</b> or <b>Chrome (Android)</b>.<br><br>
-        2. Enter your email and <b>Unlock the Journal</b>.<br><br>
-        3. Tap the <b>Share</b> or <b>Menu (⋮)</b> icon.<br><br>
-        4. Select <b>'Add to Home Screen'</b>.<br><br>
-        5. Open Sukoon from your home screen for a Full-Screen, always-unlocked experience.
+        <b>1.</b> Open this link in Safari (iPhone) or Chrome (Android).<br><br>
+        <b>2.</b> Unlock your Journal with your email.<br><br>
+        <b>3.</b> Tap the Share or Menu (⋮) icon.<br><br>
+        <b>4.</b> Select 'Add to Home Screen'.<br><br>
+        <b>5.</b> Open Sukoon from your home screen.
     </div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
@@ -852,7 +861,8 @@ elif st.session_state.current_page == "Settings":
     if st.session_state.journal_unlocked:
         st.markdown(f"<p style='font-size: 14px; color: {app_text}; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
         if st.button("LOCK JOURNAL", key="btn_lock", use_container_width=True):
-            st.query_params.clear() 
+            # --- 🚨 DELETE THE COOKIE TO LOCK THE DOOR 🚨 ---
+            cookie_manager.delete("sukoon_access")
             st.session_state.journal_unlocked = False
             st.rerun()
     else:
@@ -861,4 +871,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v134.0 | Onboarding Instructions</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v135.0 | Ironclad Cookie Memory</div>", unsafe_allow_html=True)
