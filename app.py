@@ -6,7 +6,7 @@ import google.generativeai as genai
 import urllib.parse
 import json
 import gspread
-import extra_streamlit_components as stx # 🚨 THE NEW COOKIE MAKER 🚨
+import extra_streamlit_components as stx
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -27,11 +27,8 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # --- 3. THE IRONCLAD COOKIE MEMORY ---
-@st.cache_resource
-def get_cookie_manager():
-    return stx.CookieManager()
-
-cookie_manager = get_cookie_manager()
+# We removed the cache here to satisfy Streamlit's new strict rules!
+cookie_manager = stx.CookieManager(key="cookie_manager")
 
 if "journal_unlocked" not in st.session_state: 
     st.session_state.journal_unlocked = False
@@ -861,7 +858,6 @@ elif st.session_state.current_page == "Settings":
     if st.session_state.journal_unlocked:
         st.markdown(f"<p style='font-size: 14px; color: {app_text}; margin-bottom: 20px;'>Your private Sanctuary Journal is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
         if st.button("LOCK JOURNAL", key="btn_lock", use_container_width=True):
-            # --- 🚨 DELETE THE COOKIE TO LOCK THE DOOR 🚨 ---
             cookie_manager.delete("sukoon_access")
             st.session_state.journal_unlocked = False
             st.rerun()
@@ -871,4 +867,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v135.0 | Ironclad Cookie Memory</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v135.1 | Ironclad Cookie Fix</div>", unsafe_allow_html=True)
