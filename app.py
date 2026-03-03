@@ -105,11 +105,22 @@ st.markdown(f"""
     .main-title {{ text-align: center; letter-spacing: 12px; font-weight: 200; font-size: 2.5rem; color: #FFFFFF; text-transform: uppercase; }}
     .section-header {{ font-size: 13px; letter-spacing: 4px; text-transform: uppercase; margin: 30px 0 15px 0; color: {soft_blue}; border-bottom: 1px solid #333; padding-bottom: 8px; }}
     
+    /* 🚨 NEW: FORCE ALL BUTTONS TO BE UNIFORM SIZE AND CENTERED 🚨 */
+    div.stButton {{
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }}
+
     .stButton>button {{ 
         background: linear-gradient(180deg, rgba(50,50,50,1) 0%, rgba(20,20,20,1) 100%) !important; 
         color: #E0E0E0 !important; border: 1px solid #444 !important; border-radius: 4px !important; 
         min-height: 48px !important; width: 100% !important; font-size: 11px !important;
         padding: 0px 2px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
     }}
     
     .autopilot-btn>button {{
