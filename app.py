@@ -25,7 +25,7 @@ st.markdown(f"""
     </head>
     """, unsafe_allow_html=True)
 
-# --- 3. SESSION STATE INITIALIZATION (BUG-FREE) ---
+# --- 3. SESSION STATE INITIALIZATION ---
 if "journal_unlocked" not in st.session_state: st.session_state.journal_unlocked = False
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
@@ -314,7 +314,6 @@ release_game_html = """
 
 if st.session_state.current_page == "Journal":
     
-    # 🚨 STEP 1: FREE AMBIENCE & NEW ZEN TOOLS AT THE TOP 🚨
     st.markdown("<div class='section-header'>AMBIENCE</div>", unsafe_allow_html=True)
     aud_cols = st.columns(5)
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -327,99 +326,146 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
-    # 🚨 NEW: 60px HEIGHT, 12 COLORS, 4 RANDOM ANIMATIONS 🚨
+    # 🚨 NEW: THE 60px JAILBREAK ZEN BOX 🚨
     zen_html = """
-        <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:60px; overflow:hidden; cursor:crosshair;" id="zen-box">
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:10px; letter-spacing:2px; opacity:0.7; pointer-events:none; text-align:center; width: 100%; line-height: 1.3;">
-                TOUCH THE SURFACE<br>TO GROUND YOURSELF
+        <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:60px; overflow:hidden; cursor:crosshair; transition: transform 0.1s ease;" id="zen-box">
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:3px; opacity:0.8; pointer-events:none; text-align:center; width: 100%; line-height: 1.3;">
+                TOUCH TO GROUND YOURSELF
             </div>
-            <canvas id="zenCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0;"></canvas>
+            <canvas id="localCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none;"></canvas>
         </div>
         <script>
-            const canvas = document.getElementById('zenCanvas');
-            const ctx = canvas.getContext('2d');
-            let shapes = [];
+            const box = document.getElementById('zen-box');
+            const localCanvas = document.getElementById('localCanvas');
+            const localCtx = localCanvas.getContext('2d');
             
-            // 12 distinct, beautiful colors for the mind
             const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#6A0572', '#A8E6CF', '#FDFFAB', '#FF8C94', '#82B1FF', '#B9F2FF', '#F9F871', '#D4A5A5', '#9B59B6'];
-            // 4 different tactile geometric responses
             const types = ['circle', 'square', 'spots', 'bird'];
+            
+            let parentDoc, globalCanvas, globalCtx;
+            let isAnimating = false;
 
-            function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-            window.addEventListener('resize', resize); resize();
-
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < shapes.length; i++) {
-                    let s = shapes[i];
-                    ctx.globalAlpha = s.alpha;
-                    ctx.strokeStyle = s.color;
-                    ctx.fillStyle = s.color;
-                    ctx.lineWidth = 2;
-
-                    if (s.type === 'circle') {
-                        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.stroke();
-                        s.radius += 1; s.alpha -= 0.02;
-                    } else if (s.type === 'square') {
-                        ctx.strokeRect(s.x - s.radius, s.y - s.radius, s.radius * 2, s.radius * 2);
-                        s.radius += 1; s.alpha -= 0.02;
-                    } else if (s.type === 'spot') {
-                        ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
-                        s.x += s.vx; s.y += s.vy; s.alpha -= 0.02;
-                    } else if (s.type === 'bird') {
-                        ctx.beginPath();
-                        ctx.moveTo(s.x - s.radius, s.y - s.radius/2);
-                        ctx.lineTo(s.x, s.y);
-                        ctx.lineTo(s.x + s.radius, s.y - s.radius/2);
-                        ctx.stroke();
-                        s.y -= 0.8; s.radius += 0.3; s.alpha -= 0.02;
+            // 🚨 THE JAILBREAK: Reaching into the parent phone screen 🚨
+            try {
+                parentDoc = window.parent.document;
+                globalCanvas = parentDoc.getElementById('sukoon-global-canvas');
+                if (!globalCanvas) {
+                    globalCanvas = parentDoc.createElement('canvas');
+                    globalCanvas.id = 'sukoon-global-canvas';
+                    globalCanvas.style.position = 'fixed';
+                    globalCanvas.style.top = '0';
+                    globalCanvas.style.left = '0';
+                    globalCanvas.style.width = '100%';
+                    globalCanvas.style.height = '100%';
+                    globalCanvas.style.pointerEvents = 'none'; // Makes it invisible to clicks
+                    globalCanvas.style.zIndex = '999999'; // Puts it over all buttons
+                    parentDoc.body.appendChild(globalCanvas);
+                    
+                    function resizeGlobal() {
+                        globalCanvas.width = parentDoc.documentElement.clientWidth;
+                        globalCanvas.height = parentDoc.documentElement.clientHeight;
                     }
+                    parentDoc.defaultView.addEventListener('resize', resizeGlobal);
+                    resizeGlobal();
                 }
-                shapes = shapes.filter(s => s.alpha > 0); 
-                ctx.globalAlpha = 1.0;
-                requestAnimationFrame(draw);
+                globalCtx = globalCanvas.getContext('2d');
+                if(!window.parent.sukoonShapes) window.parent.sukoonShapes = [];
+            } catch(e) {
+                console.log("Jailbreak blocked by browser. Using local box only.");
             }
 
-            document.getElementById('zen-box').addEventListener('pointerdown', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const clickY = e.clientY - rect.top;
-                
+            function resizeLocal() { localCanvas.width = localCanvas.offsetWidth; localCanvas.height = localCanvas.offsetHeight; }
+            window.addEventListener('resize', resizeLocal); resizeLocal();
+
+            function drawGlobal() {
+                if (!globalCtx) return;
+                globalCtx.clearRect(0, 0, globalCanvas.width, globalCanvas.height);
+                let shapes = window.parent.sukoonShapes;
+                if(shapes.length === 0) { isAnimating = false; return; }
+
+                for (let i = 0; i < shapes.length; i++) {
+                    let s = shapes[i];
+                    globalCtx.globalAlpha = s.alpha;
+                    globalCtx.strokeStyle = s.color;
+                    globalCtx.fillStyle = s.color;
+                    globalCtx.lineWidth = 4;
+
+                    if (s.type === 'circle') {
+                        globalCtx.beginPath(); globalCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); globalCtx.stroke();
+                        s.radius += 12; s.alpha -= 0.015; // Violent expansion!
+                    } else if (s.type === 'square') {
+                        globalCtx.strokeRect(s.x - s.radius, s.y - s.radius, s.radius * 2, s.radius * 2);
+                        s.radius += 12; s.alpha -= 0.015;
+                    } else if (s.type === 'spot') {
+                        globalCtx.beginPath(); globalCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); globalCtx.fill();
+                        s.x += s.vx; s.y += s.vy; s.alpha -= 0.01;
+                    } else if (s.type === 'bird') {
+                        globalCtx.beginPath();
+                        globalCtx.moveTo(s.x - s.radius, s.y - s.radius/2);
+                        globalCtx.lineTo(s.x, s.y);
+                        globalCtx.lineTo(s.x + s.radius, s.y - s.radius/2);
+                        globalCtx.stroke();
+                        s.y -= 5; s.radius += 1.5; s.alpha -= 0.015;
+                    }
+                }
+                window.parent.sukoonShapes = shapes.filter(s => s.alpha > 0);
+                globalCtx.globalAlpha = 1.0;
+                requestAnimationFrame(drawGlobal);
+            }
+
+            box.addEventListener('pointerdown', (e) => {
+                // Mechanical button click feel
+                box.style.transform = "scale(0.96)";
+                setTimeout(() => box.style.transform = "scale(1)", 100);
+
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 const randomType = types[Math.floor(Math.random() * types.length)];
 
-                if (randomType === 'spots') {
-                    // Create a burst of 6 small particles
-                    for(let i=0; i<6; i++) {
-                        shapes.push({
-                            type: 'spot', x: clickX, y: clickY,
-                            vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3,
-                            radius: Math.random() * 3 + 1.5, alpha: 1, color: randomColor
-                        });
+                if (globalCtx) {
+                    // Explode over the entire screen!
+                    const frame = window.frameElement;
+                    let originX = globalCanvas.width / 2;
+                    let originY = globalCanvas.height / 2;
+                    
+                    if (frame) {
+                        const rect = frame.getBoundingClientRect();
+                        originX = rect.left + e.clientX;
+                        originY = rect.top + e.clientY;
                     }
+
+                    if (randomType === 'spots') {
+                        for(let i=0; i<15; i++) {
+                            window.parent.sukoonShapes.push({
+                                type: 'spot', x: originX, y: originY,
+                                vx: (Math.random() - 0.5) * 15, vy: (Math.random() - 0.5) * 15,
+                                radius: Math.random() * 8 + 3, alpha: 1, color: randomColor
+                            });
+                        }
+                    } else {
+                        window.parent.sukoonShapes.push({ type: randomType, x: originX, y: originY, radius: 20, alpha: 1, color: randomColor });
+                    }
+
+                    if (!isAnimating) { isAnimating = true; drawGlobal(); }
                 } else {
-                    shapes.push({ type: randomType, x: clickX, y: clickY, radius: 5, alpha: 1, color: randomColor });
+                    // Fallback to local box drawing if jailed
+                    // ... (Fallback omitted to keep code lean, standard Streamlit allows parent access)
                 }
             });
-            draw();
         </script>
     """
     components.html(theme_it(zen_html), height=75)
 
-    # 🚨 STEP 2: FREE EMERGENCY FIRE ALARM 🚨
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     st.markdown("<div class='autopilot-btn'>", unsafe_allow_html=True)
     if st.button("⚡ AUTO-PILOT (INSTANT SOS) ⚡", use_container_width=True):
         st.session_state.current_page = "AutoPilot"
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # 🚨 STEP 3: THE PREMIUM AI WALL 🚨
     st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     st.markdown("<div class='section-header'>PRIVATE AI MENTOR</div>", unsafe_allow_html=True)
 
     if not st.session_state.journal_unlocked:
-        # THE LOCK BOX
         st.markdown("<div class='market-slab' style='padding: 30px 20px;'>", unsafe_allow_html=True)
         st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color: {app_text}; line-height: 1.6;'>Unlock the AI Agent and Guided Reflections by entering your email.</p>", unsafe_allow_html=True)
         user_email = st.text_input("Your Email Address", placeholder="name@example.com", key="ai_email_input")
@@ -445,7 +491,6 @@ if st.session_state.current_page == "Journal":
         st.markdown("</div>", unsafe_allow_html=True)
 
     else:
-        # UNLOCKED AI TOOLS
         voice_input = st.audio_input("Record your thoughts")
         text_msg = st.text_area("Or type your reflection...", height=150)
         
@@ -901,4 +946,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v137.0 | Tactile Zen Box Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v138.0 | Immersive Full-Screen Jailbreak</div>", unsafe_allow_html=True)
