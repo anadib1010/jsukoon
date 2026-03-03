@@ -58,28 +58,28 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
-    /* 🚨 THE RULE BREAKER: Forcing the Grid 🚨 */
+    /* 🚨 THE PRECISION SCALPEL: Exact Math for the Grid 🚨 */
     div[data-testid="stHorizontalBlock"] {{
         flex-direction: row !important;
         flex-wrap: wrap !important;
+        gap: 10px !important; /* Force a predictable gap */
     }}
     
-    /* Force columns to act like small blocks, not long lines */
+    /* 3-Column Math */
     div[data-testid="column"], div[data-testid="stColumn"] {{
-        width: 31% !important;
-        min-width: 31% !important;
-        max-width: 31% !important;
-        flex: 1 1 31% !important;
-        display: inline-block !important;
+        width: calc(33.333% - 10px) !important;
+        min-width: calc(33.333% - 10px) !important;
+        max-width: calc(33.333% - 10px) !important;
+        flex: 1 1 calc(33.333% - 10px) !important;
+        margin-bottom: 5px !important;
     }}
     
-    /* Make sure the 2-button rows (like the Short/Deep Guide) split the screen in half */
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"], 
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="stColumn"] {{
-        width: 48% !important;
-        min-width: 48% !important;
-        max-width: 48% !important;
-        flex: 1 1 48% !important;
+    /* 2-Column Math (For the Short/Deep Guide and the 2 Games) */
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"] {{
+        width: calc(50% - 10px) !important;
+        min-width: calc(50% - 10px) !important;
+        max-width: calc(50% - 10px) !important;
+        flex: 1 1 calc(50% - 10px) !important;
     }}
     
     @keyframes pulse426 {{
