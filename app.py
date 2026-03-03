@@ -58,19 +58,17 @@ st.markdown(f"""
     .stApp {{ background-color: #121212 !important; color: #E0E0E0 !important; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 4.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
-    /* CRITICAL MOBILE GRID FIX */
-    @media (max-width: 640px) {{
-        [data-testid="stHorizontalBlock"] {{
-            flex-direction: row !important;
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-        }}
-        [data-testid="column"] {{
-            width: fit-content !important;
-            flex: 1 1 auto !important;
-            min-width: 28% !important; /* Forces max 3 items per row */
-            margin-bottom: 5px !important;
-        }}
+    /* THE BIG HAMMER: Forcing Streamlit to keep the grid on all screens */
+    div[data-testid="stHorizontalBlock"] {{
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }}
+    div[data-testid="column"] {{
+        width: 30% !important;
+        flex: 1 1 30% !important;
+        min-width: 30% !important;
+        margin-bottom: 5px !important;
     }}
     
     @keyframes pulse426 {{
