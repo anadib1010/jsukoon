@@ -34,19 +34,20 @@ if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
 if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
 
-# Default to Deep Sage if an old light theme is cached
-valid_themes = ["Deep Sage", "Ocean Blue", "Ocean Green", "Red Amber", "Maroon", "Twilight Blue", "Liquid Gold"]
+# Ensure valid theme
+valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "The Deep Abyss", "First Light", "Sea Glass", 
+                "Deep Sage", "Ocean Blue", "Ocean Green", "Red Amber", "Maroon", "Twilight Blue", "Liquid Gold"]
 if "theme" not in st.session_state or st.session_state.theme not in valid_themes: 
-    st.session_state.theme = "Deep Sage"
+    st.session_state.theme = "The Void"
     
 if "ui_language" not in st.session_state: st.session_state.ui_language = "English"
 
-# VIP Unlocks (The Phygital Loop)
+# VIP Unlocks
 if "unlocked_mala" not in st.session_state: st.session_state.unlocked_mala = False
 if "unlocked_flame" not in st.session_state: st.session_state.unlocked_flame = False
 if "unlocked_nirvana" not in st.session_state: st.session_state.unlocked_nirvana = False
 
-# --- 4. ZERO-COST UI DICTIONARY (THE TOGGLE) ---
+# --- 4. ZERO-COST UI DICTIONARY ---
 LANG = {
     "English": {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
@@ -68,7 +69,10 @@ LANG = {
         "h_market": "RITUAL BUNDLES & TOOLS",
         "order_wa": "ORDER VIA WA", "free_shipping": "+ FREE SHIPPING",
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
-        "t_sage": "Deep Sage", "t_oblue": "Ocean Blue", "t_ogreen": "Ocean Green",
+        "th_light": "LIGHT SANCTUARY", "th_dark": "DEEP SANCTUARY",
+        "t_void": "The Void", "t_sage_l": "Sage Sanctuary", "t_terra": "Terracotta",
+        "t_abyss": "The Deep Abyss", "t_dawn": "First Light", "t_sea": "Sea Glass",
+        "t_sage_d": "Deep Sage", "t_oblue": "Ocean Blue", "t_ogreen": "Ocean Green",
         "t_amber": "Red Amber", "t_maroon": "Maroon", "t_tblue": "Twilight Blue",
         "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
         "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?"
@@ -93,7 +97,10 @@ LANG = {
         "h_market": "रीचुअल बंडल और टूल्स",
         "order_wa": "व्हाट्सएप से ऑर्डर करें", "free_shipping": "+ मुफ्त शिपिंग",
         "h_theme": "ऐप थीम", "h_lang": "ऐप की भाषा",
-        "t_sage": "गहरा सेज (Sage)", "t_oblue": "समुद्री नीला (Blue)", "t_ogreen": "समुद्री हरा (Green)",
+        "th_light": "हल्का अभयारण्य (Light)", "th_dark": "गहरा अभयारण्य (Deep)",
+        "t_void": "शून्य (The Void)", "t_sage_l": "सेज वन (Sage)", "t_terra": "मिट्टी (Terracotta)",
+        "t_abyss": "गहरा महासागर (Abyss)", "t_dawn": "पहली किरण (Dawn)", "t_sea": "समुद्री कांच (Sea Glass)",
+        "t_sage_d": "गहरा सेज (Deep Sage)", "t_oblue": "समुद्री नीला (Blue)", "t_ogreen": "समुद्री हरा (Green)",
         "t_amber": "लाल एम्बर (Amber)", "t_maroon": "मैरून (Maroon)", "t_tblue": "गहरा नीला (Twilight)",
         "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
         "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?"
@@ -101,8 +108,23 @@ LANG = {
 }
 t = LANG[st.session_state.ui_language]
 
-# --- 5. THE DEEP SANCTUARY THEMES ENGINE ---
-if st.session_state.theme == "Deep Sage":
+# --- 5. THE ULTIMATE 13-THEME ENGINE ---
+# LIGHT THEMES
+if st.session_state.theme == "First Light":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FDFBF7", "#4A4A4A", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.05)", "#D4A373", "212,163,115"
+elif st.session_state.theme == "Sea Glass":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#E5EDF0", "#4A5D66", "rgba(255,255,255,0.4)", "rgba(0,0,0,0.06)", "#7A9EA8", "122,158,168"
+elif st.session_state.theme == "Terracotta Earth":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#F2ECE7", "#5C4033", "rgba(255,255,255,0.4)", "rgba(0,0,0,0.06)", "#B07D62", "176,125,98"
+elif st.session_state.theme == "Sage Sanctuary":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#E3E7E0", "#3E4735", "rgba(255,255,255,0.4)", "rgba(0,0,0,0.06)", "#6B765F", "107,118,95"
+
+# DEEP THEMES
+elif st.session_state.theme == "The Void":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#E0E0E0", "rgba(20,20,20,0.6)", "rgba(255,255,255,0.08)", "#888888", "136,136,136"
+elif st.session_state.theme == "The Deep Abyss":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#051124", "#EAF2FA", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#4A76A8", "74,118,168"
+elif st.session_state.theme == "Deep Sage":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#1E2720", "#D3DDD0", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#7B9075", "123,144,117"
 elif st.session_state.theme == "Ocean Blue":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#122840", "#CFE2F3", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#5D93C4", "93,147,196"
@@ -114,10 +136,12 @@ elif st.session_state.theme == "Maroon":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#2A0E13", "#EFD1D6", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#9B3D4F", "155,61,79"
 elif st.session_state.theme == "Twilight Blue":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#181830", "#D6D5F2", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#726FBA", "114,111,186"
+
+# VIP
 elif st.session_state.theme == "Liquid Gold":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#F5E6BA", "rgba(212,175,55,0.08)", "rgba(212,175,55,0.25)", "#D4AF37", "212,175,55"
 else:
-    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#1E2720", "#D3DDD0", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#7B9075", "123,144,117"
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#E0E0E0", "rgba(20,20,20,0.6)", "rgba(255,255,255,0.08)", "#888888", "136,136,136"
 
 def theme_it(html_str):
     return html_str.replace("[C_BG]", "transparent").replace("[C_GLASS]", glass_bg).replace("[C_BORDER]", btn_border).replace("[C_TEXT]", app_text).replace("[C_ACCENT]", c_accent).replace("[C_RGB]", c_rgb)
@@ -142,6 +166,7 @@ st.markdown(f"""
     .breathing-circle {{ width: 50px; height: 50px; border: 2px solid {c_accent}; border-radius: 50%; margin: 15px auto 25px auto; animation: pulse 12s infinite ease-in-out !important; box-shadow: 0 0 20px rgba({c_rgb}, 0.3); transition: all 0.8s ease; }}
     .main-title {{ text-align: center; letter-spacing: 14px; font-weight: 300; font-size: 2.2rem; color: {app_text}; text-transform: uppercase; margin-bottom: 5px; }}
     .section-header {{ font-size: 11px; letter-spacing: 5px; font-weight: 500; text-transform: uppercase; margin: 35px 0 15px 0; color: {c_accent}; padding-bottom: 8px; opacity: 0.8; }}
+    .theme-group-header {{ font-size: 9px; letter-spacing: 3px; font-weight: 400; text-transform: uppercase; margin: 20px 0 10px 0; color: {app_text}; opacity: 0.5; text-align: left; padding-left: 5px; }}
     div.stButton {{ width: 100% !important; }}
     .stButton>button {{ width: 100% !important; min-width: 100% !important; background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 30px !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; min-height: 44px !important; height: 100% !important; font-size: 11px !important; font-weight: 400 !important; letter-spacing: 1px !important; display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; transition: all 0.3s ease; }}
     .stButton>button:active {{ transform: scale(0.96); opacity: 0.7; }}
@@ -768,19 +793,39 @@ elif st.session_state.current_page == "Settings":
         if st.button("हिंदी (Hindi)", use_container_width=True): st.session_state.ui_language = "Hindi"; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # 🚨 THE 12-THEME GRID 🚨
     st.markdown(f"<div class='section-header'>{t['h_theme']}</div>", unsafe_allow_html=True)
-    st.markdown("<div class='market-slab' style='padding: 20px;'>", unsafe_allow_html=True)
-    t_col1, t_col2, t_col3 = st.columns(3)
+    
+    # 1. Light Themes Row
+    st.markdown(f"<div class='theme-group-header'>{t['th_light']}</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='padding: 15px 20px 5px 20px;'>", unsafe_allow_html=True)
+    t_col1, t_col2 = st.columns(2)
     with t_col1:
-        if st.button(t["t_sage"], use_container_width=True): st.session_state.theme = "Deep Sage"; st.rerun()
-        if st.button(t["t_amber"], use_container_width=True): st.session_state.theme = "Red Amber"; st.rerun()
+        if st.button(t["t_dawn"], use_container_width=True): st.session_state.theme = "First Light"; st.rerun()
+        if st.button(t["t_terra"], use_container_width=True): st.session_state.theme = "Terracotta Earth"; st.rerun()
     with t_col2:
-        if st.button(t["t_oblue"], use_container_width=True): st.session_state.theme = "Ocean Blue"; st.rerun()
-        if st.button(t["t_maroon"], use_container_width=True): st.session_state.theme = "Maroon"; st.rerun()
-    with t_col3:
+        if st.button(t["t_sea"], use_container_width=True): st.session_state.theme = "Sea Glass"; st.rerun()
+        if st.button(t["t_sage_l"], use_container_width=True): st.session_state.theme = "Sage Sanctuary"; st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 2. Deep Themes Row
+    st.markdown(f"<div class='theme-group-header'>{t['th_dark']}</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='padding: 15px 20px 5px 20px;'>", unsafe_allow_html=True)
+    d_col1, d_col2 = st.columns(2)
+    with d_col1:
+        if st.button(t["t_void"], use_container_width=True): st.session_state.theme = "The Void"; st.rerun()
+        if st.button(t["t_sage_d"], use_container_width=True): st.session_state.theme = "Deep Sage"; st.rerun()
         if st.button(t["t_ogreen"], use_container_width=True): st.session_state.theme = "Ocean Green"; st.rerun()
+        if st.button(t["t_maroon"], use_container_width=True): st.session_state.theme = "Maroon"; st.rerun()
+    with d_col2:
+        if st.button(t["t_abyss"], use_container_width=True): st.session_state.theme = "The Deep Abyss"; st.rerun()
+        if st.button(t["t_oblue"], use_container_width=True): st.session_state.theme = "Ocean Blue"; st.rerun()
+        if st.button(t["t_amber"], use_container_width=True): st.session_state.theme = "Red Amber"; st.rerun()
         if st.button(t["t_tblue"], use_container_width=True): st.session_state.theme = "Twilight Blue"; st.rerun()
+    
+    # Secret 13th Theme
     if st.session_state.unlocked_nirvana:
+        st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
         if st.button(t["t_gold"], use_container_width=True): st.session_state.theme = "Liquid Gold"; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -812,4 +857,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v151.0 | The Deep Palette Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v152.0 | The Ultimate 12-Theme Engine</div>", unsafe_allow_html=True)
