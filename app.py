@@ -65,8 +65,9 @@ LANG = {
         "h_ether": "THE ETHER", "h_breath": "BREATH STUDIO", "h_games": "GROUNDING GAMES",
         "b_anchor": "Anchor (4-2-6)", "b_box": "The Box (4-4-4-4)", "b_sleep": "Deep Sleep (4-7-8)",
         "choose_visual": "CHOOSE YOUR VISUAL GUIDE", "v_wave": "The Wave", "v_moon": "The Moon", "v_lotus": "The Lotus",
-        "game_release": "The Release", "game_bloom": "The Bloom",
+        "game_release": "The Release", "game_bloom": "The Bloom", "game_convergence": "The Convergence",
         "release_desc": "Tap the rising thoughts to release them.", "bloom_desc": "Tap the center slowly to grow your light.",
+        "convergence_desc": "Your mind is the swarm. Press and hold to pull it into focus.",
         "h_market": "RITUAL BUNDLES & TOOLS",
         "order_wa": "ORDER VIA WA", "free_shipping": "+ FREE SHIPPING",
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
@@ -94,8 +95,9 @@ LANG = {
         "h_ether": "आकाश (द ईथर)", "h_breath": "सांस स्टूडियो", "h_games": "ग्राउंडिंग गेम्स",
         "b_anchor": "एंकर (4-2-6)", "b_box": "द बॉक्स (4-4-4-4)", "b_sleep": "गहरी नींद (4-7-8)",
         "choose_visual": "अपना दृश्य मार्गदर्शक चुनें", "v_wave": "लहर (Wave)", "v_moon": "चांद (Moon)", "v_lotus": "कमल (Lotus)",
-        "game_release": "रिलीज़ (छोड़ें)", "game_bloom": "ब्लूम (खिलना)",
+        "game_release": "रिलीज़ (छोड़ें)", "game_bloom": "ब्लूम (खिलना)", "game_convergence": "कन्वर्जेंस (संकेंद्रण)",
         "release_desc": "उठते हुए विचारों को छोड़ने के लिए उन्हें छुएं।", "bloom_desc": "अपने प्रकाश को बढ़ाने के लिए धीरे से केंद्र को छुएं।",
+        "convergence_desc": "आपका मन यह झुंड है। इसे शांत करने के लिए स्क्रीन को दबाकर रखें।",
         "h_market": "रीचुअल बंडल और टूल्स",
         "order_wa": "व्हाट्सएप से ऑर्डर करें", "free_shipping": "+ मुफ्त शिपिंग",
         "h_theme": "ऐप थीम", "h_lang": "ऐप की भाषा",
@@ -164,6 +166,8 @@ st.markdown(f"""
     div[data-testid="stHorizontalBlock"] {{ flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }}
     div[data-testid="column"], div[data-testid="stColumn"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; display: flex !important; justify-content: center !important; margin-bottom: 5px !important; }}
     div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"] {{ width: calc(50% - 8px) !important; min-width: calc(50% - 8px) !important; max-width: calc(50% - 8px) !important; flex: 1 1 calc(50% - 8px) !important; }}
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(3):last-child) > div[data-testid="column"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; }}
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(4):last-child) > div[data-testid="column"] {{ width: calc(25% - 8px) !important; min-width: calc(25% - 8px) !important; max-width: calc(25% - 8px) !important; flex: 1 1 calc(25% - 8px) !important; }}
     @keyframes pulse {{ 0% {{ transform: scale(1); opacity: 0.2; border-width: 1px; }} 50% {{ transform: scale(1.6); opacity: 0.8; border-width: 3px; }} 100% {{ transform: scale(1); opacity: 0.2; border-width: 1px; }} }}
     .breathing-circle {{ width: 50px; height: 50px; border: 2px solid {c_accent}; border-radius: 50%; margin: 15px auto 25px auto; animation: pulse 12s infinite ease-in-out !important; box-shadow: 0 0 20px rgba({c_rgb}, 0.3); transition: all 0.8s ease; }}
     .main-title {{ text-align: center; letter-spacing: 14px; font-weight: 300; font-size: 2.2rem; color: {app_text}; text-transform: uppercase; margin-bottom: 5px; }}
@@ -187,14 +191,16 @@ st.markdown(f"""
 # ==========================================
 base_breath_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
-    <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
+    <canvas id="[CANVAS_ID]" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
 </div>
 <script>
-    const canvas = document.getElementById('breathCanvas'); const ctx = canvas.getContext('2d');
-    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    window.addEventListener('resize', resize); resize(); const start = Date.now();
-    function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width/2; const cy = canvas.height/2 - 10; let t = ((Date.now() - start) / 1000); [JS_INJECT] requestAnimationFrame(draw); }
-    draw();
+    (function() {
+        const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize(); const start = Date.now();
+        function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width/2; const cy = canvas.height/2 - 10; let t = ((Date.now() - start) / 1000); [JS_INJECT] requestAnimationFrame(draw); }
+        draw();
+    })();
 </script>
 """
 
@@ -241,48 +247,140 @@ breath_js_dict = {
     """
 }
 
+# 🚨 THE NEW CONVERGENCE ENGINE 🚨
+convergence_html = """
+<div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; touch-action: none;">
+    <div id="convMsg" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:[C_ACCENT]; font-family:sans-serif; font-size:10px; font-weight:300; letter-spacing:4px; z-index:10; pointer-events:none; transition: opacity 0.5s; text-align:center; line-height:1.5;">PRESS & HOLD TO<br>GATHER THE MIND</div>
+    <canvas id="[CANVAS_ID]" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+</div>
+<script>
+    (function() {
+        const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d'); const msg = document.getElementById('convMsg');
+        let isPressing = false; let particles = []; let vibeInterval;
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize();
+        
+        // Create the chaotic monkey mind swarm
+        for(let i=0; i<120; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                radius: Math.random() * 2.5 + 1
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2; const cy = canvas.height / 2;
+            
+            for (let p of particles) {
+                if (isPressing) {
+                    // GRAVITY MODE
+                    let dx = cx - p.x; let dy = cy - p.y;
+                    let dist = Math.hypot(dx, dy);
+                    if (dist > 8) {
+                        p.vx += dx * 0.04; p.vy += dy * 0.04;
+                        p.vx *= 0.82; p.vy *= 0.82; // Friction to create orbit
+                    } else {
+                        p.x = cx + (Math.random() - 0.5) * 8; // Tightly packed vibrating core
+                        p.y = cy + (Math.random() - 0.5) * 8;
+                        p.vx = 0; p.vy = 0;
+                    }
+                } else {
+                    // CHAOS MODE
+                    p.vx += (Math.random() - 0.5) * 1.5; p.vy += (Math.random() - 0.5) * 1.5;
+                    let speed = Math.hypot(p.vx, p.vy);
+                    if (speed > 4) { p.vx = (p.vx/speed)*4; p.vy = (p.vy/speed)*4; }
+                    
+                    // Bounce off walls
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                }
+                
+                p.x += p.vx; p.y += p.vy;
+                
+                // Draw Particle
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba([C_RGB], 0.7)"; ctx.fill();
+            }
+
+            // Draw Core Glow when converging
+            if (isPressing) {
+                let glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 70);
+                glow.addColorStop(0, "rgba([C_RGB], 0.6)"); glow.addColorStop(1, "rgba(0,0,0,0)");
+                ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, 70, 0, Math.PI*2); ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function triggerPress() {
+            isPressing = true; msg.style.opacity = 0;
+            if(navigator.vibrate) vibeInterval = setInterval(()=>navigator.vibrate(30), 60);
+        }
+        function releasePress() {
+            if(!isPressing) return;
+            isPressing = false; msg.style.opacity = 1; clearInterval(vibeInterval);
+            if(navigator.vibrate) navigator.vibrate([60, 40, 60]); // The Shatter Haptic
+            // Explosive shatter velocity
+            for(let p of particles) { p.vx = (Math.random() - 0.5) * 30; p.vy = (Math.random() - 0.5) * 30; }
+        }
+
+        canvas.addEventListener('pointerdown', triggerPress);
+        canvas.addEventListener('pointerup', releasePress);
+        canvas.addEventListener('pointerleave', releasePress);
+        
+        draw();
+    })();
+</script>
+"""
+
 release_game_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden;">
     <div id="scoreDisplay" style="position:absolute; top:20px; width:100%; text-align:center; color:[C_ACCENT]; font-family:sans-serif; font-size:11px; font-weight:300; letter-spacing:4px; z-index:10; pointer-events:none;">
         THOUGHTS RELEASED: <span id="scoreVal">0</span>
     </div>
-    <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+    <canvas id="[CANVAS_ID]" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
 </div>
 <script>
-    const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-    let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
-    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    window.addEventListener('resize', resize); resize();
-    function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (!gameStarted) { ctx.fillStyle = "[C_ACCENT]"; ctx.globalAlpha = 0.5; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0; } 
-        else {
-            for (let i = bubbles.length - 1; i >= 0; i--) {
-                let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba([C_RGB], ${b.alpha})`; ctx.lineWidth = 1.5; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1); } 
-                else { b.y -= b.speed; ctx.fillStyle = `rgba([C_RGB], ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba([C_RGB], 0.3)"; if (b.y < -50) bubbles.splice(i, 1); }
-            }
-        } requestAnimationFrame(draw);
-    }
-    canvas.addEventListener('pointerdown', (e) => {
-        if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
-        const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
-        for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
-    }); draw();
+    (function() {
+        const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize();
+        function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!gameStarted) { ctx.fillStyle = "[C_ACCENT]"; ctx.globalAlpha = 0.5; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0; } 
+            else {
+                for (let i = bubbles.length - 1; i >= 0; i--) {
+                    let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                    if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba([C_RGB], ${b.alpha})`; ctx.lineWidth = 1.5; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1); } 
+                    else { b.y -= b.speed; ctx.fillStyle = `rgba([C_RGB], ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba([C_RGB], 0.3)"; if (b.y < -50) bubbles.splice(i, 1); }
+                }
+            } requestAnimationFrame(draw);
+        }
+        canvas.addEventListener('pointerdown', (e) => {
+            if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
+            const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+            for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
+        }); draw();
+    })();
 </script>
 """
 
 bloom_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
-    <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+    <canvas id="[CANVAS_ID]" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
     <div id="bloomMessage" style="position:absolute; z-index:10; color:[C_TEXT]; font-family:'Inter', sans-serif; font-weight:300; font-size:13px; letter-spacing:4px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:[C_GLASS]; backdrop-filter: blur(10px); padding:15px 25px; border-radius:30px; border:1px solid [C_BORDER];"></div>
 </div>
 <script>
-    const c = document.getElementById('bloomCanvas'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
-    function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
-    function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
-    c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
+    (function() {
+        const c = document.getElementById('[CANVAS_ID]'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
+        function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
+        function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
+        c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
+    })();
 </script>
 """
 
@@ -306,7 +404,7 @@ mala_html = """
 
 ether_html = """
 <div id="ether-container" style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
-    <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+    <canvas id="[CANVAS_ID]" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
     <p id="promptText" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:11px; font-weight:400; letter-spacing:4px; margin-bottom:25px; transition: opacity 2s; z-index: 10;">
         WRITE YOUR THOUGHTS INTO THE ETHER
     </p>
@@ -327,44 +425,46 @@ ether_html = """
 </div>
 
 <script>
-    const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
-    let particles = []; let animating = false; let currentMode = 'star'; let audioCtx = null;
+    (function() {
+        const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        let particles = []; let animating = false; let currentMode = 'star'; let audioCtx = null;
 
-    function initAudio() { if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; audioCtx = new AudioContext(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } }
-    function playBurnSound() { initAudio(); const bufferSize = audioCtx.sampleRate * 4; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(); }
-    function playManifestSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 4); }
+        function initAudio() { if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; audioCtx = new AudioContext(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } }
+        function playBurnSound() { initAudio(); const bufferSize = audioCtx.sampleRate * 4; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(); }
+        function playManifestSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 4); }
 
-    function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
-    function createParticles(mode) {
-        const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left; const cx = left + rect.width / 2; const cy = top + rect.height / 2;
-        for (let i = 0; i < 150; i++) {
-            if (mode === 'fire') { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 1, ax: 0, ay: 0.15, friction: 0.94, radius: Math.random() * 4 + 1.5, alpha: 1, decay: Math.random() * 0.005 + 0.002, color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` }); } 
-            else { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -4) - 0.5, ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.004 + 0.001, color: `rgba([C_RGB], ` }); }
-        } if (!animating) { animating = true; animateParticles(); }
-    }
+        function createParticles(mode) {
+            const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left; const cx = left + rect.width / 2; const cy = top + rect.height / 2;
+            for (let i = 0; i < 150; i++) {
+                if (mode === 'fire') { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 1, ax: 0, ay: 0.15, friction: 0.94, radius: Math.random() * 4 + 1.5, alpha: 1, decay: Math.random() * 0.005 + 0.002, color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` }); } 
+                else { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -4) - 0.5, ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.004 + 0.001, color: `rgba([C_RGB], ` }); }
+            } if (!animating) { animating = true; animateParticles(); }
+        }
 
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
-        for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.vx += p.ax; p.vy += p.ay; p.vx *= p.friction; p.vy *= p.friction; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "rgba([C_RGB], 1)"; ctx.fill(); } }
-        if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
-    }
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
+            for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.vx += p.ax; p.vy += p.ay; p.vx *= p.friction; p.vy *= p.friction; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "rgba([C_RGB], 1)"; ctx.fill(); } }
+            if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        }
 
-    function triggerEther(mode) {
-        if(input.value.trim() === '') return; currentMode = mode;
-        if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
-        if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
-        
-        if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
-        else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
+        function triggerEther(mode) {
+            if(input.value.trim() === '') return; currentMode = mode;
+            if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
+            if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
+            
+            if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
+            else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
 
-        createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
-        setTimeout(() => { msg.style.opacity = "1"; }, 3000);
-        setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 3000); }, 8000); 
-    }
+            createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+            setTimeout(() => { msg.style.opacity = "1"; }, 3000);
+            setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 3000); }, 8000); 
+        }
 
-    btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; }); btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
-    btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
+        btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; }); btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
+        btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
+    })();
 </script>
 """
 
@@ -593,7 +693,6 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
-    # 🚨 V155.0: THE VOICE HUNTER ENGINE 🚨
     for entry in reversed(st.session_state.core_journal):
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
@@ -614,7 +713,6 @@ if st.session_state.current_page == "Journal":
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 
-                // The Acoustic Hack
                 m.pitch = 0.9; 
                 m.rate = 0.82; 
                 
@@ -630,14 +728,11 @@ if st.session_state.current_page == "Journal":
                         m.lang = 'hi-IN'; 
                     }} 
                     else {{
-                        // The Voice Hunter (Prioritizing soft, high-quality English voices)
                         const preferredNames = ['samantha', 'serena', 'tessa', 'victoria', 'karen', 'moira', 'premium', 'enhanced', 'natural', 'uk english female'];
                         for (let pref of preferredNames) {{
                             let match = voices.find(v => v.name.toLowerCase().includes(pref) && v.lang.includes('en'));
                             if (match) {{ voice = match; break; }}
                         }}
-                        
-                        // Fallback
                         if (!voice) {{
                             voice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
                                     voices.find(v => v.lang === 'en-US' && v.name.includes('Female')) ||
@@ -677,9 +772,9 @@ elif st.session_state.current_page == "AutoPilot":
     
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
+    components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_sos").replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(release_game_html), height=370)
+    components.html(theme_it(release_game_html.replace("gameCanvas", "game_sos")), height=370)
 
 elif st.session_state.current_page == "AgentSanctuary":
     st.markdown(f"<div class='section-header' style='color: {c_accent};'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
@@ -689,14 +784,15 @@ elif st.session_state.current_page == "AgentSanctuary":
     
     selected_js = breath_js_dict.get(st.session_state.agent_breath, breath_js_dict["Box"])
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", selected_js)), height=270)
+    components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_agent").replace("[JS_INJECT]", selected_js)), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(release_game_html), height=370)
+    components.html(theme_it(release_game_html.replace("gameCanvas", "game_agent")), height=370)
 
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
-    components.html(theme_it(ether_html), height=450)
+    components.html(theme_it(ether_html.replace("starCanvas", "ether_main")), height=450)
 
+# 🚨 THE FOCUS TAB WITH "THE CONVERGENCE" 🚨
 elif st.session_state.current_page == "Focus":
     
     st.markdown(f"<div class='section-header'>{t['h_breath']}</div>", unsafe_allow_html=True)
@@ -733,33 +829,40 @@ elif st.session_state.current_page == "Focus":
             if st.button(t["v_lotus"], use_container_width=True): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
     selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
-    final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
+    final_breath_html = base_breath_html.replace("breathCanvas", "breath_focus").replace("[JS_INJECT]", selected_js)
     components.html(theme_it(final_breath_html), height=270)
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown(f"<div class='section-header'>{t['h_games']}</div>", unsafe_allow_html=True)
     
+    # Updated Grid for 3 Games (or 4 if VIP)
     has_mala = st.session_state.unlocked_mala
     if has_mala:
-        g_col1, g_col2, g_col3 = st.columns(3)
+        g_col1, g_col2, g_col3, g_col4 = st.columns(4)
     else:
-        g_col1, g_col2 = st.columns(2)
+        g_col1, g_col2, g_col3 = st.columns(3)
         
     with g_col1:
         if st.button(t["game_release"], use_container_width=True): st.session_state.active_game = "Release"; st.rerun()
     with g_col2:
         if st.button(t["game_bloom"], use_container_width=True): st.session_state.active_game = "Bloom"; st.rerun()
+    with g_col3:
+        if st.button(t["game_convergence"], use_container_width=True): st.session_state.active_game = "Convergence"; st.rerun()
     if has_mala:
-        with g_col3:
+        with g_col4:
             if st.button(t["game_mala"], use_container_width=True): st.session_state.active_game = "Mala"; st.rerun()
 
     if st.session_state.active_game == "Release":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['release_desc']}</p>", unsafe_allow_html=True)
-        components.html(theme_it(release_game_html), height=370)
+        components.html(theme_it(release_game_html.replace("gameCanvas", "game_focus_release")), height=370)
 
     elif st.session_state.active_game == "Bloom":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['bloom_desc']}</p>", unsafe_allow_html=True)
-        components.html(theme_it(bloom_html), height=370)
+        components.html(theme_it(bloom_html.replace("bloomCanvas", "game_focus_bloom")), height=370)
+
+    elif st.session_state.active_game == "Convergence":
+        st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['convergence_desc']}</p>", unsafe_allow_html=True)
+        components.html(theme_it(convergence_html.replace("[CANVAS_ID]", "game_convergence")), height=370)
     
     elif st.session_state.active_game == "Mala":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
@@ -893,4 +996,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v156.1 | Clean Slate Patched</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.0 | The Monkey Mind Update</div>", unsafe_allow_html=True)
