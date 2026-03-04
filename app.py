@@ -326,11 +326,11 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
-    # 🚨 NEW: THE MULTISENSORY JAILBREAK ZEN BOX 🚨
+    # 🚨 UPDATED TEXT: "TOUCH 3 TIMES TO GROUND YOURSELF" 🚨
     zen_html = """
         <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:60px; overflow:hidden; cursor:crosshair; transition: transform 0.1s ease;" id="zen-box">
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:3px; opacity:0.8; pointer-events:none; text-align:center; width: 100%; line-height: 1.3;">
-                TOUCH TO GROUND YOURSELF
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:10px; letter-spacing:2px; opacity:0.8; pointer-events:none; text-align:center; width: 100%; line-height: 1.4;">
+                TOUCH 3 TIMES<br>TO GROUND YOURSELF
             </div>
             <canvas id="localCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none;"></canvas>
         </div>
@@ -985,4 +985,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v139.0 | Multisensory Haptics</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v140.0 | Rule of Three Hook</div>", unsafe_allow_html=True)
