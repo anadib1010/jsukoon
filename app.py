@@ -37,7 +37,7 @@ if "agent_message" not in st.session_state: st.session_state.agent_message = "I 
 # Ensure valid theme
 valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue", "First Light", "Sea Glass", 
                 "Deep Sage", "Ocean Blue", "Ocean Green", "Red Amber", "Maroon", "Twilight Blue", 
-                "Champagne Gold", "Amber Champagne", "Liquid Gold"]
+                "Champagne Gold", "Pink Champagne", "Liquid Gold"]
 if "theme" not in st.session_state or st.session_state.theme not in valid_themes: 
     st.session_state.theme = "The Void"
     
@@ -73,7 +73,7 @@ LANG = {
         "th_light": "LIGHT SANCTUARY", "th_dark": "DEEP SANCTUARY",
         "t_void": "The Void", "t_sage_l": "Sage Sanctuary", "t_terra": "Terracotta",
         "t_abyss": "Social Blue", "t_dawn": "First Light", "t_sea": "Sea Glass",
-        "t_champagne": "Champagne Gold", "t_amber_champ": "Amber Champagne",
+        "t_champagne": "Champagne Gold", "t_pink_champ": "Pink Champagne",
         "t_sage_d": "Deep Sage", "t_oblue": "Ocean Blue", "t_ogreen": "Ocean Green",
         "t_amber": "Red Amber", "t_maroon": "Maroon", "t_tblue": "Twilight Blue",
         "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
@@ -102,7 +102,7 @@ LANG = {
         "th_light": "हल्का अभयारण्य (Light)", "th_dark": "गहरा अभयारण्य (Deep)",
         "t_void": "शून्य (The Void)", "t_sage_l": "सेज वन (Sage)", "t_terra": "मिट्टी (Terracotta)",
         "t_abyss": "सोशल ब्लू (FB Blue)", "t_dawn": "पहली किरण (Dawn)", "t_sea": "समुद्री कांच (Sea Glass)",
-        "t_champagne": "शैंपेन गोल्ड (Champagne)", "t_amber_champ": "एम्बर शैंपेन (Amber)",
+        "t_champagne": "शैंपेन गोल्ड (Champagne)", "t_pink_champ": "पिंक शैंपेन (Pink)",
         "t_sage_d": "गहरा सेज (Deep Sage)", "t_oblue": "समुद्री नीला (Blue)", "t_ogreen": "समुद्री हरा (Green)",
         "t_amber": "लाल एम्बर (Amber)", "t_maroon": "मैरून (Maroon)", "t_tblue": "गहरा नीला (Twilight)",
         "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
@@ -123,8 +123,8 @@ elif st.session_state.theme == "Sage Sanctuary":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#E3E7E0", "#3E4735", "rgba(255,255,255,0.4)", "rgba(0,0,0,0.06)", "#6B765F", "107,118,95"
 elif st.session_state.theme == "Champagne Gold":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FBF5ED", "#4A4036", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.06)", "#C5A059", "197,160,89"
-elif st.session_state.theme == "Amber Champagne":
-    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FDF0E3", "#593D2B", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.06)", "#D28856", "210,136,86"
+elif st.session_state.theme == "Pink Champagne":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#F8DECD", "#5A3A42", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.06)", "#C88A8E", "200,138,142"
 
 # DEEP THEMES (8)
 elif st.session_state.theme == "The Void":
@@ -814,7 +814,7 @@ elif st.session_state.current_page == "Settings":
     with l_col2:
         if st.button(t["t_sea"], use_container_width=True): st.session_state.theme = "Sea Glass"; st.rerun()
         if st.button(t["t_sage_l"], use_container_width=True): st.session_state.theme = "Sage Sanctuary"; st.rerun()
-        if st.button(t["t_amber_champ"], use_container_width=True): st.session_state.theme = "Amber Champagne"; st.rerun()
+        if st.button(t["t_pink_champ"], use_container_width=True): st.session_state.theme = "Pink Champagne"; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
     # 2. Deep Themes Row (8 Themes)
@@ -866,4 +866,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v153.0 | The Champagne Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v153.1 | Pink Champagne Edition</div>", unsafe_allow_html=True)
