@@ -183,7 +183,7 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# --- 8. GLOBAL HTML COMPONENTS ---
+# --- REUSABLE GLOBAL HTML COMPONENTS ---
 # ==========================================
 base_breath_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
@@ -357,32 +357,6 @@ ether_html = """
     })();
 </script>
 """
-
-# ==========================================
-# --- 9. MAIN APP HEADER & NAV GRID ---
-# ==========================================
-
-st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
-with col2:
-    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
-with col3:
-    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
-
-col4, col5, col6 = st.columns(3)
-with col4:
-    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
-with col5:
-    if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
-with col6:
-    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
-
-st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # --- PAGES ---
@@ -583,6 +557,7 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
+    # 🚨 V155.0: THE VOICE HUNTER ENGINE 🚨
     for entry in reversed(st.session_state.core_journal):
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
@@ -602,22 +577,48 @@ if st.session_state.current_page == "Journal":
                 window.speechSynthesis.cancel(); 
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
-                m.rate = 0.85;
+                
+                // The Acoustic Hack
+                m.pitch = 0.9; 
+                m.rate = 0.82; 
+                
                 var isHindi = /[\u0900-\u097F]/.test(decodedText);
-                var userLang = navigator.language || navigator.userLanguage || "en-US";
-                var userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
                 
                 function setVoiceAndSpeak() {{
-                    var voices = window.speechSynthesis.getVoices(); var voice;
-                    if (isHindi) {{ voice = voices.find(v => v.lang === 'hi-IN' || v.lang.includes('hi') || v.name.includes('Hindi')); m.lang = 'hi-IN'; }} 
+                    var voices = window.speechSynthesis.getVoices(); 
+                    var voice = null;
+                    
+                    if (isHindi) {{ 
+                        voice = voices.find(v => v.lang.includes('hi') && (v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Lekha'))) 
+                             || voices.find(v => v.lang.includes('hi'));
+                        m.lang = 'hi-IN'; 
+                    }} 
                     else {{
-                        if (userLang.includes('GB') || userTZ.includes('Europe/London')) {{ voice = voices.find(v => v.lang === 'en-GB' || v.name.includes('UK') || v.name.includes('British')); m.lang = 'en-GB'; }} 
-                        else if (userLang.includes('IN') || userTZ.includes('Asia/Calcutta') || userTZ.includes('Asia/Kolkata')) {{ voice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India')); m.lang = 'en-IN'; }} 
-                        else {{ voice = voices.find(v => v.lang === 'en-US' || v.name.includes('US') || v.name.includes('United States')) || voices.find(v => v.lang.includes('en')); m.lang = 'en-US'; }}
+                        // The Voice Hunter (Prioritizing soft, high-quality English voices)
+                        const preferredNames = ['samantha', 'serena', 'tessa', 'victoria', 'karen', 'moira', 'premium', 'enhanced', 'natural', 'uk english female'];
+                        for (let pref of preferredNames) {{
+                            let match = voices.find(v => v.name.toLowerCase().includes(pref) && v.lang.includes('en'));
+                            if (match) {{ voice = match; break; }}
+                        }}
+                        
+                        // Fallback
+                        if (!voice) {{
+                            voice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
+                                    voices.find(v => v.lang === 'en-US' && v.name.includes('Female')) ||
+                                    voices.find(v => v.lang.includes('en'));
+                        }}
+                        m.lang = voice ? voice.lang : 'en-US';
                     }}
-                    if (voice) {{ m.voice = voice; }} window.speechSynthesis.speak(m);
+                    
+                    if (voice) {{ m.voice = voice; }} 
+                    window.speechSynthesis.speak(m);
                 }}
-                if (window.speechSynthesis.getVoices().length === 0) {{ window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak; }} else {{ setVoiceAndSpeak(); }}
+                
+                if (window.speechSynthesis.getVoices().length === 0) {{ 
+                    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak; 
+                }} else {{ 
+                    setVoiceAndSpeak(); 
+                }}
             }}
         </script>
         """
@@ -918,4 +919,4 @@ elif st.session_state.current_page == "Settings":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v154.1 | Bug Fix & Director's Lab</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v155.0 | Voice Hunter Engine</div>", unsafe_allow_html=True)
