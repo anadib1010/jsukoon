@@ -229,41 +229,6 @@ breath_js_dict = {
     """
 }
 
-release_game_html = """
-<div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
-    <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
-        THOUGHTS RELEASED: <span id="scoreVal">0</span>
-    </div>
-    <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-</div>
-<script>
-    const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-    let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
-    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    window.addEventListener('resize', resize); resize();
-    function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (!gameStarted) {
-            ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0;
-        } else {
-            for (let i = bubbles.length - 1; i >= 0; i--) {
-                let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1);
-                } else { b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)"; if (b.y < -50) bubbles.splice(i, 1); }
-            }
-        }
-        requestAnimationFrame(draw);
-    }
-    canvas.addEventListener('pointerdown', (e) => {
-        if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
-        const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
-        for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
-    });
-    draw();
-</script>
-"""
-
 # --- PAGES ---
 
 if st.session_state.current_page == "Journal":
@@ -344,74 +309,117 @@ if st.session_state.current_page == "Journal":
     st.markdown("</div>", unsafe_allow_html=True)
     
     if btn_short or btn_deep or btn_agent:
-        if model:
-            with st.spinner("Channeling Wisdom..."):
-                energy_context = ""
-                if st.session_state.energy_history:
-                    latest_energy = st.session_state.energy_history[-1]
-                    energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
-
-                core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
-                Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
-                
-                YOUR RULES OF ENGAGEMENT:
-                1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
-                2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
-                3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts (The Witness/Sakshi), not the thoughts themselves. Thoughts are passing clouds; the user is the sky.
-                4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
-                5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
-                6. Always speak with deep empathy, but unwavering, grounded strength.
-                7. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish (Hindi words written with English letters), you MUST reply ONLY in pure Hindi using the Devanagari script (e.g., मैं खुश हूँ). We assume Hinglish speakers can read Devanagari. NEVER reply in Hinglish.
-                """
-
-                if btn_agent:
-                    context = f"""{core_philosophy}
-                    The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
-                    {energy_context}
-                    CRITICAL INSTRUCTION: Respond ONLY with a raw JSON object. No markdown.
-                    {{ "reply": "A very short, 1-sentence poetic grounding message.", "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus", "audio": "birds", "flute", "forest", "waves", or "wind" }}
-                    """
+        # 🚨 V148.0: THE ZERO-COST SMART CACHE LAYER 🚨
+        cached_reply = None
+        is_agent_mode = bool(btn_agent)
+        
+        if text_msg and not voice_input:
+            t_low = text_msg.lower().strip()
+            cat = None
+            # Keywords detection (English & Hindi/Hinglish)
+            if any(w in t_low for w in ["sleep", "neend", "नींद", "so nahi", "awake", "insomnia", "tired", "thak"]): cat = "sleep"
+            elif any(w in t_low for w in ["heavy", "sad", "bhari", "udhas", "udaas", "depress", "cry", "rona", "उदास", "रोने", "akela", "lonely"]): cat = "heavy"
+            elif any(w in t_low for w in ["racing", "overwhelm", "shant", "anxious", "panic", "fast", "kya karu", "soch", "overthink", "gussa", "anger"]): cat = "racing"
+            
+            if cat:
+                if is_agent_mode:
+                    if cat == "sleep": cached_reply = '{"reply": "The night is yours. Let us find stillness.", "breath": "Sleep_Lotus", "audio": "waves"}'
+                    else: cached_reply = '{"reply": "The storm is loud. Step into the quiet.", "breath": "Box", "audio": "forest"}'
                 else:
-                    length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
-                    context = f"""{core_philosophy}
-                    {length_instruction}
-                    End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi. Do not use abrupt military-style formatting.
-                    {energy_context}"""
-                
+                    if st.session_state.ui_language == "English":
+                        if cat == "sleep": cached_reply = "The night is quiet, but your mind is loud. You are not your racing thoughts; you are the vast sky observing them. Release the need to control the outcome of tomorrow. Let the body rest.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
+                        elif cat == "heavy": cached_reply = "I hear the heaviness you are carrying. This weight is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it without judgment. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
+                        elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
+                    else:
+                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+
+        if cached_reply:
+            # 🚨 ZERO API COST ROUTE 🚨
+            if is_agent_mode:
                 try:
-                    if voice_input:
-                        audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                        prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Mentor."]
-                    elif text_msg:
-                        prompt_parts = [context, text_msg]
-                    else:
-                        prompt_parts = [context, "I am seeking silence. My mind is heavy."]
-                        
-                    resp = model.generate_content(prompt_parts)
-                    
-                    if btn_agent:
-                        try:
-                            clean_text = resp.text.strip().replace('```json', '').replace('```', '')
-                            agent_command = json.loads(clean_text)
-                            st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
-                            st.session_state.agent_breath = agent_command.get("breath", "Box")
-                            raw_audio = str(agent_command.get("audio", "flute")).lower()
-                            st.session_state.agent_audio = f"{raw_audio}.mp3"
-                            st.session_state.current_page = "AgentSanctuary"
-                        except Exception as e:
-                            st.session_state.agent_message = "The outside world is loud. Step into the quiet."
-                            st.session_state.agent_breath = "Box"
-                            st.session_state.agent_audio = "flute.mp3"
-                            st.session_state.current_page = "AgentSanctuary"
-                    else:
-                        ai_reply = resp.text
-                        unique_id = str(datetime.now().timestamp()).replace('.', '')
-                        st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": ai_reply, "id": unique_id})
-                    st.rerun()
-                except Exception as e:
-                    st.error("The Mentor needs a moment of quiet. Please try again.")
+                    agent_command = json.loads(cached_reply)
+                    st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
+                    st.session_state.agent_breath = agent_command.get("breath", "Box")
+                    st.session_state.agent_audio = f"{str(agent_command.get('audio', 'flute')).lower()}.mp3"
+                    st.session_state.current_page = "AgentSanctuary"
+                except: pass
+            else:
+                unique_id = str(datetime.now().timestamp()).replace('.', '')
+                st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": cached_reply, "id": unique_id})
+            st.rerun()
+
         else:
-            st.warning("The Mentor is resting. Please try again in an hour.")
+            # 🚨 FULL API ROUTE (FOR COMPLEX/VOICE ENTRIES) 🚨
+            if model:
+                with st.spinner("Channeling Wisdom..."):
+                    energy_context = ""
+                    if st.session_state.energy_history:
+                        latest_energy = st.session_state.energy_history[-1]
+                        energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
+
+                    core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
+                    Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
+                    
+                    YOUR RULES OF ENGAGEMENT:
+                    1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
+                    2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
+                    3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts (The Witness/Sakshi), not the thoughts themselves. Thoughts are passing clouds; the user is the sky.
+                    4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
+                    5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
+                    6. Always speak with deep empathy, but unwavering, grounded strength.
+                    7. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish (Hindi words written with English letters), you MUST reply ONLY in pure Hindi using the Devanagari script (e.g., मैं खुश हूँ). We assume Hinglish speakers can read Devanagari. NEVER reply in Hinglish.
+                    """
+
+                    if btn_agent:
+                        context = f"""{core_philosophy}
+                        The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
+                        {energy_context}
+                        CRITICAL INSTRUCTION: Respond ONLY with a raw JSON object. No markdown.
+                        {{ "reply": "A very short, 1-sentence poetic grounding message.", "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus", "audio": "birds", "flute", "forest", "waves", or "wind" }}
+                        """
+                    else:
+                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
+                        context = f"""{core_philosophy}
+                        {length_instruction}
+                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi. Do not use abrupt military-style formatting.
+                        {energy_context}"""
+                    
+                    try:
+                        if voice_input:
+                            audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
+                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Mentor."]
+                        elif text_msg:
+                            prompt_parts = [context, text_msg]
+                        else:
+                            prompt_parts = [context, "I am seeking silence. My mind is heavy."]
+                            
+                        resp = model.generate_content(prompt_parts)
+                        
+                        if btn_agent:
+                            try:
+                                clean_text = resp.text.strip().replace('```json', '').replace('```', '')
+                                agent_command = json.loads(clean_text)
+                                st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
+                                st.session_state.agent_breath = agent_command.get("breath", "Box")
+                                raw_audio = str(agent_command.get("audio", "flute")).lower()
+                                st.session_state.agent_audio = f"{raw_audio}.mp3"
+                                st.session_state.current_page = "AgentSanctuary"
+                            except Exception as e:
+                                st.session_state.agent_message = "The outside world is loud. Step into the quiet."
+                                st.session_state.agent_breath = "Box"
+                                st.session_state.agent_audio = "flute.mp3"
+                                st.session_state.current_page = "AgentSanctuary"
+                        else:
+                            ai_reply = resp.text
+                            unique_id = str(datetime.now().timestamp()).replace('.', '')
+                            st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": ai_reply, "id": unique_id})
+                        st.rerun()
+                    except Exception as e:
+                        st.error("The Mentor needs a moment of quiet. Please try again.")
+            else:
+                st.warning("The Mentor is resting. Please try again in an hour.")
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
@@ -491,7 +499,6 @@ elif st.session_state.current_page == "AgentSanctuary":
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
     
-    # 🚨 V147.1: SLOWER PHYSICS + GENERATIVE AUDIO (FIRE RUMBLE & MANIFEST CHIME) 🚨
     ether_html = """
     <div id="ether-container" style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
@@ -515,178 +522,44 @@ elif st.session_state.current_page == "Ether":
     </div>
 
     <script>
-        const btnRelease = document.getElementById('releaseBtn'); 
-        const btnManifest = document.getElementById('manifestBtn'); 
-        const btnRow = document.getElementById('buttonRow'); 
-        const input = document.getElementById('etherInput'); 
-        const promptText = document.getElementById('promptText'); 
-        const msg = document.getElementById('messageText'); 
-        const container = document.getElementById('ether-container'); 
-        const canvas = document.getElementById('starCanvas'); 
-        const ctx = canvas.getContext('2d');
-        
-        let particles = []; let animating = false; let currentMode = 'star';
-        let audioCtx = null;
+        const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
+        let particles = []; let animating = false; let currentMode = 'star'; let audioCtx = null;
 
-        // --- GENERATIVE AUDIO SCRIPT ---
-        function initAudio() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
-            }
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-        }
+        function initAudio() { if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; audioCtx = new AudioContext(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } }
+        function playBurnSound() { initAudio(); const bufferSize = audioCtx.sampleRate * 4; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(); }
+        function playManifestSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 4); }
 
-        function playBurnSound() {
-            initAudio();
-            const bufferSize = audioCtx.sampleRate * 4; // 4 seconds of noise
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
-            
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-            
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'lowpass'; 
-            filter.frequency.value = 300; // Deep rumble tone
-            
-            const gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(0, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); // Fade in
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); // Slow fade out
-            
-            noise.connect(filter).connect(gain).connect(audioCtx.destination);
-            noise.start();
-        }
-
-        function playManifestSound() {
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'sine'; // Soft, pure tone
-            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); // Ascending pitch
-            
-            gain.gain.setValueAtTime(0, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); // Slow fade in
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); // Slow fade out
-            
-            osc.connect(gain).connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 4);
-        }
-
-        // --- VISUAL PHYSICS ---
-        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } 
-        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
         function createParticles(mode) {
-            const rect = input.getBoundingClientRect(); 
-            const containerRect = container.getBoundingClientRect(); 
-            const top = rect.top - containerRect.top; 
-            const left = rect.left - containerRect.left;
-            const cx = left + rect.width / 2;
-            const cy = top + rect.height / 2;
-            
+            const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left; const cx = left + rect.width / 2; const cy = top + rect.height / 2;
             for (let i = 0; i < 150; i++) {
-                if (mode === 'fire') { 
-                    particles.push({ 
-                        x: cx + (Math.random() - 0.5) * rect.width * 0.8, 
-                        y: cy + (Math.random() - 0.5) * rect.height * 0.8, 
-                        vx: (Math.random() - 0.5) * 6, // Slower explosion
-                        vy: (Math.random() - 0.5) * 6 - 1, 
-                        ax: 0, ay: 0.15, friction: 0.94, // Softer gravity
-                        radius: Math.random() * 4 + 1.5, 
-                        alpha: 1, decay: Math.random() * 0.005 + 0.002, // Lives much longer
-                        color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` 
-                    }); 
-                } else { 
-                    particles.push({ 
-                        x: cx + (Math.random() - 0.5) * rect.width * 0.8, 
-                        y: cy + (Math.random() - 0.5) * rect.height * 0.8, 
-                        vx: (Math.random() - 0.5) * 3, 
-                        vy: (Math.random() * -4) - 0.5, 
-                        ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, // Very slow anti-gravity
-                        radius: Math.random() * 3 + 1, 
-                        alpha: 1, decay: Math.random() * 0.004 + 0.001, // Lives much longer
-                        color: `rgba([C_STAR], ` 
-                    }); 
-                }
-            } 
-            if (!animating) { animating = true; animateParticles(); }
+                if (mode === 'fire') { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 1, ax: 0, ay: 0.15, friction: 0.94, radius: Math.random() * 4 + 1.5, alpha: 1, decay: Math.random() * 0.005 + 0.002, color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` }); } 
+                else { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -4) - 0.5, ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.004 + 0.001, color: `rgba([C_STAR], ` }); }
+            } if (!animating) { animating = true; animateParticles(); }
         }
 
         function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); 
-            let active = false;
-            for (let i = 0; i < particles.length; i++) { 
-                let p = particles[i]; 
-                if (p.alpha > 0) { 
-                    active = true; 
-                    p.vx += p.ax; p.vy += p.ay;
-                    p.vx *= p.friction; p.vy *= p.friction;
-                    p.x += p.vx; p.y += p.vy; 
-                    p.alpha -= p.decay; 
-                    
-                    ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); 
-                    ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; 
-                    ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; 
-                    ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "[C_TEXT]"; 
-                    ctx.fill(); 
-                } 
-            }
-            if (active) { requestAnimationFrame(animateParticles); } 
-            else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+            ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
+            for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.vx += p.ax; p.vy += p.ay; p.vx *= p.friction; p.vy *= p.friction; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "[C_TEXT]"; ctx.fill(); } }
+            if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
         }
 
         function triggerEther(mode) {
-            if(input.value.trim() === '') return; 
-            currentMode = mode;
-            
-            // Trigger Audio
+            if(input.value.trim() === '') return; currentMode = mode;
             if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
+            if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
             
-            // Trigger Haptics
-            if (navigator.vibrate) {
-                if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } 
-                else { navigator.vibrate([20, 150, 20, 150, 20]); } 
-            }
-            
-            // Slow, cinematic text dissolve
-            if (mode === 'fire') { 
-                msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; 
-                input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
-                input.style.transform = "scale(0.8) translateY(60px)"; 
-            } else { 
-                msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; 
-                input.style.filter = "blur(15px) brightness(200%)"; 
-                input.style.transform = "scale(0.8) translateY(-60px)"; 
-            }
+            if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
+            else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
 
-            createParticles(mode); 
-            input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; 
-            btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
-            
-            // Wait longer before showing message
+            createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
             setTimeout(() => { msg.style.opacity = "1"; }, 3000);
-            
-            // Wait much longer before resetting the page
-            setTimeout(() => { 
-                msg.style.opacity = "0"; 
-                setTimeout(() => { 
-                    input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; 
-                    void input.offsetWidth; 
-                    input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; 
-                    btnRow.style.opacity = "1"; promptText.style.opacity = "1"; 
-                    btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; 
-                }, 3000); 
-            }, 8000); 
+            setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 3000); }, 8000); 
         }
 
-        btnRelease.addEventListener('click', () => { triggerEther('fire'); }); 
-        btnManifest.addEventListener('click', () => { triggerEther('star'); });
+        btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; }); btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
+        btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
     </script>
     """
     components.html(theme_it(ether_html), height=450)
@@ -827,4 +700,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v147.1 | Cinematic Ether Audio & Physics</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v148.0 | Smart Cache Layer</div>", unsafe_allow_html=True)
