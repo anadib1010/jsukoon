@@ -491,21 +491,22 @@ elif st.session_state.current_page == "AgentSanctuary":
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
     
+    # 🚨 V147.0: NEW PHYSICS ENGINE FOR THE ETHER 🚨
     ether_html = """
     <div id="ether-container" style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
         <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
             WRITE YOUR THOUGHTS INTO THE ETHER
         </p>
-        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:[C_TEXT]; border:1px solid [C_BORDER]; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
+        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:[C_TEXT]; border:1px solid [C_BORDER]; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 1.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
         
         <div style="height: 25px; z-index: 10;"></div>
         
         <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 1s;">
-            <button id="releaseBtn" style="background: linear-gradient(180deg, #3a1c1c 0%, #1a0b0b 100%); color: #ffbba6; border: 1px solid #5a2a2a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1;">
+            <button id="releaseBtn" style="background: linear-gradient(180deg, #3a1c1c 0%, #1a0b0b 100%); color: #ffbba6; border: 1px solid #5a2a2a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.2s;">
                 BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.6;">(Negative Thoughts)</span>
             </button>
-            <button id="manifestBtn" style="background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%); color: #a6d8ff; border: 1px solid #2a415a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1;">
+            <button id="manifestBtn" style="background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%); color: #a6d8ff; border: 1px solid #2a415a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.2s;">
                 MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.6;">(Positive Thoughts)</span>
             </button>
         </div>
@@ -514,30 +515,124 @@ elif st.session_state.current_page == "Ether":
     </div>
 
     <script>
-        const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
+        const btnRelease = document.getElementById('releaseBtn'); 
+        const btnManifest = document.getElementById('manifestBtn'); 
+        const btnRow = document.getElementById('buttonRow'); 
+        const input = document.getElementById('etherInput'); 
+        const promptText = document.getElementById('promptText'); 
+        const msg = document.getElementById('messageText'); 
+        const container = document.getElementById('ether-container'); 
+        const canvas = document.getElementById('starCanvas'); 
+        const ctx = canvas.getContext('2d');
+        
         let particles = []; let animating = false; let currentMode = 'star';
-        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } 
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
         function createParticles(mode) {
-            const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left;
-            for (let i = 0; i < 120; i++) {
-                if (mode === 'fire') { particles.push({ x: left + Math.random() * rect.width, y: top + Math.random() * rect.height, vx: (Math.random() - 0.5) * 4, vy: (Math.random() * -5) - 1, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.02 + 0.01, color: `rgba(${255}, ${Math.random() * 100 + 50}, 0, ` }); } 
-                else { particles.push({ x: left + Math.random() * rect.width, y: top + Math.random() * rect.height, vx: (Math.random() - 0.5) * 2, vy: (Math.random() * -2) - 0.2, radius: Math.random() * 2 + 0.5, alpha: 1, decay: Math.random() * 0.01 + 0.005, color: `rgba([C_STAR], ` }); }
-            } if (!animating) { animating = true; animateParticles(); }
+            const rect = input.getBoundingClientRect(); 
+            const containerRect = container.getBoundingClientRect(); 
+            const top = rect.top - containerRect.top; 
+            const left = rect.left - containerRect.left;
+            const cx = left + rect.width / 2;
+            const cy = top + rect.height / 2;
+            
+            for (let i = 0; i < 150; i++) {
+                if (mode === 'fire') { 
+                    particles.push({ 
+                        x: cx + (Math.random() - 0.5) * rect.width * 0.8, 
+                        y: cy + (Math.random() - 0.5) * rect.height * 0.8, 
+                        vx: (Math.random() - 0.5) * 12, 
+                        vy: (Math.random() - 0.5) * 12 - 2, 
+                        ax: 0, ay: 0.4, friction: 0.92, // Gravity pulls down, high friction
+                        radius: Math.random() * 4 + 1.5, 
+                        alpha: 1, decay: Math.random() * 0.015 + 0.01, 
+                        color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` 
+                    }); 
+                } else { 
+                    particles.push({ 
+                        x: cx + (Math.random() - 0.5) * rect.width * 0.8, 
+                        y: cy + (Math.random() - 0.5) * rect.height * 0.8, 
+                        vx: (Math.random() - 0.5) * 6, 
+                        vy: (Math.random() * -8) - 2, 
+                        ax: (Math.random() - 0.5) * 0.15, ay: -0.1, friction: 0.96, // Anti-gravity floats up, drifting
+                        radius: Math.random() * 3 + 1, 
+                        alpha: 1, decay: Math.random() * 0.01 + 0.005, 
+                        color: `rgba([C_STAR], ` 
+                    }); 
+                }
+            } 
+            if (!animating) { animating = true; animateParticles(); }
         }
+
         function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
-            for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 8 : 15; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "[C_TEXT]"; ctx.fill(); } }
-            if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            let active = false;
+            for (let i = 0; i < particles.length; i++) { 
+                let p = particles[i]; 
+                if (p.alpha > 0) { 
+                    active = true; 
+                    // Apply Physics Vector Math
+                    p.vx += p.ax; p.vy += p.ay;
+                    p.vx *= p.friction; p.vy *= p.friction;
+                    p.x += p.vx; p.y += p.vy; 
+                    p.alpha -= p.decay; 
+                    
+                    ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); 
+                    ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; 
+                    ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; 
+                    ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "[C_TEXT]"; 
+                    ctx.fill(); 
+                } 
+            }
+            if (active) { requestAnimationFrame(animateParticles); } 
+            else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
         }
+
         function triggerEther(mode) {
-            if(input.value.trim() === '') return; currentMode = mode;
-            if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(15px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "translateY(30px) scale(0.9)"; } else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(12px) brightness(200%)"; input.style.transform = "translateY(-60px) scale(1.05)"; }
-            createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
-            setTimeout(() => { msg.style.opacity = "1"; }, 2000);
-            setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 2000); }, 6500); 
+            if(input.value.trim() === '') return; 
+            currentMode = mode;
+            
+            // Haptic Feedback (Android Only)
+            if (navigator.vibrate) {
+                if (mode === 'fire') { navigator.vibrate([30, 50, 40, 40, 50]); } // Heavy rumble
+                else { navigator.vibrate([20, 100, 20]); } // Light heartbeat
+            }
+            
+            // Shrink and dissolve text box
+            if (mode === 'fire') { 
+                msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; 
+                input.style.filter = "blur(15px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
+                input.style.transform = "scale(0.5) translateY(50px)"; 
+            } else { 
+                msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; 
+                input.style.filter = "blur(12px) brightness(200%)"; 
+                input.style.transform = "scale(0.5) translateY(-50px)"; 
+            }
+
+            createParticles(mode); 
+            input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; 
+            btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+            
+            setTimeout(() => { msg.style.opacity = "1"; }, 1500);
+            
+            setTimeout(() => { 
+                msg.style.opacity = "0"; 
+                setTimeout(() => { 
+                    input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; 
+                    void input.offsetWidth; 
+                    input.style.transition = "all 1.5s cubic-bezier(0.25, 0.1, 0.25, 1)"; 
+                    btnRow.style.opacity = "1"; promptText.style.opacity = "1"; 
+                    btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; 
+                }, 2000); 
+            }, 6000); 
         }
-        btnRelease.addEventListener('click', () => triggerEther('fire')); btnManifest.addEventListener('click', () => triggerEther('star'));
+
+        // Button Click Effects
+        btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; });
+        btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
+        btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); 
+        btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
     </script>
     """
     components.html(theme_it(ether_html), height=450)
@@ -678,4 +773,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v146.1 | Pure Translation Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v147.0 | Physics of the Ether</div>", unsafe_allow_html=True)
