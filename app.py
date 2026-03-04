@@ -326,7 +326,7 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
-    # 🚨 NEW: THE 60px JAILBREAK ZEN BOX 🚨
+    # 🚨 NEW: THE MULTISENSORY JAILBREAK ZEN BOX 🚨
     zen_html = """
         <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:60px; overflow:hidden; cursor:crosshair; transition: transform 0.1s ease;" id="zen-box">
             <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:11px; letter-spacing:3px; opacity:0.8; pointer-events:none; text-align:center; width: 100%; line-height: 1.3;">
@@ -344,6 +344,40 @@ if st.session_state.current_page == "Journal":
             
             let parentDoc, globalCanvas, globalCtx;
             let isAnimating = false;
+            let audioCtx = null;
+
+            // Initialize Web Audio API for a soft chime
+            function playSoftChime() {
+                try {
+                    if (!audioCtx) {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        audioCtx = new AudioContext();
+                    }
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                    
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    oscillator.type = 'sine'; // Soft, rounded tone
+                    // Randomize pitch slightly for organic feel
+                    const freq = 400 + Math.random() * 400; 
+                    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(freq/2, audioCtx.currentTime + 0.15);
+                    
+                    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Low volume so it's not jarring
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); // Quick fade out
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                } catch(e) {
+                    console.log("Audio not supported or blocked");
+                }
+            }
 
             // 🚨 THE JAILBREAK: Reaching into the parent phone screen 🚨
             try {
@@ -357,8 +391,8 @@ if st.session_state.current_page == "Journal":
                     globalCanvas.style.left = '0';
                     globalCanvas.style.width = '100%';
                     globalCanvas.style.height = '100%';
-                    globalCanvas.style.pointerEvents = 'none'; // Makes it invisible to clicks
-                    globalCanvas.style.zIndex = '999999'; // Puts it over all buttons
+                    globalCanvas.style.pointerEvents = 'none'; 
+                    globalCanvas.style.zIndex = '999999'; 
                     parentDoc.body.appendChild(globalCanvas);
                     
                     function resizeGlobal() {
@@ -392,7 +426,7 @@ if st.session_state.current_page == "Journal":
 
                     if (s.type === 'circle') {
                         globalCtx.beginPath(); globalCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); globalCtx.stroke();
-                        s.radius += 12; s.alpha -= 0.015; // Violent expansion!
+                        s.radius += 12; s.alpha -= 0.015; 
                     } else if (s.type === 'square') {
                         globalCtx.strokeRect(s.x - s.radius, s.y - s.radius, s.radius * 2, s.radius * 2);
                         s.radius += 12; s.alpha -= 0.015;
@@ -414,15 +448,23 @@ if st.session_state.current_page == "Journal":
             }
 
             box.addEventListener('pointerdown', (e) => {
-                // Mechanical button click feel
+                // 1. TACTILE: Mechanical button click feel
                 box.style.transform = "scale(0.96)";
                 setTimeout(() => box.style.transform = "scale(1)", 100);
 
+                // 2. HAPTIC: Vibrate phone (Works on Android)
+                if (navigator.vibrate) {
+                    navigator.vibrate(50); // 50ms vibration pulse
+                }
+
+                // 3. AUDITORY: Play soft chime
+                playSoftChime();
+
+                // 4. VISUAL: Explode colors
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 const randomType = types[Math.floor(Math.random() * types.length)];
 
                 if (globalCtx) {
-                    // Explode over the entire screen!
                     const frame = window.frameElement;
                     let originX = globalCanvas.width / 2;
                     let originY = globalCanvas.height / 2;
@@ -446,9 +488,6 @@ if st.session_state.current_page == "Journal":
                     }
 
                     if (!isAnimating) { isAnimating = true; drawGlobal(); }
-                } else {
-                    // Fallback to local box drawing if jailed
-                    // ... (Fallback omitted to keep code lean, standard Streamlit allows parent access)
                 }
             });
         </script>
@@ -946,4 +985,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v138.0 | Immersive Full-Screen Jailbreak</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v139.0 | Multisensory Haptics</div>", unsafe_allow_html=True)
