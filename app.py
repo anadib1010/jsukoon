@@ -35,7 +35,7 @@ if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
 if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
 
 # Ensure valid theme
-valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "The Deep Abyss", "First Light", "Sea Glass", 
+valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue", "First Light", "Sea Glass", 
                 "Deep Sage", "Ocean Blue", "Ocean Green", "Red Amber", "Maroon", "Twilight Blue", "Liquid Gold"]
 if "theme" not in st.session_state or st.session_state.theme not in valid_themes: 
     st.session_state.theme = "The Void"
@@ -71,7 +71,7 @@ LANG = {
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
         "th_light": "LIGHT SANCTUARY", "th_dark": "DEEP SANCTUARY",
         "t_void": "The Void", "t_sage_l": "Sage Sanctuary", "t_terra": "Terracotta",
-        "t_abyss": "The Deep Abyss", "t_dawn": "First Light", "t_sea": "Sea Glass",
+        "t_abyss": "Social Blue", "t_dawn": "First Light", "t_sea": "Sea Glass",
         "t_sage_d": "Deep Sage", "t_oblue": "Ocean Blue", "t_ogreen": "Ocean Green",
         "t_amber": "Red Amber", "t_maroon": "Maroon", "t_tblue": "Twilight Blue",
         "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
@@ -99,7 +99,7 @@ LANG = {
         "h_theme": "ऐप थीम", "h_lang": "ऐप की भाषा",
         "th_light": "हल्का अभयारण्य (Light)", "th_dark": "गहरा अभयारण्य (Deep)",
         "t_void": "शून्य (The Void)", "t_sage_l": "सेज वन (Sage)", "t_terra": "मिट्टी (Terracotta)",
-        "t_abyss": "गहरा महासागर (Abyss)", "t_dawn": "पहली किरण (Dawn)", "t_sea": "समुद्री कांच (Sea Glass)",
+        "t_abyss": "सोशल ब्लू (FB Blue)", "t_dawn": "पहली किरण (Dawn)", "t_sea": "समुद्री कांच (Sea Glass)",
         "t_sage_d": "गहरा सेज (Deep Sage)", "t_oblue": "समुद्री नीला (Blue)", "t_ogreen": "समुद्री हरा (Green)",
         "t_amber": "लाल एम्बर (Amber)", "t_maroon": "मैरून (Maroon)", "t_tblue": "गहरा नीला (Twilight)",
         "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
@@ -122,8 +122,8 @@ elif st.session_state.theme == "Sage Sanctuary":
 # DEEP THEMES
 elif st.session_state.theme == "The Void":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#E0E0E0", "rgba(20,20,20,0.6)", "rgba(255,255,255,0.08)", "#888888", "136,136,136"
-elif st.session_state.theme == "The Deep Abyss":
-    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#051124", "#EAF2FA", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#4A76A8", "74,118,168"
+elif st.session_state.theme == "Social Blue":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#1877F2", "#FFFFFF", "rgba(255,255,255,0.15)", "rgba(255,255,255,0.3)", "#FFFFFF", "255,255,255"
 elif st.session_state.theme == "Deep Sage":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#1E2720", "#D3DDD0", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#7B9075", "123,144,117"
 elif st.session_state.theme == "Ocean Blue":
@@ -818,7 +818,7 @@ elif st.session_state.current_page == "Settings":
         if st.button(t["t_ogreen"], use_container_width=True): st.session_state.theme = "Ocean Green"; st.rerun()
         if st.button(t["t_maroon"], use_container_width=True): st.session_state.theme = "Maroon"; st.rerun()
     with d_col2:
-        if st.button(t["t_abyss"], use_container_width=True): st.session_state.theme = "The Deep Abyss"; st.rerun()
+        if st.button(t["t_abyss"], use_container_width=True): st.session_state.theme = "Social Blue"; st.rerun()
         if st.button(t["t_oblue"], use_container_width=True): st.session_state.theme = "Ocean Blue"; st.rerun()
         if st.button(t["t_amber"], use_container_width=True): st.session_state.theme = "Red Amber"; st.rerun()
         if st.button(t["t_tblue"], use_container_width=True): st.session_state.theme = "Twilight Blue"; st.rerun()
@@ -857,4 +857,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v152.0 | The Ultimate 12-Theme Engine</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v152.1 | The Ultimate 12-Theme Engine</div>", unsafe_allow_html=True)
