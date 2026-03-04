@@ -526,7 +526,7 @@ if st.session_state.current_page == "Journal":
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
-                    # 🚨 NEW: THE PROPRIETARY "SOUL" PROMPT FOR SUKOON 🚨
+                    # 🚨 NEW: THE STRICT LANGUAGE GUARDRAILS 🚨
                     core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
                     Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
                     
@@ -537,7 +537,7 @@ if st.session_state.current_page == "Journal":
                     4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
                     5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
                     6. Always speak with deep empathy, but unwavering, grounded strength.
-                    7. Respond in the user's exact language (or Hinglish if appropriate).
+                    7. STRICT LANGUAGE RULE: If the user inputs English, reply ONLY in English. If the user inputs Hindi, reply ONLY in pure Hindi using the Devanagari script (e.g., शांत रहें). STRICTLY PROHIBITED: Do not use Hinglish (Hindi words written in English letters) under any circumstances.
                     """
 
                     if btn_agent:
@@ -972,4 +972,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v141.0 | Proprietary AI Soul</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v142.0 | Pure Language Boundary</div>", unsafe_allow_html=True)
