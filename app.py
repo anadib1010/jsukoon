@@ -212,7 +212,8 @@ breath_js_dict = {
     "Sleep_Wave": """
         let cycle = t % 19; let text = ""; let width = canvas.width * 0.7; let startX = cx - width/2; let amp = 50; let pathX = 0; let pathY = 0;
         if(cycle < 4) { text = "INHALE (4)"; pathX = startX + (width * 0.2 * (cycle/4)); pathY = cy + amp - (amp * 2 * (cycle/4)); } else if(cycle < 11) { text = "HOLD (7)"; pathX = startX + (width * 0.2) + (width * 0.4 * ((cycle-4)/7)); pathY = cy - amp; } else { text = "EXHALE (8)"; pathX = startX + (width * 0.6) + (width * 0.4 * ((cycle-11)/8)); pathY = cy - amp + (amp * 2 * ((cycle-11)/8)); }
-        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp); ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
+        ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp);
+        ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
         ctx.beginPath(); ctx.arc(pathX, pathY, 12, 0, Math.PI*2); ctx.fillStyle = "rgba(91, 150, 178, 1)"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2"; ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """,
     "Sleep_Moon": """
@@ -228,6 +229,41 @@ breath_js_dict = {
         ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """
 }
+
+release_game_html = """
+<div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
+    <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
+        THOUGHTS RELEASED: <span id="scoreVal">0</span>
+    </div>
+    <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+</div>
+<script>
+    const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+    let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
+    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    window.addEventListener('resize', resize); resize();
+    function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!gameStarted) {
+            ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0;
+        } else {
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1);
+                } else { b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)"; if (b.y < -50) bubbles.splice(i, 1); }
+            }
+        }
+        requestAnimationFrame(draw);
+    }
+    canvas.addEventListener('pointerdown', (e) => {
+        if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
+        const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+        for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
+    });
+    draw();
+</script>
+"""
 
 # --- PAGES ---
 
@@ -309,17 +345,20 @@ if st.session_state.current_page == "Journal":
     st.markdown("</div>", unsafe_allow_html=True)
     
     if btn_short or btn_deep or btn_agent:
-        # 🚨 V148.0: THE ZERO-COST SMART CACHE LAYER 🚨
         cached_reply = None
         is_agent_mode = bool(btn_agent)
         
         if text_msg and not voice_input:
             t_low = text_msg.lower().strip()
+            word_count = len(t_low.split())
             cat = None
-            # Keywords detection (English & Hindi/Hinglish)
-            if any(w in t_low for w in ["sleep", "neend", "नींद", "so nahi", "awake", "insomnia", "tired", "thak"]): cat = "sleep"
-            elif any(w in t_low for w in ["heavy", "sad", "bhari", "udhas", "udaas", "depress", "cry", "rona", "उदास", "रोने", "akela", "lonely"]): cat = "heavy"
-            elif any(w in t_low for w in ["racing", "overwhelm", "shant", "anxious", "panic", "fast", "kya karu", "soch", "overthink", "gussa", "anger"]): cat = "racing"
+            
+            # 🚨 V148.1: WORD COUNT BYPASS FOR DEEP CONTEXT 🚨
+            # Only use the generic cache if the prompt is short (under 12 words)
+            if word_count < 12:
+                if any(w in t_low for w in ["sleep", "neend", "नींद", "so nahi", "awake", "insomnia", "tired", "thak"]): cat = "sleep"
+                elif any(w in t_low for w in ["heavy", "sad", "bhari", "udhas", "udaas", "depress", "cry", "rona", "उदास", "रोने", "akela", "lonely"]): cat = "heavy"
+                elif any(w in t_low for w in ["racing", "overwhelm", "shant", "anxious", "panic", "fast", "kya karu", "soch", "overthink", "gussa", "anger"]): cat = "racing"
             
             if cat:
                 if is_agent_mode:
@@ -336,7 +375,6 @@ if st.session_state.current_page == "Journal":
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
         if cached_reply:
-            # 🚨 ZERO API COST ROUTE 🚨
             if is_agent_mode:
                 try:
                     agent_command = json.loads(cached_reply)
@@ -351,7 +389,6 @@ if st.session_state.current_page == "Journal":
             st.rerun()
 
         else:
-            # 🚨 FULL API ROUTE (FOR COMPLEX/VOICE ENTRIES) 🚨
             if model:
                 with st.spinner("Channeling Wisdom..."):
                     energy_context = ""
@@ -380,7 +417,7 @@ if st.session_state.current_page == "Journal":
                         {{ "reply": "A very short, 1-sentence poetic grounding message.", "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus", "audio": "birds", "flute", "forest", "waves", or "wind" }}
                         """
                     else:
-                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
+                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response directly addressing their specific situation."
                         context = f"""{core_philosophy}
                         {length_instruction}
                         End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi. Do not use abrupt military-style formatting.
@@ -700,4 +737,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v148.0 | Smart Cache Layer</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v148.1 | Deep Context Word Bypass</div>", unsafe_allow_html=True)
