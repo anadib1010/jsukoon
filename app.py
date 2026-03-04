@@ -5,7 +5,6 @@ import os
 import google.generativeai as genai
 import urllib.parse
 import json
-import gspread
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -26,7 +25,6 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # --- 3. SESSION STATE INITIALIZATION ---
-if "journal_unlocked" not in st.session_state: st.session_state.journal_unlocked = False
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
@@ -478,198 +476,185 @@ if st.session_state.current_page == "Journal":
     st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     st.markdown("<div class='section-header'>PRIVATE AI MENTOR</div>", unsafe_allow_html=True)
 
-    if not st.session_state.journal_unlocked:
-        st.markdown("<div class='market-slab' style='padding: 30px 20px;'>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color: {app_text}; line-height: 1.6;'>Unlock the AI Agent and Guided Reflections by entering your email.</p>", unsafe_allow_html=True)
-        user_email = st.text_input("Your Email Address", placeholder="name@example.com", key="ai_email_input")
-        st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    # 🚨 1. REMOVED EMAIL LOCK: EVERYONE HAS INSTANT ACCESS NOW 🚨
+    voice_input = st.audio_input("Record your thoughts")
+    text_msg = st.text_area("Or type your reflection...", height=150)
+    
+    c_short, c_deep = st.columns(2)
+    with c_short:
+        btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
+    with c_deep:
+        btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
         
-        if st.button("UNLOCK AI MENTOR", use_container_width=True):
-            if "@" in user_email and "." in user_email:
-                try:
-                    if "GCP_CREDENTIALS" in st.secrets:
-                        creds_dict = json.loads(st.secrets["GCP_CREDENTIALS"], strict=False)
-                        gc = gspread.service_account_from_dict(creds_dict)
-                        sh = gc.open("jsukoon_users")
-                        sheet = sh.sheet1
-                        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        sheet.append_row([user_email, current_time])
-                except Exception as e:
-                    pass 
+    st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='agent-btn'>", unsafe_allow_html=True)
+    btn_agent = st.button("🤖 AI AGENT (SMART SANCTUARY) 🤖", use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    if btn_short or btn_deep or btn_agent:
+        if model:
+            with st.spinner("Channeling Wisdom..." if not btn_agent else "Agent Analyzing Symptoms..."):
+                energy_context = ""
+                if st.session_state.energy_history:
+                    latest_energy = st.session_state.energy_history[-1]
+                    energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
+
+                core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
+                Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
                 
-                st.session_state.journal_unlocked = True
-                st.rerun()
-            else:
-                st.error("Please enter a valid email address.")
-        st.markdown("</div>", unsafe_allow_html=True)
+                YOUR RULES OF ENGAGEMENT:
+                1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
+                2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
+                3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts (The Witness/Sakshi), not the thoughts themselves. Thoughts are passing clouds; the user is the sky.
+                4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
+                5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
+                6. Always speak with deep empathy, but unwavering, grounded strength.
+                7. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish (Hindi words written with English letters), you MUST reply ONLY in pure Hindi using the Devanagari script (e.g., मैं खुश हूँ). We assume Hinglish speakers can read Devanagari. NEVER reply in Hinglish.
+                """
 
-    else:
-        voice_input = st.audio_input("Record your thoughts")
-        text_msg = st.text_area("Or type your reflection...", height=150)
-        
-        c_short, c_deep = st.columns(2)
-        with c_short:
-            btn_short = st.button("GUIDE (SHORT)", use_container_width=True)
-        with c_deep:
-            btn_deep = st.button("GUIDE (DEEP)", use_container_width=True)
-            
-        st.markdown("<div style='height:5px'></div>", unsafe_allow_html=True)
-        st.markdown("<div class='agent-btn'>", unsafe_allow_html=True)
-        btn_agent = st.button("🤖 AI AGENT (SMART SANCTUARY) 🤖", use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        if btn_short or btn_deep or btn_agent:
-            if model:
-                with st.spinner("Channeling Wisdom..." if not btn_agent else "Agent Analyzing Symptoms..."):
-                    energy_context = ""
-                    if st.session_state.energy_history:
-                        latest_energy = st.session_state.energy_history[-1]
-                        energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
-
-                    # 🚨 NEW: THE UPDATED HINGLISH TO DEVANAGARI RULE 🚨
-                    core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
-                    Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
+                if btn_agent:
+                    context = f"""{core_philosophy}
+                    The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
+                    {energy_context}
                     
-                    YOUR RULES OF ENGAGEMENT:
-                    1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
-                    2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
-                    3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts (The Witness/Sakshi), not the thoughts themselves. Thoughts are passing clouds; the user is the sky.
-                    4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
-                    5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
-                    6. Always speak with deep empathy, but unwavering, grounded strength.
-                    7. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish (Hindi words written with English letters, e.g., 'mein khush hoon'), you MUST reply ONLY in pure Hindi using the Devanagari script (e.g., मैं खुश हूँ). We assume Hinglish speakers can read Devanagari. NEVER reply in Hinglish.
+                    CRITICAL INSTRUCTION: Respond ONLY with a raw JSON object. No markdown.
+                    {{
+                        "reply": "A very short, 1-sentence poetic grounding message based on your philosophy.",
+                        "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus",
+                        "audio": "birds", "flute", "forest", "waves", or "wind"
+                    }}
                     """
-
-                    if btn_agent:
-                        context = f"""{core_philosophy}
-                        The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
-                        {energy_context}
-                        
-                        CRITICAL INSTRUCTION: Respond ONLY with a raw JSON object. No markdown.
-                        {{
-                            "reply": "A very short, 1-sentence poetic grounding message based on your philosophy.",
-                            "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus",
-                            "audio": "birds", "flute", "forest", "waves", or "wind"
-                        }}
-                        """
+                else:
+                    length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
+                    context = f"""{core_philosophy}
+                    {length_instruction}
+                    End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi. Do not use abrupt military-style formatting.
+                    {energy_context}"""
+                
+                try:
+                    if voice_input:
+                        audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
+                        prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Mentor."]
+                    elif text_msg:
+                        prompt_parts = [context, text_msg]
                     else:
-                        # 🚨 NEW: POLITE DESCRIPTIVE BREATHING REMINDER 🚨
-                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
-                        context = f"""{core_philosophy}
-                        {length_instruction}
-                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi (e.g., 'कृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।'). Do not use abrupt military-style formatting like 'Inhale 4 - Hold 2'.
-                        {energy_context}"""
+                        prompt_parts = [context, "I am seeking silence. My mind is heavy."]
+                        
+                    resp = model.generate_content(prompt_parts)
                     
-                    try:
-                        if voice_input:
-                            audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Mentor."]
-                        elif text_msg:
-                            prompt_parts = [context, text_msg]
-                        else:
-                            prompt_parts = [context, "I am seeking silence. My mind is heavy."]
+                    if btn_agent:
+                        try:
+                            clean_text = resp.text.strip().replace('```json', '').replace('```', '')
+                            agent_command = json.loads(clean_text)
                             
-                        resp = model.generate_content(prompt_parts)
-                        
-                        if btn_agent:
-                            try:
-                                clean_text = resp.text.strip().replace('```json', '').replace('```', '')
-                                agent_command = json.loads(clean_text)
-                                
-                                st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
-                                st.session_state.agent_breath = agent_command.get("breath", "Box")
-                                raw_audio = str(agent_command.get("audio", "flute")).lower()
-                                st.session_state.agent_audio = f"{raw_audio}.mp3"
-                                
-                                st.session_state.current_page = "AgentSanctuary"
-                                
-                            except Exception as e:
-                                st.session_state.agent_message = "The outside world is loud. Step into the quiet."
-                                st.session_state.agent_breath = "Box"
-                                st.session_state.agent_audio = "flute.mp3"
-                                st.session_state.current_page = "AgentSanctuary"
-                                
-                        else:
-                            ai_reply = resp.text
-                            unique_id = str(datetime.now().timestamp()).replace('.', '')
-                            st.session_state.core_journal.append({
-                                "time": datetime.now().strftime("%H:%M"), 
-                                "ai": ai_reply,
-                                "id": unique_id
-                            })
-                        st.rerun()
-                        
-                    except Exception as e:
-                        st.error("The Mentor needs a moment of quiet. Please try again.")
-            else:
-                st.warning("The Mentor is resting. Please try again in an hour.")
+                            st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
+                            st.session_state.agent_breath = agent_command.get("breath", "Box")
+                            raw_audio = str(agent_command.get("audio", "flute")).lower()
+                            st.session_state.agent_audio = f"{raw_audio}.mp3"
+                            
+                            st.session_state.current_page = "AgentSanctuary"
+                            
+                        except Exception as e:
+                            st.session_state.agent_message = "The outside world is loud. Step into the quiet."
+                            st.session_state.agent_breath = "Box"
+                            st.session_state.agent_audio = "flute.mp3"
+                            st.session_state.current_page = "AgentSanctuary"
+                            
+                    else:
+                        ai_reply = resp.text
+                        unique_id = str(datetime.now().timestamp()).replace('.', '')
+                        st.session_state.core_journal.append({
+                            "time": datetime.now().strftime("%H:%M"), 
+                            "ai": ai_reply,
+                            "id": unique_id
+                        })
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error("The Mentor needs a moment of quiet. Please try again.")
+        else:
+            st.warning("The Mentor is resting. Please try again in an hour.")
 
-        st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+    
+    for entry in reversed(st.session_state.core_journal):
+        safe_speech_text = urllib.parse.quote(entry['ai'])
         
-        for entry in reversed(st.session_state.core_journal):
-            safe_speech_text = urllib.parse.quote(entry['ai'])
-            html_button = f"""
-            <style>
-                .audio-controls {{ display: flex; gap: 6px; margin-bottom: 5px; width: 100%; }}
-                .audio-btn {{
-                    background: {btn_bg};
-                    color: {app_text}; border: 1px solid {btn_border}; border-radius: 4px; padding: 10px 0;
-                    font-size: 10px; font-family: sans-serif; cursor: pointer; flex: 1; text-transform: uppercase;
-                    letter-spacing: 1px; transition: all 0.2s;
-                }}
-                .audio-btn:active {{ filter: brightness(0.8); transform: scale(0.95); }}
-            </style>
-            <div class="audio-controls">
-                <button class="audio-btn" onclick="startVoice()">▶ Listen</button>
-                <button class="audio-btn" onclick="window.speechSynthesis.pause()">⏸ Pause</button>
-                <button class="audio-btn" onclick="window.speechSynthesis.resume()">⏯ Resume</button>
-                <button class="audio-btn" onclick="window.speechSynthesis.cancel()">⏹ Stop</button>
-            </div>
-            <script>
-                function startVoice() {{
-                    window.speechSynthesis.cancel(); 
-                    var decodedText = decodeURIComponent("{safe_speech_text}");
-                    var m = new SpeechSynthesisUtterance(decodedText);
-                    m.rate = 0.85;
+        # 🚨 2. ACCENT CHAMELEON: ZERO-API MULTILINGUAL AUDIO 🚨
+        html_button = f"""
+        <style>
+            .audio-controls {{ display: flex; gap: 6px; margin-bottom: 5px; width: 100%; }}
+            .audio-btn {{
+                background: {btn_bg};
+                color: {app_text}; border: 1px solid {btn_border}; border-radius: 4px; padding: 10px 0;
+                font-size: 10px; font-family: sans-serif; cursor: pointer; flex: 1; text-transform: uppercase;
+                letter-spacing: 1px; transition: all 0.2s;
+            }}
+            .audio-btn:active {{ filter: brightness(0.8); transform: scale(0.95); }}
+        </style>
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="startVoice()">▶ Listen</button>
+            <button class="audio-btn" onclick="window.speechSynthesis.pause()">⏸ Pause</button>
+            <button class="audio-btn" onclick="window.speechSynthesis.resume()">⏯ Resume</button>
+            <button class="audio-btn" onclick="window.speechSynthesis.cancel()">⏹ Stop</button>
+        </div>
+        <script>
+            function startVoice() {{
+                window.speechSynthesis.cancel(); 
+                var decodedText = decodeURIComponent("{safe_speech_text}");
+                var m = new SpeechSynthesisUtterance(decodedText);
+                m.rate = 0.85;
+                
+                var isHindi = /[\u0900-\u097F]/.test(decodedText);
+                var userLang = navigator.language || navigator.userLanguage || "en-US";
+                var userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+                
+                function setVoiceAndSpeak() {{
+                    var voices = window.speechSynthesis.getVoices();
+                    var voice;
                     
-                    var isHindi = /[\u0900-\u097F]/.test(decodedText);
-                    m.lang = isHindi ? 'hi-IN' : 'en-IN'; 
-                    
-                    function setVoiceAndSpeak() {{
-                        var voices = window.speechSynthesis.getVoices();
-                        var voice;
-                        
-                        if (isHindi) {{
-                            voice = voices.find(v => v.lang === 'hi-IN' || v.lang.includes('hi') || v.name.includes('Hindi'));
-                        }} else {{
-                            voice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India')) || voices.find(v => v.lang.includes('en'));
-                        }}
-                        
-                        if (voice) {{ m.voice = voice; }}
-                        window.speechSynthesis.speak(m);
-                    }}
-
-                    if (window.speechSynthesis.getVoices().length === 0) {{
-                        window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+                    if (isHindi) {{
+                        voice = voices.find(v => v.lang === 'hi-IN' || v.lang.includes('hi') || v.name.includes('Hindi'));
+                        m.lang = 'hi-IN';
                     }} else {{
-                        setVoiceAndSpeak();
+                        // The Accent Chameleon Logic
+                        if (userLang.includes('GB') || userTZ.includes('Europe/London')) {{
+                            voice = voices.find(v => v.lang === 'en-GB' || v.name.includes('UK') || v.name.includes('British'));
+                            m.lang = 'en-GB';
+                        }} else if (userLang.includes('IN') || userTZ.includes('Asia/Calcutta') || userTZ.includes('Asia/Kolkata')) {{
+                            voice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India'));
+                            m.lang = 'en-IN';
+                        }} else {{
+                            voice = voices.find(v => v.lang === 'en-US' || v.name.includes('US') || v.name.includes('United States')) || voices.find(v => v.lang.includes('en'));
+                            m.lang = 'en-US';
+                        }}
                     }}
+                    
+                    if (voice) {{ m.voice = voice; }}
+                    window.speechSynthesis.speak(m);
                 }}
-            </script>
-            """
-            components.html(html_button, height=55)
 
-            formatted_text = entry['ai'].replace('\n', '<br>')
-            st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
-            st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+                if (window.speechSynthesis.getVoices().length === 0) {{
+                    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+                }} else {{
+                    setVoiceAndSpeak();
+                }}
+            }}
+        </script>
+        """
+        components.html(html_button, height=55)
 
-        st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
-        st.markdown(f"<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px; color:{app_text};'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
-        
-        m_cols = st.columns(5)
-        for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
-            with m_cols[i]:
-                if st.button(m, key=f"m_{m}", use_container_width=True): st.session_state.energy_history.append(m); st.rerun()
+        formatted_text = entry['ai'].replace('\n', '<br>')
+        st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+    st.markdown("<div class='section-header'>ENERGY STATE</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 11px; opacity: 0.7; margin-bottom: 15px; color:{app_text};'>Pause and acknowledge how your body feels to guide the Mentor.</p>", unsafe_allow_html=True)
+    
+    m_cols = st.columns(5)
+    for i, m in enumerate(["Quiet", "Heavier", "Neutral", "Steady", "Vibrant"]):
+        with m_cols[i]:
+            if st.button(m, key=f"m_{m}", use_container_width=True): st.session_state.energy_history.append(m); st.rerun()
 
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
@@ -905,15 +890,16 @@ elif st.session_state.current_page == "Focus":
 elif st.session_state.current_page == "Market":
     st.markdown("<div class='section-header'>RITUAL BUNDLES & TOOLS</div>", unsafe_allow_html=True)
     
+    # 🚨 3. PREMIUM RETAIL PRICES WITH FREE SHIPPING 🚨
     products = [
-        {"name": "Laughing Buddha", "file": "laughingbuddha.png", "price": "650"},
-        {"name": "Focus Beads", "file": "beads.png", "price": "250"},
-        {"name": "Buddha Sculpture", "file": "buddha.png", "price": "750"},
-        {"name": "Thumb Stone", "file": "thumbstone.png", "price": "300"},
-        {"name": "Wish Candle", "file": "wishcandle.png", "price": "500"},
-        {"name": "Grounding Stones", "file": "stones.png", "price": "1,000"},
-        {"name": "Starter Ritual", "file": "ritual.png", "price": "2,999"},
-        {"name": "Master Sanctuary", "file": "sanctuary.png", "price": "6,000"}
+        {"name": "Laughing Buddha", "file": "laughingbuddha.png", "price": "899"},
+        {"name": "Focus Beads", "file": "beads.png", "price": "799"},
+        {"name": "Buddha Sculpture", "file": "buddha.png", "price": "1,499"},
+        {"name": "Thumb Stone", "file": "thumbstone.png", "price": "499"},
+        {"name": "Wish Candle", "file": "wishcandle.png", "price": "799"},
+        {"name": "Grounding Stones", "file": "stones.png", "price": "899"},
+        {"name": "Starter Ritual", "file": "ritual.png", "price": "2,499"},
+        {"name": "Master Sanctuary", "file": "sanctuary.png", "price": "4,999"}
     ]
 
     products_html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">'
@@ -925,7 +911,8 @@ elif st.session_state.current_page == "Market":
         products_html += f"""<div style="background: {input_bg}; border: 1px solid {btn_border}; border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;">
 <div style="width: 100%; aspect-ratio: 1/1; background-image: url('{img_url}'); background-size: cover; background-position: center; border-radius: 6px; margin-bottom: 12px; border: 1px solid {btn_border};"></div>
 <div style="color: {app_text}; font-size: 13px; letter-spacing: 1px; margin-bottom: 5px; min-height: 35px; display: flex; align-items: center; justify-content: center; line-height: 1.3;">{p['name']}</div>
-<div style="color: {soft_blue}; font-weight: bold; font-size: 15px; margin-bottom: 12px;">₹{p['price']}</div>
+<div style="color: {soft_blue}; font-weight: bold; font-size: 16px; margin-bottom: 2px;">₹{p['price']}</div>
+<div style="color: {app_text}; opacity: 0.5; font-size: 9px; margin-bottom: 12px; letter-spacing: 1px; font-weight: bold;">+ FREE SHIPPING</div>
 <a href="{wa_link}" target="_blank" style="text-decoration: none; width: 100%;">
 <div style="background: {btn_bg}; color: {app_text}; border: 1px solid {btn_border}; padding: 10px 0; border-radius: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; width: 100%; cursor: pointer; transition: all 0.3s ease;">ORDER VIA WA</div>
 </a>
@@ -945,7 +932,7 @@ elif st.session_state.current_page == "Info":
 
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
     faqs = [
-        ("Is my journal data stored?", "No. Your reflections stay in your current session. We do not store personal journal history on our servers."),
+        ("Is the AI Mentor free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
         ("What is the 4-2-6 Rhythm?", "It is a breathing pattern designed to reduce stress and clear the mind."),
         ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being."),
         ("Are the objects religious?", "No. They are tactile grounding tools intended for sensory focus.")
@@ -959,7 +946,7 @@ elif st.session_state.current_page == "Info":
         <b>2. NO SUPERNATURAL CLAIMS:</b> Sukoon does not make spiritual claims regarding physical objects. They are strictly tactile tools for focus. <br><br>
         <b>3. NOT MEDICAL ADVICE:</b> This app is for lifestyle purposes only. Not intended to diagnose or treat medical conditions. <br><br>
         <b>4. DATA PRIVACY:</b> Your journal entries and voice recordings are session-based and are not permanently stored on our servers. <br><br>
-        <b>5. COMMERCE & TAXES:</b> Physical bundle sales are initiated via WhatsApp and are subject to standard shipping timelines and applicable state taxes (including GST).
+        <b>5. COMMERCE:</b> Physical purchases are entirely optional and act as standalone sensory tools. They are not required to access the digital app.
     </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Settings":
@@ -976,16 +963,8 @@ elif st.session_state.current_page == "Settings":
     
     st.markdown("<div class='section-header'>ACCOUNT & SECURITY</div>", unsafe_allow_html=True)
     st.markdown("<div class='market-slab' style='text-align:center; padding: 30px 20px;'>", unsafe_allow_html=True)
-    
-    if st.session_state.journal_unlocked:
-        st.markdown(f"<p style='font-size: 14px; color: {app_text}; margin-bottom: 20px;'>Your Private AI Mentor is currently <b>Unlocked</b>.</p>", unsafe_allow_html=True)
-        if st.button("LOCK AI MENTOR", key="btn_lock", use_container_width=True):
-            st.session_state.journal_unlocked = False
-            st.rerun()
-    else:
-        st.markdown(f"<p style='font-size: 14px; color: {soft_blue}; margin-bottom: 0;'>Your Private AI Mentor is secured.</p>", unsafe_allow_html=True)
-        
+    st.markdown(f"<p style='font-size: 14px; color: {soft_blue}; margin-bottom: 0;'><b>Sanctuary Open.</b><br><br><span style='opacity:0.7; font-size:12px;'>The Private AI Mentor is currently unlocked for all early beta users.</span></p>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v144.1 | Polite Bilingual Brain Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v145.0 | The Open Door Update</div>", unsafe_allow_html=True)
