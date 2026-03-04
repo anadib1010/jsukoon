@@ -526,7 +526,6 @@ if st.session_state.current_page == "Journal":
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
-                    # 🚨 NEW: THE STRICT LANGUAGE GUARDRAILS 🚨
                     core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
                     Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
                     
@@ -607,20 +606,27 @@ if st.session_state.current_page == "Journal":
         
         for entry in reversed(st.session_state.core_journal):
             safe_speech_text = urllib.parse.quote(entry['ai'])
+            # 🚨 NEW: FOUR-BUTTON AUDIO CONTROL BAR 🚨
             html_button = f"""
             <style>
-                .listen-btn {{
+                .audio-controls {{ display: flex; gap: 6px; margin-bottom: 5px; width: 100%; }}
+                .audio-btn {{
                     background: {btn_bg};
-                    color: {app_text}; border: 1px solid {btn_border}; border-radius: 4px; padding: 12px;
-                    font-size: 11px; font-family: sans-serif; cursor: pointer; width: 100%; text-transform: uppercase;
-                    margin-bottom: 5px;
+                    color: {app_text}; border: 1px solid {btn_border}; border-radius: 4px; padding: 10px 0;
+                    font-size: 10px; font-family: sans-serif; cursor: pointer; flex: 1; text-transform: uppercase;
+                    letter-spacing: 1px; transition: all 0.2s;
                 }}
-                .listen-btn:active {{ filter: brightness(0.8); }}
+                .audio-btn:active {{ filter: brightness(0.8); transform: scale(0.95); }}
             </style>
-            <button class="listen-btn" onclick="playVoice()">LISTEN TO MENTOR ({entry['time']})</button>
+            <div class="audio-controls">
+                <button class="audio-btn" onclick="startVoice()">▶ Listen</button>
+                <button class="audio-btn" onclick="window.speechSynthesis.pause()">⏸ Pause</button>
+                <button class="audio-btn" onclick="window.speechSynthesis.resume()">⏯ Resume</button>
+                <button class="audio-btn" onclick="window.speechSynthesis.cancel()">⏹ Stop</button>
+            </div>
             <script>
-                function playVoice() {{
-                    window.speechSynthesis.cancel();
+                function startVoice() {{
+                    window.speechSynthesis.cancel(); // Stop anything currently playing
                     var decodedText = decodeURIComponent("{safe_speech_text}");
                     var m = new SpeechSynthesisUtterance(decodedText);
                     m.rate = 0.85;
@@ -641,7 +647,7 @@ if st.session_state.current_page == "Journal":
                 }}
             </script>
             """
-            components.html(html_button, height=50)
+            components.html(html_button, height=55)
 
             formatted_text = entry['ai'].replace('\n', '<br>')
             st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
@@ -972,4 +978,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v142.0 | Pure Language Boundary</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v143.0 | Audio Control Hub</div>", unsafe_allow_html=True)
