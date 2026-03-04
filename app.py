@@ -183,33 +183,7 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# --- 8. MAIN APP HEADER & NAV GRID ---
-# ==========================================
-
-st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
-with col2:
-    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
-with col3:
-    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
-
-col4, col5, col6 = st.columns(3)
-with col4:
-    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
-with col5:
-    if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
-with col6:
-    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
-
-st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
-
-# ==========================================
-# --- REUSABLE HTML COMPONENTS ---
+# --- GLOBAL HTML COMPONENTS ---
 # ==========================================
 base_breath_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
@@ -299,6 +273,19 @@ release_game_html = """
 </script>
 """
 
+bloom_html = """
+<div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+    <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+    <div id="bloomMessage" style="position:absolute; z-index:10; color:[C_TEXT]; font-family:'Inter', sans-serif; font-weight:300; font-size:13px; letter-spacing:4px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:[C_GLASS]; backdrop-filter: blur(10px); padding:15px 25px; border-radius:30px; border:1px solid [C_BORDER];"></div>
+</div>
+<script>
+    const c = document.getElementById('bloomCanvas'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
+    function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
+    function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
+    c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
+</script>
+"""
+
 mala_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer;" id="malaContainer">
     <div id="malaCount" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:14px; font-weight:300; letter-spacing:4px; margin-bottom: 30px;">0 / 108</div>
@@ -316,6 +303,96 @@ mala_html = """
     });
 </script>
 """
+
+ether_html = """
+<div id="ether-container" style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
+    <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+    <p id="promptText" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:11px; font-weight:400; letter-spacing:4px; margin-bottom:25px; transition: opacity 2s; z-index: 10;">
+        WRITE YOUR THOUGHTS INTO THE ETHER
+    </p>
+    <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent !important; color:[C_TEXT] !important; border:1px solid [C_BORDER] !important; border-radius:12px; padding:15px; text-align:center; font-size:16px; font-weight: 300; resize:none; outline:none; font-family:'Inter', sans-serif; transition: all 4s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
+    
+    <div style="height: 25px; z-index: 10;"></div>
+    
+    <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 2s;">
+        <button id="releaseBtn" style="background: rgba([C_RGB], 0.1); backdrop-filter: blur(5px); color: [C_TEXT]; border: 1px solid [C_BORDER]; border-radius: 20px; padding: 12px; font-family:'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
+            BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.5;">(Negative Thoughts)</span>
+        </button>
+        <button id="manifestBtn" style="background: rgba([C_RGB], 0.2); backdrop-filter: blur(5px); color: [C_TEXT]; border: 1px solid [C_BORDER]; border-radius: 20px; padding: 12px; font-family:'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
+            MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.5;">(Positive Thoughts)</span>
+        </button>
+    </div>
+
+    <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: [C_TEXT]; font-family: 'Inter', sans-serif; font-weight: 300; font-size: 13px; letter-spacing: 4px; opacity: 0; transition: opacity 3s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;"></div>
+</div>
+
+<script>
+    const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
+    let particles = []; let animating = false; let currentMode = 'star'; let audioCtx = null;
+
+    function initAudio() { if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; audioCtx = new AudioContext(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } }
+    function playBurnSound() { initAudio(); const bufferSize = audioCtx.sampleRate * 4; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(); }
+    function playManifestSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 4); }
+
+    function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+    function createParticles(mode) {
+        const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left; const cx = left + rect.width / 2; const cy = top + rect.height / 2;
+        for (let i = 0; i < 150; i++) {
+            if (mode === 'fire') { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 1, ax: 0, ay: 0.15, friction: 0.94, radius: Math.random() * 4 + 1.5, alpha: 1, decay: Math.random() * 0.005 + 0.002, color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` }); } 
+            else { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -4) - 0.5, ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.004 + 0.001, color: `rgba([C_RGB], ` }); }
+        } if (!animating) { animating = true; animateParticles(); }
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
+        for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.vx += p.ax; p.vy += p.ay; p.vx *= p.friction; p.vy *= p.friction; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "rgba([C_RGB], 1)"; ctx.fill(); } }
+        if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    }
+
+    function triggerEther(mode) {
+        if(input.value.trim() === '') return; currentMode = mode;
+        if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
+        if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
+        
+        if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
+        else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
+
+        createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+        setTimeout(() => { msg.style.opacity = "1"; }, 3000);
+        setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 3000); }, 8000); 
+    }
+
+    btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; }); btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
+    btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
+</script>
+"""
+
+# ==========================================
+# --- 8. MAIN APP HEADER & NAV GRID ---
+# ==========================================
+
+st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
+st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
+with col2:
+    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
+with col3:
+    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
+
+col4, col5, col6 = st.columns(3)
+with col4:
+    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
+with col5:
+    if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
+with col6:
+    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
+
+st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # --- PAGES ---
@@ -516,7 +593,7 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
-    # THE VOICE HUNTER ENGINE 
+    # 🚨 V155.0: THE VOICE HUNTER ENGINE 🚨
     for entry in reversed(st.session_state.core_journal):
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
@@ -537,6 +614,7 @@ if st.session_state.current_page == "Journal":
                 var decodedText = decodeURIComponent("{safe_speech_text}");
                 var m = new SpeechSynthesisUtterance(decodedText);
                 
+                // The Acoustic Hack
                 m.pitch = 0.9; 
                 m.rate = 0.82; 
                 
@@ -552,11 +630,14 @@ if st.session_state.current_page == "Journal":
                         m.lang = 'hi-IN'; 
                     }} 
                     else {{
+                        // The Voice Hunter (Prioritizing soft, high-quality English voices)
                         const preferredNames = ['samantha', 'serena', 'tessa', 'victoria', 'karen', 'moira', 'premium', 'enhanced', 'natural', 'uk english female'];
                         for (let pref of preferredNames) {{
                             let match = voices.find(v => v.name.toLowerCase().includes(pref) && v.lang.includes('en'));
                             if (match) {{ voice = match; break; }}
                         }}
+                        
+                        // Fallback
                         if (!voice) {{
                             voice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
                                     voices.find(v => v.lang === 'en-US' && v.name.includes('Female')) ||
@@ -596,10 +677,9 @@ elif st.session_state.current_page == "AutoPilot":
     
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_sos").replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
+    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    
-    components.html(theme_it(release_game_html.replace("gameCanvas", "game_sos")), height=370)
+    components.html(theme_it(release_game_html), height=370)
 
 elif st.session_state.current_page == "AgentSanctuary":
     st.markdown(f"<div class='section-header' style='color: {c_accent};'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
@@ -609,14 +689,13 @@ elif st.session_state.current_page == "AgentSanctuary":
     
     selected_js = breath_js_dict.get(st.session_state.agent_breath, breath_js_dict["Box"])
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_agent").replace("[JS_INJECT]", selected_js)), height=270)
+    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", selected_js)), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(release_game_html.replace("gameCanvas", "game_agent")), height=370)
+    components.html(theme_it(release_game_html), height=370)
 
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
-    ether_ui = ether_html.replace("starCanvas", "ether_main")
-    components.html(theme_it(ether_ui), height=450)
+    components.html(theme_it(ether_html), height=450)
 
 elif st.session_state.current_page == "Focus":
     
@@ -654,7 +733,7 @@ elif st.session_state.current_page == "Focus":
             if st.button(t["v_lotus"], use_container_width=True): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
     selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
-    final_breath_html = base_breath_html.replace("breathCanvas", "breath_focus").replace("[JS_INJECT]", selected_js)
+    final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
     components.html(theme_it(final_breath_html), height=270)
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
@@ -676,24 +755,11 @@ elif st.session_state.current_page == "Focus":
 
     if st.session_state.active_game == "Release":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['release_desc']}</p>", unsafe_allow_html=True)
-        components.html(theme_it(release_game_html.replace("gameCanvas", "game_focus_release")), height=370)
+        components.html(theme_it(release_game_html), height=370)
 
     elif st.session_state.active_game == "Bloom":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['bloom_desc']}</p>", unsafe_allow_html=True)
-        
-        bloom_ui = """
-        <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
-            <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-            <div id="bloomMessage" style="position:absolute; z-index:10; color:[C_TEXT]; font-family:'Inter', sans-serif; font-weight:300; font-size:13px; letter-spacing:4px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:[C_GLASS]; backdrop-filter: blur(10px); padding:15px 25px; border-radius:30px; border:1px solid [C_BORDER];"></div>
-        </div>
-        <script>
-            const c = document.getElementById('bloomCanvas'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
-            function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
-            function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
-            c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
-        </script>
-        """
-        components.html(theme_it(bloom_ui), height=370)
+        components.html(theme_it(bloom_html), height=370)
     
     elif st.session_state.active_game == "Mala":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
@@ -827,4 +893,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v156.0 | Clean Slate Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v156.1 | Clean Slate Patched</div>", unsafe_allow_html=True)
