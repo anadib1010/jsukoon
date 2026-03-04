@@ -526,6 +526,7 @@ if st.session_state.current_page == "Journal":
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
+                    # 🚨 NEW: THE UPDATED HINGLISH TO DEVANAGARI RULE 🚨
                     core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
                     Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
                     
@@ -536,7 +537,7 @@ if st.session_state.current_page == "Journal":
                     4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
                     5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
                     6. Always speak with deep empathy, but unwavering, grounded strength.
-                    7. STRICT LANGUAGE RULE: If the user inputs English, reply ONLY in English. If the user inputs Hindi, reply ONLY in pure Hindi using the Devanagari script (e.g., शांत रहें). STRICTLY PROHIBITED: Do not use Hinglish (Hindi words written in English letters) under any circumstances.
+                    7. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish (Hindi words written with English letters, e.g., 'mein khush hoon'), you MUST reply ONLY in pure Hindi using the Devanagari script (e.g., मैं खुश हूँ). We assume Hinglish speakers can read Devanagari. NEVER reply in Hinglish.
                     """
 
                     if btn_agent:
@@ -552,10 +553,11 @@ if st.session_state.current_page == "Journal":
                         }}
                         """
                     else:
+                        # 🚨 NEW: POLITE DESCRIPTIVE BREATHING REMINDER 🚨
                         length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
                         context = f"""{core_philosophy}
                         {length_instruction}
-                        End your reflection with a brief, gentle 'Inhale 4 - Hold 2 - Exhale 6' reminder.
+                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi (e.g., 'कृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।'). Do not use abrupt military-style formatting like 'Inhale 4 - Hold 2'.
                         {energy_context}"""
                     
                     try:
@@ -606,7 +608,6 @@ if st.session_state.current_page == "Journal":
         
         for entry in reversed(st.session_state.core_journal):
             safe_speech_text = urllib.parse.quote(entry['ai'])
-            # 🚨 NEW: FOUR-BUTTON AUDIO CONTROL BAR 🚨
             html_button = f"""
             <style>
                 .audio-controls {{ display: flex; gap: 6px; margin-bottom: 5px; width: 100%; }}
@@ -626,16 +627,25 @@ if st.session_state.current_page == "Journal":
             </div>
             <script>
                 function startVoice() {{
-                    window.speechSynthesis.cancel(); // Stop anything currently playing
+                    window.speechSynthesis.cancel(); 
                     var decodedText = decodeURIComponent("{safe_speech_text}");
                     var m = new SpeechSynthesisUtterance(decodedText);
                     m.rate = 0.85;
-                    m.lang = 'hi-IN'; 
+                    
+                    var isHindi = /[\u0900-\u097F]/.test(decodedText);
+                    m.lang = isHindi ? 'hi-IN' : 'en-IN'; 
                     
                     function setVoiceAndSpeak() {{
                         var voices = window.speechSynthesis.getVoices();
-                        var localVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.name.includes('India') || v.name.includes('Hindi'));
-                        if (localVoice) {{ m.voice = localVoice; }}
+                        var voice;
+                        
+                        if (isHindi) {{
+                            voice = voices.find(v => v.lang === 'hi-IN' || v.lang.includes('hi') || v.name.includes('Hindi'));
+                        }} else {{
+                            voice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India')) || voices.find(v => v.lang.includes('en'));
+                        }}
+                        
+                        if (voice) {{ m.voice = voice; }}
                         window.speechSynthesis.speak(m);
                     }}
 
@@ -978,4 +988,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v143.0 | Audio Control Hub</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v144.1 | Polite Bilingual Brain Update</div>", unsafe_allow_html=True)
