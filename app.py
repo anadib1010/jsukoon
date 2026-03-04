@@ -28,7 +28,7 @@ if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
 if "active_audio" not in st.session_state: st.session_state.active_audio = None
-if "active_game" not in st.session_state: st.session_state.active_game = "Release"
+if "active_game" not in st.session_state: st.session_state.active_game = "Convergence"
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.mp3"
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
@@ -67,7 +67,7 @@ LANG = {
         "choose_visual": "CHOOSE YOUR VISUAL GUIDE", "v_wave": "The Wave", "v_moon": "The Moon", "v_lotus": "The Lotus",
         "game_release": "The Release", "game_bloom": "The Bloom", "game_convergence": "The Convergence",
         "release_desc": "Tap the rising thoughts to release them.", "bloom_desc": "Tap the center slowly to grow your light.",
-        "convergence_desc": "Your mind is the swarm. Press and hold to pull it into focus.",
+        "convergence_desc": "Your mind is the swarm. Hold to overpower the resistance.",
         "h_market": "RITUAL BUNDLES & TOOLS",
         "order_wa": "ORDER VIA WA", "free_shipping": "+ FREE SHIPPING",
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
@@ -247,7 +247,7 @@ breath_js_dict = {
     """
 }
 
-# 🚨 THE NEW CONVERGENCE ENGINE 🚨
+# 🚨 THE NEW "OBSTINATE MIND" CONVERGENCE ENGINE 🚨
 convergence_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; touch-action: none;">
     <div id="convMsg" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:[C_ACCENT]; font-family:sans-serif; font-size:10px; font-weight:300; letter-spacing:4px; z-index:10; pointer-events:none; transition: opacity 0.5s; text-align:center; line-height:1.5;">PRESS & HOLD TO<br>GATHER THE MIND</div>
@@ -256,7 +256,9 @@ convergence_html = """
 <script>
     (function() {
         const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d'); const msg = document.getElementById('convMsg');
-        let isPressing = false; let particles = []; let vibeInterval;
+        let isPressing = false; let particles = []; let vibeInterval; 
+        let focusPower = 0; // The algorithm for sustained focus
+        
         function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
         window.addEventListener('resize', resize); resize();
         
@@ -273,16 +275,36 @@ convergence_html = """
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const cx = canvas.width / 2; const cy = canvas.height / 2;
             
+            if (isPressing) {
+                // It takes roughly 4 to 5 seconds to reach max focus
+                focusPower += 0.004; 
+                if (focusPower > 1) focusPower = 1;
+            } else {
+                focusPower = 0;
+            }
+
             for (let p of particles) {
                 if (isPressing) {
-                    // GRAVITY MODE
                     let dx = cx - p.x; let dy = cy - p.y;
                     let dist = Math.hypot(dx, dy);
+                    
+                    // THE RESISTANCE ALGORITHM
+                    // The lower the focusPower, the more the dots fight back.
+                    let resistX = (Math.random() - 0.5) * (1 - focusPower) * 12;
+                    let resistY = (Math.random() - 0.5) * (1 - focusPower) * 12;
+
                     if (dist > 8) {
-                        p.vx += dx * 0.04; p.vy += dy * 0.04;
-                        p.vx *= 0.82; p.vy *= 0.82; // Friction to create orbit
+                        // Gravity gets stronger over time
+                        let pull = 0.002 + (0.05 * focusPower);
+                        // Friction gets heavier over time to force the orbit to collapse
+                        let friction = 0.99 - (0.15 * focusPower);
+                        
+                        p.vx += (dx * pull) + resistX; 
+                        p.vy += (dy * pull) + resistY;
+                        p.vx *= friction; p.vy *= friction;
                     } else {
-                        p.x = cx + (Math.random() - 0.5) * 8; // Tightly packed vibrating core
+                        // Once they reach the center, they vibrate slightly to show stored energy
+                        p.x = cx + (Math.random() - 0.5) * 8; 
                         p.y = cy + (Math.random() - 0.5) * 8;
                         p.vx = 0; p.vy = 0;
                     }
@@ -292,44 +314,44 @@ convergence_html = """
                     let speed = Math.hypot(p.vx, p.vy);
                     if (speed > 4) { p.vx = (p.vx/speed)*4; p.vy = (p.vy/speed)*4; }
                     
-                    // Bounce off walls
                     if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                     if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
                 }
                 
                 p.x += p.vx; p.y += p.vy;
-                
-                // Draw Particle
                 ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba([C_RGB], 0.7)"; ctx.fill();
+                ctx.fillStyle = `rgba([C_RGB], ${0.4 + (focusPower * 0.4)})`; ctx.fill();
             }
 
-            // Draw Core Glow when converging
-            if (isPressing) {
-                let glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 70);
-                glow.addColorStop(0, "rgba([C_RGB], 0.6)"); glow.addColorStop(1, "rgba(0,0,0,0)");
-                ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, 70, 0, Math.PI*2); ctx.fill();
+            // Draw Core Glow only when focus is building
+            if (isPressing && focusPower > 0.1) {
+                let glowSize = 20 + (60 * focusPower);
+                let glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowSize);
+                glow.addColorStop(0, `rgba([C_RGB], ${0.8 * focusPower})`); glow.addColorStop(1, "rgba(0,0,0,0)");
+                ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, glowSize, 0, Math.PI*2); ctx.fill();
             }
-
             requestAnimationFrame(draw);
         }
 
         function triggerPress() {
             isPressing = true; msg.style.opacity = 0;
-            if(navigator.vibrate) vibeInterval = setInterval(()=>navigator.vibrate(30), 60);
+            if(navigator.vibrate) vibeInterval = setInterval(()=> {
+                // Haptic heartbeat gets steadier and stronger as focus builds
+                if (Math.random() < focusPower) navigator.vibrate(30);
+            }, 100);
         }
+        
         function releasePress() {
             if(!isPressing) return;
             isPressing = false; msg.style.opacity = 1; clearInterval(vibeInterval);
             if(navigator.vibrate) navigator.vibrate([60, 40, 60]); // The Shatter Haptic
-            // Explosive shatter velocity
-            for(let p of particles) { p.vx = (Math.random() - 0.5) * 30; p.vy = (Math.random() - 0.5) * 30; }
+            // Explosive shatter velocity based on how much focus was built up
+            for(let p of particles) { p.vx = (Math.random() - 0.5) * (40 * focusPower); p.vy = (Math.random() - 0.5) * (40 * focusPower); }
         }
 
         canvas.addEventListener('pointerdown', triggerPress);
         canvas.addEventListener('pointerup', releasePress);
         canvas.addEventListener('pointerleave', releasePress);
-        
         draw();
     })();
 </script>
@@ -774,6 +796,7 @@ elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_sos").replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    
     components.html(theme_it(release_game_html.replace("gameCanvas", "game_sos")), height=370)
 
 elif st.session_state.current_page == "AgentSanctuary":
@@ -790,7 +813,8 @@ elif st.session_state.current_page == "AgentSanctuary":
 
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
-    components.html(theme_it(ether_html.replace("starCanvas", "ether_main")), height=450)
+    ether_ui = ether_html.replace("starCanvas", "ether_main")
+    components.html(theme_it(ether_ui), height=450)
 
 # 🚨 THE FOCUS TAB WITH "THE CONVERGENCE" 🚨
 elif st.session_state.current_page == "Focus":
@@ -996,4 +1020,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.0 | The Monkey Mind Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.1 | The Obstinate Mind Update</div>", unsafe_allow_html=True)
