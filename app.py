@@ -37,6 +37,11 @@ if "agent_message" not in st.session_state: st.session_state.agent_message = "I 
 if "theme" not in st.session_state: st.session_state.theme = "The Void"
 if "ui_language" not in st.session_state: st.session_state.ui_language = "English"
 
+# VIP Unlocks (The Phygital Loop)
+if "unlocked_mala" not in st.session_state: st.session_state.unlocked_mala = False
+if "unlocked_flame" not in st.session_state: st.session_state.unlocked_flame = False
+if "unlocked_nirvana" not in st.session_state: st.session_state.unlocked_nirvana = False
+
 # --- 4. ZERO-COST UI DICTIONARY (THE TOGGLE) ---
 LANG = {
     "English": {
@@ -60,7 +65,9 @@ LANG = {
         "order_wa": "ORDER VIA WA", "free_shipping": "+ FREE SHIPPING",
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
         "t_void": "The Void (True Black)", "t_sage": "Sage Sanctuary (Forest)", "t_terra": "Terracotta Earth",
-        "t_abyss": "The Deep Abyss (Navy)", "t_dawn": "First Light (Dawn)", "t_sea": "Sea Glass (Light Blue)"
+        "t_abyss": "The Deep Abyss (Navy)", "t_dawn": "First Light (Dawn)", "t_sea": "Sea Glass (Light Blue)",
+        "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
+        "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?"
     },
     "Hindi": {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
@@ -83,12 +90,14 @@ LANG = {
         "order_wa": "व्हाट्सएप से ऑर्डर करें", "free_shipping": "+ मुफ्त शिपिंग",
         "h_theme": "ऐप थीम", "h_lang": "ऐप की भाषा",
         "t_void": "शून्य (The Void)", "t_sage": "सेज वन (Sage)", "t_terra": "मिट्टी (Earth)",
-        "t_abyss": "गहरा महासागर (Abyss)", "t_dawn": "पहली किरण (Dawn)", "t_sea": "समुद्री कांच (Sea Glass)"
+        "t_abyss": "गहरा महासागर (Abyss)", "t_dawn": "पहली किरण (Dawn)", "t_sea": "समुद्री कांच (Sea Glass)",
+        "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
+        "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?"
     }
 }
 t = LANG[st.session_state.ui_language]
 
-# --- 5. THE 6 LUXURY THEMES ENGINE ---
+# --- 5. THE LUXURY THEMES ENGINE ---
 if st.session_state.theme == "The Void":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#E0E0E0", "rgba(20,20,20,0.6)", "rgba(255,255,255,0.08)", "#888888", "136,136,136"
 elif st.session_state.theme == "Sage Sanctuary":
@@ -101,6 +110,8 @@ elif st.session_state.theme == "First Light":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FDFBF7", "#4A4A4A", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.05)", "#D4A373", "212,163,115"
 elif st.session_state.theme == "Sea Glass":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#E5EDF0", "#4A5D66", "rgba(255,255,255,0.4)", "rgba(0,0,0,0.06)", "#7A9EA8", "122,158,168"
+elif st.session_state.theme == "Liquid Gold":
+    app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#F5E6BA", "rgba(212,175,55,0.08)", "rgba(212,175,55,0.25)", "#D4AF37", "212,175,55"
 else:
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#E0E0E0", "rgba(20,20,20,0.6)", "rgba(255,255,255,0.08)", "#888888", "136,136,136"
 
@@ -118,47 +129,24 @@ if api_key:
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
-    
     .stApp {{ background-color: {app_bg} !important; color: {app_text} !important; font-family: 'Inter', sans-serif; transition: background-color 0.8s ease; }}
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 3.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
-    
-    /* Sleek Navigation Pills */
     div[data-testid="stHorizontalBlock"] {{ flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }}
     div[data-testid="column"], div[data-testid="stColumn"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; display: flex !important; justify-content: center !important; margin-bottom: 5px !important; }}
     div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"] {{ width: calc(50% - 8px) !important; min-width: calc(50% - 8px) !important; max-width: calc(50% - 8px) !important; flex: 1 1 calc(50% - 8px) !important; }}
-    
     @keyframes pulse {{ 0% {{ transform: scale(1); opacity: 0.2; border-width: 1px; }} 50% {{ transform: scale(1.6); opacity: 0.8; border-width: 3px; }} 100% {{ transform: scale(1); opacity: 0.2; border-width: 1px; }} }}
-    
     .breathing-circle {{ width: 50px; height: 50px; border: 2px solid {c_accent}; border-radius: 50%; margin: 15px auto 25px auto; animation: pulse 12s infinite ease-in-out !important; box-shadow: 0 0 20px rgba({c_rgb}, 0.3); transition: all 0.8s ease; }}
     .main-title {{ text-align: center; letter-spacing: 14px; font-weight: 300; font-size: 2.2rem; color: {app_text}; text-transform: uppercase; margin-bottom: 5px; }}
     .section-header {{ font-size: 11px; letter-spacing: 5px; font-weight: 500; text-transform: uppercase; margin: 35px 0 15px 0; color: {c_accent}; padding-bottom: 8px; opacity: 0.8; }}
-    
     div.stButton {{ width: 100% !important; }}
-    
-    /* Frosted Glass Buttons */
-    .stButton>button {{ 
-        width: 100% !important; min-width: 100% !important; 
-        background: {glass_bg} !important; color: {app_text} !important; 
-        border: 1px solid {btn_border} !important; border-radius: 30px !important; 
-        backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
-        min-height: 44px !important; height: 100% !important; font-size: 11px !important; 
-        font-weight: 400 !important; letter-spacing: 1px !important;
-        display: flex !important; justify-content: center !important; align-items: center !important; 
-        text-align: center !important; transition: all 0.3s ease;
-    }}
+    .stButton>button {{ width: 100% !important; min-width: 100% !important; background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 30px !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; min-height: 44px !important; height: 100% !important; font-size: 11px !important; font-weight: 400 !important; letter-spacing: 1px !important; display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; transition: all 0.3s ease; }}
     .stButton>button:active {{ transform: scale(0.96); opacity: 0.7; }}
-    
     .autopilot-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
     .agent-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
-    
-    /* Frosted Glass Slabs */
     .market-slab {{ background: {glass_bg}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid {btn_border}; padding: 20px; margin-bottom: 15px; text-align: center; transition: all 0.5s ease; }}
     .disclaimer-box {{ text-align: left; font-size: 11px; opacity: 0.6; line-height: 1.8; background: transparent; padding: 15px; border-radius: 12px; border: 1px solid {btn_border}; }}
-    
-    /* Borderless Text Inputs */
     textarea, input {{ background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 16px !important; backdrop-filter: blur(12px) !important; text-align: center !important; font-size: 14px !important; font-weight: 300 !important; font-family: 'Inter', sans-serif !important; padding: 15px !important; box-shadow: none !important; }}
     textarea:focus, input:focus {{ border-color: {c_accent} !important; outline: none !important; }}
-    
     .journal-entry {{ background: {glass_bg}; backdrop-filter: blur(12px); border-left: 2px solid {c_accent}; padding: 20px; margin-bottom: 10px; border-radius: 12px; color: {app_text}; text-align: left; font-size: 14px; line-height: 1.6; font-weight: 300; border-top: 1px solid {btn_border}; border-right: 1px solid {btn_border}; border-bottom: 1px solid {btn_border}; }}
     </style>
     """, unsafe_allow_html=True)
@@ -233,6 +221,16 @@ breath_js_dict = {
         if(cycle < 4) { text = "INHALE (4)"; spread = cycle/4; } else if(cycle < 11) { text = "HOLD (7)"; spread = 1; } else { text = "EXHALE (8)"; spread = 1 - ((cycle-11)/8); }
         for(let i=0; i<6; i++) { let angle = i * (Math.PI*2/6) + (t * 0.1); let px = cx + Math.cos(angle) * (30 * spread); let py = cy + Math.sin(angle) * (30 * spread); ctx.beginPath(); ctx.arc(px, py, 25, 0, Math.PI*2); ctx.strokeStyle = "rgba([C_RGB], 0.5)"; ctx.lineWidth = 1; ctx.stroke(); ctx.fillStyle = "rgba([C_RGB], 0.05)"; ctx.fill(); }
         ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "300 12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "4px"; ctx.fillText(text, cx, cy + 90);
+    """,
+    "Flame": """
+        let cycle = t % 12; let text = ""; let scale = 1;
+        if(cycle < 4) { text = "INHALE (4)"; scale = 1 + (cycle/4)*0.5; } else if(cycle < 6) { text = "HOLD (2)"; scale = 1.5; } else { text = "EXHALE (6)"; scale = 1.5 - ((cycle-6)/6)*0.5; }
+        let gradient = ctx.createRadialGradient(cx, cy + 20, 0, cx, cy + 20, 50 * scale);
+        gradient.addColorStop(0, "rgba(255, 200, 50, 0.9)"); gradient.addColorStop(0.3, "rgba(255, 80, 0, 0.6)"); gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.beginPath(); let flicker = Math.sin(t * 15) * 4 + Math.cos(t * 22) * 2;
+        ctx.arc(cx + flicker, cy + 20 - (15 * scale) + flicker, 50 * scale, 0, Math.PI*2);
+        ctx.fillStyle = gradient; ctx.fill();
+        ctx.fillStyle = "[C_TEXT]"; ctx.font = "300 12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "4px"; ctx.fillText(text, cx, cy + 90);
     """
 }
 
@@ -251,23 +249,38 @@ release_game_html = """
     function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (!gameStarted) {
-            ctx.fillStyle = "[C_ACCENT]"; ctx.globalAlpha = 0.5; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0;
-        } else {
+        if (!gameStarted) { ctx.fillStyle = "[C_ACCENT]"; ctx.globalAlpha = 0.5; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0; } 
+        else {
             for (let i = bubbles.length - 1; i >= 0; i--) {
                 let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba([C_RGB], ${b.alpha})`; ctx.lineWidth = 1.5; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1);
-                } else { b.y -= b.speed; ctx.fillStyle = `rgba([C_RGB], ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba([C_RGB], 0.3)"; if (b.y < -50) bubbles.splice(i, 1); }
+                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba([C_RGB], ${b.alpha})`; ctx.lineWidth = 1.5; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1); } 
+                else { b.y -= b.speed; ctx.fillStyle = `rgba([C_RGB], ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba([C_RGB], 0.3)"; if (b.y < -50) bubbles.splice(i, 1); }
             }
-        }
-        requestAnimationFrame(draw);
+        } requestAnimationFrame(draw);
     }
     canvas.addEventListener('pointerdown', (e) => {
         if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
         const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
         for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
+    }); draw();
+</script>
+"""
+
+mala_html = """
+<div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer;" id="malaContainer">
+    <div id="malaCount" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:14px; font-weight:300; letter-spacing:4px; margin-bottom: 30px;">0 / 108</div>
+    <div id="bead" style="width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, [C_ACCENT], rgba([C_RGB], 0.1)); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);"></div>
+    <div style="margin-top: 40px; font-size:10px; color:[C_TEXT]; opacity:0.4; letter-spacing:3px;">TAP TO PULL BEAD</div>
+</div>
+<script>
+    let count = 0; const container = document.getElementById('malaContainer'); const bead = document.getElementById('bead'); const countDisplay = document.getElementById('malaCount');
+    container.addEventListener('pointerdown', () => {
+        count++; if(count > 108) count = 1;
+        countDisplay.innerText = count + " / 108";
+        bead.style.transform = "translateY(30px) scale(0.9)";
+        if (navigator.vibrate) navigator.vibrate([40]);
+        setTimeout(() => { bead.style.transform = "translateY(0px) scale(1)"; }, 150);
     });
-    draw();
 </script>
 """
 
@@ -398,16 +411,25 @@ if st.session_state.current_page == "Journal":
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
-                    core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
-                    Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
-                    1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
-                    2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
-                    3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts (The Witness/Sakshi).
-                    4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
-                    5. Draw from Neuroscience: Remind them that the breath is a biological lever. 
-                    6. Always speak with deep empathy, but unwavering, grounded strength.
-                    7. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script. NEVER reply in Hinglish.
-                    """
+                    # 🚨 ZENITH MODE UPGRADE IF MASTER BUNDLE IS UNLOCKED 🚨
+                    if st.session_state.unlocked_nirvana:
+                        core_philosophy = """You are the Zenith Master of Sukoon, the highest tier of philosophical guidance. 
+                        Your words carry immense weight, ancient wisdom, and profound poetic beauty. You see deeply into the user's soul.
+                        1. NEVER use clinical words like anxiety, depression, etc. 
+                        2. Speak with absolute mastery, drawing heavily from advanced Zen koans, deep Advaita Vedanta, and cosmic scale.
+                        3. Use the user's energy state to weave a masterful metaphor.
+                        4. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script. NEVER reply in Hinglish.
+                        """
+                    else:
+                        core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
+                        Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
+                        1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
+                        2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
+                        3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts.
+                        4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
+                        5. Draw from Neuroscience: Remind them that the breath is a biological lever. 
+                        6. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script.
+                        """
 
                     if btn_agent:
                         context = f"""{core_philosophy}
@@ -420,7 +442,7 @@ if st.session_state.current_page == "Journal":
                         length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response directly addressing their specific situation."
                         context = f"""{core_philosophy}
                         {length_instruction}
-                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi. Do not use abrupt military-style formatting.
+                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi.
                         {energy_context}"""
                     
                     try:
@@ -608,7 +630,13 @@ elif st.session_state.current_page == "Focus":
     if st.session_state.active_audio:
         st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/{st.session_state.active_audio}", format="audio/mp3", autoplay=True)
 
-    b_col1, b_col2, b_col3 = st.columns(3)
+    # dynamically adjust columns if VIP is unlocked
+    has_flame = st.session_state.unlocked_flame
+    if has_flame:
+        b_col1, b_col2, b_col3, b_col4 = st.columns(4)
+    else:
+        b_col1, b_col2, b_col3 = st.columns(3)
+        
     with b_col1:
         if st.button(t["b_anchor"], use_container_width=True): st.session_state.active_breath = "Anchor"; st.rerun()
     with b_col2:
@@ -617,6 +645,9 @@ elif st.session_state.current_page == "Focus":
         if st.button(t["b_sleep"], use_container_width=True): 
             if not st.session_state.active_breath.startswith("Sleep"): st.session_state.active_breath = "Sleep_Wave"
             st.rerun()
+    if has_flame:
+        with b_col4:
+            if st.button(t["b_flame"], use_container_width=True): st.session_state.active_breath = "Flame"; st.rerun()
 
     if st.session_state.active_breath.startswith("Sleep"):
         st.markdown(f"<p style='font-size: 10px; opacity: 0.6; margin: 15px 0 5px 0; text-align: center; color: {app_text}; font-weight: 300; letter-spacing: 2px;'>{t['choose_visual']}</p>", unsafe_allow_html=True)
@@ -635,11 +666,20 @@ elif st.session_state.current_page == "Focus":
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown(f"<div class='section-header'>{t['h_games']}</div>", unsafe_allow_html=True)
     
-    g_col1, g_col2 = st.columns(2)
+    # dynamically adjust columns if VIP is unlocked
+    has_mala = st.session_state.unlocked_mala
+    if has_mala:
+        g_col1, g_col2, g_col3 = st.columns(3)
+    else:
+        g_col1, g_col2 = st.columns(2)
+        
     with g_col1:
         if st.button(t["game_release"], use_container_width=True): st.session_state.active_game = "Release"; st.rerun()
     with g_col2:
         if st.button(t["game_bloom"], use_container_width=True): st.session_state.active_game = "Bloom"; st.rerun()
+    if has_mala:
+        with g_col3:
+            if st.button(t["game_mala"], use_container_width=True): st.session_state.active_game = "Mala"; st.rerun()
 
     if st.session_state.active_game == "Release":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['release_desc']}</p>", unsafe_allow_html=True)
@@ -660,6 +700,10 @@ elif st.session_state.current_page == "Focus":
         </script>
         """
         components.html(theme_it(bloom_html), height=370)
+    
+    elif st.session_state.active_game == "Mala":
+        st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
+        components.html(theme_it(mala_html), height=370)
 
 elif st.session_state.current_page == "Market":
     st.markdown(f"<div class='section-header'>{t['h_market']}</div>", unsafe_allow_html=True)
@@ -718,11 +762,9 @@ elif st.session_state.current_page == "Settings":
     st.markdown("<div class='market-slab' style='padding: 20px;'>", unsafe_allow_html=True)
     l_col1, l_col2 = st.columns(2)
     with l_col1:
-        if st.button("English", use_container_width=True): 
-            st.session_state.ui_language = "English"; st.rerun()
+        if st.button("English", use_container_width=True): st.session_state.ui_language = "English"; st.rerun()
     with l_col2:
-        if st.button("हिंदी (Hindi)", use_container_width=True): 
-            st.session_state.ui_language = "Hindi"; st.rerun()
+        if st.button("हिंदी (Hindi)", use_container_width=True): st.session_state.ui_language = "Hindi"; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown(f"<div class='section-header'>{t['h_theme']}</div>", unsafe_allow_html=True)
@@ -737,7 +779,36 @@ elif st.session_state.current_page == "Settings":
     with t_col3:
         if st.button(t["t_terra"], use_container_width=True): st.session_state.theme = "Terracotta Earth"; st.rerun()
         if st.button(t["t_sea"], use_container_width=True): st.session_state.theme = "Sea Glass"; st.rerun()
+    if st.session_state.unlocked_nirvana:
+        if st.button(t["t_gold"], use_container_width=True): st.session_state.theme = "Liquid Gold"; st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 🚨 THE PHYGITAL VAULT 🚨
+    st.markdown(f"<div class='section-header'>{t['vault_h']}</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='padding: 20px;'>", unsafe_allow_html=True)
+    
+    code_input = st.text_input("Enter Sanctuary Code", value="", key="vault_input", label_visibility="collapsed", placeholder=t['vault_p'])
+    
+    if code_input:
+        code = code_input.strip().upper()
+        if code == "MANTRA" and not st.session_state.unlocked_mala:
+            st.session_state.unlocked_mala = True
+            st.success("✨ The Haptic Mala unlocked in Focus.")
+            st.rerun()
+        elif code == "EMBER" and not st.session_state.unlocked_flame:
+            st.session_state.unlocked_flame = True
+            st.success("🔥 The Eternal Flame unlocked in Breath Studio.")
+            st.rerun()
+        elif code == "NIRVANA" and not st.session_state.unlocked_nirvana:
+            st.session_state.unlocked_nirvana = True
+            st.session_state.theme = "Liquid Gold"
+            st.success("👑 Master Sanctuary unlocked. Zenith Mode activated.")
+            st.rerun()
+        elif code in ["MANTRA", "EMBER", "NIRVANA"]:
+            st.info("Code already unlocked.")
+        else:
+            st.error("Code not recognized in the Ether.")
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v149.0 | Minimalist Command Center</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v150.0 | The Phygital Vault</div>", unsafe_allow_html=True)
