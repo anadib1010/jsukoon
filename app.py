@@ -326,7 +326,6 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
-    # 🚨 UPDATED TEXT: "TOUCH 3 TIMES TO GROUND YOURSELF" 🚨
     zen_html = """
         <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:60px; overflow:hidden; cursor:crosshair; transition: transform 0.1s ease;" id="zen-box">
             <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#5B96B2; font-family:sans-serif; font-size:10px; letter-spacing:2px; opacity:0.8; pointer-events:none; text-align:center; width: 100%; line-height: 1.4;">
@@ -346,40 +345,28 @@ if st.session_state.current_page == "Journal":
             let isAnimating = false;
             let audioCtx = null;
 
-            // Initialize Web Audio API for a soft chime
             function playSoftChime() {
                 try {
                     if (!audioCtx) {
                         const AudioContext = window.AudioContext || window.webkitAudioContext;
                         audioCtx = new AudioContext();
                     }
-                    if (audioCtx.state === 'suspended') {
-                        audioCtx.resume();
-                    }
-                    
+                    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
                     const oscillator = audioCtx.createOscillator();
                     const gainNode = audioCtx.createGain();
-                    
-                    oscillator.type = 'sine'; // Soft, rounded tone
-                    // Randomize pitch slightly for organic feel
+                    oscillator.type = 'sine'; 
                     const freq = 400 + Math.random() * 400; 
                     oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
                     oscillator.frequency.exponentialRampToValueAtTime(freq/2, audioCtx.currentTime + 0.15);
-                    
-                    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Low volume so it's not jarring
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); // Quick fade out
-                    
+                    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2); 
                     oscillator.connect(gainNode);
                     gainNode.connect(audioCtx.destination);
-                    
                     oscillator.start();
                     oscillator.stop(audioCtx.currentTime + 0.2);
-                } catch(e) {
-                    console.log("Audio not supported or blocked");
-                }
+                } catch(e) { }
             }
 
-            // 🚨 THE JAILBREAK: Reaching into the parent phone screen 🚨
             try {
                 parentDoc = window.parent.document;
                 globalCanvas = parentDoc.getElementById('sukoon-global-canvas');
@@ -394,7 +381,6 @@ if st.session_state.current_page == "Journal":
                     globalCanvas.style.pointerEvents = 'none'; 
                     globalCanvas.style.zIndex = '999999'; 
                     parentDoc.body.appendChild(globalCanvas);
-                    
                     function resizeGlobal() {
                         globalCanvas.width = parentDoc.documentElement.clientWidth;
                         globalCanvas.height = parentDoc.documentElement.clientHeight;
@@ -404,9 +390,7 @@ if st.session_state.current_page == "Journal":
                 }
                 globalCtx = globalCanvas.getContext('2d');
                 if(!window.parent.sukoonShapes) window.parent.sukoonShapes = [];
-            } catch(e) {
-                console.log("Jailbreak blocked by browser. Using local box only.");
-            }
+            } catch(e) {}
 
             function resizeLocal() { localCanvas.width = localCanvas.offsetWidth; localCanvas.height = localCanvas.offsetHeight; }
             window.addEventListener('resize', resizeLocal); resizeLocal();
@@ -448,19 +432,11 @@ if st.session_state.current_page == "Journal":
             }
 
             box.addEventListener('pointerdown', (e) => {
-                // 1. TACTILE: Mechanical button click feel
                 box.style.transform = "scale(0.96)";
                 setTimeout(() => box.style.transform = "scale(1)", 100);
-
-                // 2. HAPTIC: Vibrate phone (Works on Android)
-                if (navigator.vibrate) {
-                    navigator.vibrate(50); // 50ms vibration pulse
-                }
-
-                // 3. AUDITORY: Play soft chime
+                if (navigator.vibrate) { navigator.vibrate(50); }
                 playSoftChime();
 
-                // 4. VISUAL: Explode colors
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 const randomType = types[Math.floor(Math.random() * types.length)];
 
@@ -468,7 +444,6 @@ if st.session_state.current_page == "Journal":
                     const frame = window.frameElement;
                     let originX = globalCanvas.width / 2;
                     let originY = globalCanvas.height / 2;
-                    
                     if (frame) {
                         const rect = frame.getBoundingClientRect();
                         originX = rect.left + e.clientX;
@@ -486,7 +461,6 @@ if st.session_state.current_page == "Journal":
                     } else {
                         window.parent.sukoonShapes.push({ type: randomType, x: originX, y: originY, radius: 20, alpha: 1, color: randomColor });
                     }
-
                     if (!isAnimating) { isAnimating = true; drawGlobal(); }
                 }
             });
@@ -552,34 +526,47 @@ if st.session_state.current_page == "Journal":
                         latest_energy = st.session_state.energy_history[-1]
                         energy_context = f"\n\nThe user's physical energy state is '{latest_energy}'."
 
+                    # 🚨 NEW: THE PROPRIETARY "SOUL" PROMPT FOR SUKOON 🚨
+                    core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
+                    Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
+                    
+                    YOUR RULES OF ENGAGEMENT:
+                    1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
+                    2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
+                    3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts (The Witness/Sakshi), not the thoughts themselves. Thoughts are passing clouds; the user is the sky.
+                    4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
+                    5. Draw from Neuroscience: Remind them that the breath is a biological, mechanical lever to slow the body down. 
+                    6. Always speak with deep empathy, but unwavering, grounded strength.
+                    7. Respond in the user's exact language (or Hinglish if appropriate).
+                    """
+
                     if btn_agent:
-                        context = f"""You are the Sukoon AI Agent. The user needs a custom sanctuary.
-                        Analyze their text. If they can't sleep, select 'Sleep_Lotus' and 'waves'. 
-                        If they are anxious, select 'Box' and 'forest'.
+                        context = f"""{core_philosophy}
+                        The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
                         {energy_context}
                         
                         CRITICAL INSTRUCTION: Respond ONLY with a raw JSON object. No markdown.
                         {{
-                            "reply": "A very short, 1-sentence comforting message.",
+                            "reply": "A very short, 1-sentence poetic grounding message based on your philosophy.",
                             "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus",
                             "audio": "birds", "flute", "forest", "waves", or "wind"
                         }}
                         """
                     else:
                         length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response."
-                        context = f"""You are the Sukoon Mentor. Respond in the user's exact language or Hinglish.
+                        context = f"""{core_philosophy}
                         {length_instruction}
-                        End with a brief 'Inhale 4 - Hold 2 - Exhale 6' reminder.
+                        End your reflection with a brief, gentle 'Inhale 4 - Hold 2 - Exhale 6' reminder.
                         {energy_context}"""
                     
                     try:
                         if voice_input:
                             audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond."]
+                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Mentor."]
                         elif text_msg:
                             prompt_parts = [context, text_msg]
                         else:
-                            prompt_parts = [context, "I am seeking silence."]
+                            prompt_parts = [context, "I am seeking silence. My mind is heavy."]
                             
                         resp = model.generate_content(prompt_parts)
                         
@@ -596,7 +583,7 @@ if st.session_state.current_page == "Journal":
                                 st.session_state.current_page = "AgentSanctuary"
                                 
                             except Exception as e:
-                                st.session_state.agent_message = "I am here. Let us breathe together."
+                                st.session_state.agent_message = "The outside world is loud. Step into the quiet."
                                 st.session_state.agent_breath = "Box"
                                 st.session_state.agent_audio = "flute.mp3"
                                 st.session_state.current_page = "AgentSanctuary"
@@ -985,4 +972,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v140.0 | Rule of Three Hook</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v141.0 | Proprietary AI Soul</div>", unsafe_allow_html=True)
