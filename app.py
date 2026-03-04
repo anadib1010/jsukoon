@@ -183,7 +183,7 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# --- REUSABLE GLOBAL HTML COMPONENTS ---
+# --- 8. GLOBAL HTML COMPONENTS ---
 # ==========================================
 base_breath_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
@@ -359,6 +359,32 @@ ether_html = """
 """
 
 # ==========================================
+# --- 9. MAIN APP HEADER & NAV GRID ---
+# ==========================================
+
+st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
+st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
+with col2:
+    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
+with col3:
+    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
+
+col4, col5, col6 = st.columns(3)
+with col4:
+    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
+with col5:
+    if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
+with col6:
+    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
+
+st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
+
+# ==========================================
 # --- PAGES ---
 # ==========================================
 
@@ -462,7 +488,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "heavy": cached_reply = "I hear the heaviness you are carrying. This weight is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it without judgment. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
-                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 select के लिए सांस छोड़ें।"
+                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
@@ -764,28 +790,28 @@ elif st.session_state.current_page == "Lab":
     st.markdown("<div class='market-slab' style='padding: 15px 20px 5px 20px;'>", unsafe_allow_html=True)
     l_col1, l_col2 = st.columns(2)
     with l_col1:
-        if st.button(t["t_dawn"], use_container_width=True): st.session_state.theme = "First Light"; st.rerun()
-        if st.button(t["t_terra"], use_container_width=True): st.session_state.theme = "Terracotta Earth"; st.rerun()
-        if st.button(t["t_champagne"], use_container_width=True): st.session_state.theme = "Champagne Gold"; st.rerun()
+        if st.button(t["t_dawn"], key="lab_dawn", use_container_width=True): st.session_state.theme = "First Light"; st.rerun()
+        if st.button(t["t_terra"], key="lab_terra", use_container_width=True): st.session_state.theme = "Terracotta Earth"; st.rerun()
+        if st.button(t["t_champagne"], key="lab_champ", use_container_width=True): st.session_state.theme = "Champagne Gold"; st.rerun()
     with l_col2:
-        if st.button(t["t_sea"], use_container_width=True): st.session_state.theme = "Sea Glass"; st.rerun()
-        if st.button(t["t_sage_l"], use_container_width=True): st.session_state.theme = "Sage Sanctuary"; st.rerun()
-        if st.button(t["t_pink_champ"], use_container_width=True): st.session_state.theme = "Pink Champagne"; st.rerun()
+        if st.button(t["t_sea"], key="lab_sea", use_container_width=True): st.session_state.theme = "Sea Glass"; st.rerun()
+        if st.button(t["t_sage_l"], key="lab_sagel", use_container_width=True): st.session_state.theme = "Sage Sanctuary"; st.rerun()
+        if st.button(t["t_pink_champ"], key="lab_pink", use_container_width=True): st.session_state.theme = "Pink Champagne"; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown(f"<div class='theme-group-header'>{t['th_dark']}</div>", unsafe_allow_html=True)
     st.markdown("<div class='market-slab' style='padding: 15px 20px 5px 20px;'>", unsafe_allow_html=True)
     d_col1, d_col2 = st.columns(2)
     with d_col1:
-        if st.button(t["t_void"], use_container_width=True): st.session_state.theme = "The Void"; st.rerun()
-        if st.button(t["t_sage_d"], use_container_width=True): st.session_state.theme = "Deep Sage"; st.rerun()
-        if st.button(t["t_ogreen"], use_container_width=True): st.session_state.theme = "Ocean Green"; st.rerun()
-        if st.button(t["t_maroon"], use_container_width=True): st.session_state.theme = "Maroon"; st.rerun()
+        if st.button(t["t_void"], key="lab_void", use_container_width=True): st.session_state.theme = "The Void"; st.rerun()
+        if st.button(t["t_sage_d"], key="lab_saged", use_container_width=True): st.session_state.theme = "Deep Sage"; st.rerun()
+        if st.button(t["t_ogreen"], key="lab_ogreen", use_container_width=True): st.session_state.theme = "Ocean Green"; st.rerun()
+        if st.button(t["t_maroon"], key="lab_maroon", use_container_width=True): st.session_state.theme = "Maroon"; st.rerun()
     with d_col2:
-        if st.button(t["t_abyss"], use_container_width=True): st.session_state.theme = "Social Blue"; st.rerun()
-        if st.button(t["t_oblue"], use_container_width=True): st.session_state.theme = "Ocean Blue"; st.rerun()
-        if st.button(t["t_amber"], use_container_width=True): st.session_state.theme = "Red Amber"; st.rerun()
-        if st.button(t["t_tblue"], use_container_width=True): st.session_state.theme = "Twilight Blue"; st.rerun()
+        if st.button(t["t_abyss"], key="lab_abyss", use_container_width=True): st.session_state.theme = "Social Blue"; st.rerun()
+        if st.button(t["t_oblue"], key="lab_oblue", use_container_width=True): st.session_state.theme = "Ocean Blue"; st.rerun()
+        if st.button(t["t_amber"], key="lab_amber", use_container_width=True): st.session_state.theme = "Red Amber"; st.rerun()
+        if st.button(t["t_tblue"], key="lab_tblue", use_container_width=True): st.session_state.theme = "Twilight Blue"; st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
     # 2. Visuals
@@ -892,4 +918,4 @@ elif st.session_state.current_page == "Settings":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v154.0 | Director's Dashboard</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v154.1 | Bug Fix & Director's Lab</div>", unsafe_allow_html=True)
