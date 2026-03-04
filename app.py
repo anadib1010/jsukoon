@@ -53,6 +53,10 @@ LANG = {
         "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
         "e_quiet": "Quiet", "e_heavy": "Heavier", "e_neutral": "Neutral", "e_steady": "Steady", "e_vibrant": "Vibrant",
         "h_ether": "THE ETHER", "h_breath": "BREATH STUDIO", "h_games": "GROUNDING GAMES",
+        "b_anchor": "Anchor (4-2-6)", "b_box": "The Box (4-4-4-4)", "b_sleep": "Deep Sleep (4-7-8)",
+        "choose_visual": "CHOOSE YOUR VISUAL GUIDE", "v_wave": "The Wave", "v_moon": "The Moon", "v_lotus": "The Lotus",
+        "game_release": "The Release", "game_bloom": "The Bloom",
+        "release_desc": "Tap the rising thoughts to release them.", "bloom_desc": "Tap the center slowly to grow your light.",
         "h_market": "RITUAL BUNDLES & TOOLS",
         "order_wa": "ORDER VIA WA", "free_shipping": "+ FREE SHIPPING",
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
@@ -71,6 +75,10 @@ LANG = {
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
         "e_quiet": "शांत", "e_heavy": "भारी", "e_neutral": "तटस्थ", "e_steady": "स्थिर", "e_vibrant": "जीवंत",
         "h_ether": "आकाश (द ईथर)", "h_breath": "सांस स्टूडियो", "h_games": "ग्राउंडिंग गेम्स",
+        "b_anchor": "एंकर (4-2-6)", "b_box": "द बॉक्स (4-4-4-4)", "b_sleep": "गहरी नींद (4-7-8)",
+        "choose_visual": "अपना दृश्य मार्गदर्शक चुनें", "v_wave": "लहर (Wave)", "v_moon": "चांद (Moon)", "v_lotus": "कमल (Lotus)",
+        "game_release": "रिलीज़ (छोड़ें)", "game_bloom": "ब्लूम (खिलना)",
+        "release_desc": "उठते हुए विचारों को छोड़ने के लिए उन्हें छुएं।", "bloom_desc": "अपने प्रकाश को बढ़ाने के लिए धीरे से केंद्र को छुएं।",
         "h_market": "रीचुअल बंडल और टूल्स",
         "order_wa": "व्हाट्सएप से ऑर्डर करें", "free_shipping": "+ मुफ्त शिपिंग",
         "h_theme": "ऐप थीम", "h_lang": "ऐप की भाषा",
@@ -206,8 +214,55 @@ breath_js_dict = {
         if(cycle < 4) { text = "INHALE (4)"; pathX = startX + (width * 0.2 * (cycle/4)); pathY = cy + amp - (amp * 2 * (cycle/4)); } else if(cycle < 11) { text = "HOLD (7)"; pathX = startX + (width * 0.2) + (width * 0.4 * ((cycle-4)/7)); pathY = cy - amp; } else { text = "EXHALE (8)"; pathX = startX + (width * 0.6) + (width * 0.4 * ((cycle-11)/8)); pathY = cy - amp + (amp * 2 * ((cycle-11)/8)); }
         ctx.strokeStyle = "rgba(91, 150, 178, 0.2)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp); ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
         ctx.beginPath(); ctx.arc(pathX, pathY, 12, 0, Math.PI*2); ctx.fillStyle = "rgba(91, 150, 178, 1)"; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "#5B96B2"; ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+    """,
+    "Sleep_Moon": """
+        let cycle = t % 19; let text = ""; let opacity = 0.2; let yOffset = 0;
+        if(cycle < 4) { text = "INHALE (4)"; opacity = 0.2 + 0.8*(cycle/4); yOffset = -20 * (cycle/4); } else if(cycle < 11) { text = "HOLD (7)"; opacity = 1.0; yOffset = -20; } else { text = "EXHALE (8)"; opacity = 1.0 - 0.8*((cycle-11)/8); yOffset = -20 + 40*((cycle-11)/8); }
+        ctx.beginPath(); ctx.arc(cx, cy + yOffset, 40, 0, Math.PI*2); ctx.fillStyle = `rgba([C_MOON], ${opacity})`; ctx.fill();
+        ctx.shadowBlur = 30 * opacity; ctx.shadowColor = "[C_TEXT]"; ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
+    """,
+    "Sleep_Lotus": """
+        let cycle = t % 19; let text = ""; let spread = 0;
+        if(cycle < 4) { text = "INHALE (4)"; spread = cycle/4; } else if(cycle < 11) { text = "HOLD (7)"; spread = 1; } else { text = "EXHALE (8)"; spread = 1 - ((cycle-11)/8); }
+        for(let i=0; i<6; i++) { let angle = i * (Math.PI*2/6) + (t * 0.1); let px = cx + Math.cos(angle) * (30 * spread); let py = cy + Math.sin(angle) * (30 * spread); ctx.beginPath(); ctx.arc(px, py, 25, 0, Math.PI*2); ctx.strokeStyle = "rgba(91, 150, 178, 0.6)"; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fillStyle = "rgba(91, 150, 178, 0.1)"; ctx.fill(); }
+        ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "14px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText(text, cx, cy + 90);
     """
 }
+
+release_game_html = """
+<div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden;">
+    <div id="scoreDisplay" style="position:absolute; top:15px; width:100%; text-align:center; color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; z-index:10; pointer-events:none;">
+        THOUGHTS RELEASED: <span id="scoreVal">0</span>
+    </div>
+    <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+</div>
+<script>
+    const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+    let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
+    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    window.addEventListener('resize', resize); resize();
+    function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!gameStarted) {
+            ctx.fillStyle = "#5B96B2"; ctx.globalAlpha = 0.5; ctx.font = "12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "2px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0;
+        } else {
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.lineWidth = 2; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1);
+                } else { b.y -= b.speed; ctx.fillStyle = `rgba(91, 150, 178, ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba(91, 150, 178, 0.5)"; if (b.y < -50) bubbles.splice(i, 1); }
+            }
+        }
+        requestAnimationFrame(draw);
+    }
+    canvas.addEventListener('pointerdown', (e) => {
+        if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
+        const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+        for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
+    });
+    draw();
+</script>
+"""
 
 # --- PAGES ---
 
@@ -496,23 +551,23 @@ elif st.session_state.current_page == "Focus":
 
     b_col1, b_col2, b_col3 = st.columns(3)
     with b_col1:
-        if st.button("Anchor (4-2-6)", use_container_width=True): st.session_state.active_breath = "Anchor"; st.rerun()
+        if st.button(t["b_anchor"], use_container_width=True): st.session_state.active_breath = "Anchor"; st.rerun()
     with b_col2:
-        if st.button("The Box (4-4-4-4)", use_container_width=True): st.session_state.active_breath = "Box"; st.rerun()
+        if st.button(t["b_box"], use_container_width=True): st.session_state.active_breath = "Box"; st.rerun()
     with b_col3:
-        if st.button("Deep Sleep (4-7-8)", use_container_width=True): 
-            if not st.session_state.active_breath.startswith("Sleep"):
-                st.session_state.active_breath = "Sleep_Wave"
+        if st.button(t["b_sleep"], use_container_width=True): 
+            if not st.session_state.active_breath.startswith("Sleep"): st.session_state.active_breath = "Sleep_Wave"
             st.rerun()
 
     if st.session_state.active_breath.startswith("Sleep"):
+        st.markdown(f"<p style='font-size: 11px; opacity: 0.7; margin: 15px 0 5px 0; text-align: center; color: #5B96B2;'>{t['choose_visual']}</p>", unsafe_allow_html=True)
         s_col1, s_col2, s_col3 = st.columns(3)
         with s_col1:
-            if st.button("The Wave", use_container_width=True): st.session_state.active_breath = "Sleep_Wave"; st.rerun()
+            if st.button(t["v_wave"], use_container_width=True): st.session_state.active_breath = "Sleep_Wave"; st.rerun()
         with s_col2:
-            if st.button("The Moon", use_container_width=True): st.session_state.active_breath = "Sleep_Moon"; st.rerun()
+            if st.button(t["v_moon"], use_container_width=True): st.session_state.active_breath = "Sleep_Moon"; st.rerun()
         with s_col3:
-            if st.button("The Lotus", use_container_width=True): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
+            if st.button(t["v_lotus"], use_container_width=True): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
     selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
     final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
@@ -523,13 +578,16 @@ elif st.session_state.current_page == "Focus":
     
     g_col1, g_col2 = st.columns(2)
     with g_col1:
-        if st.button("The Release", use_container_width=True): st.session_state.active_game = "Release"; st.rerun()
+        if st.button(t["game_release"], use_container_width=True): st.session_state.active_game = "Release"; st.rerun()
     with g_col2:
-        if st.button("The Bloom", use_container_width=True): st.session_state.active_game = "Bloom"; st.rerun()
+        if st.button(t["game_bloom"], use_container_width=True): st.session_state.active_game = "Bloom"; st.rerun()
 
     if st.session_state.active_game == "Release":
+        st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color:{app_text};'>{t['release_desc']}</p>", unsafe_allow_html=True)
         components.html(theme_it(release_game_html), height=370)
+
     elif st.session_state.active_game == "Bloom":
+        st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 20px; color:{app_text};'>{t['bloom_desc']}</p>", unsafe_allow_html=True)
         bloom_html = """
         <div style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
             <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
@@ -620,4 +678,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v146.0 | Universal Language Toggle</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v146.1 | Pure Translation Fix</div>", unsafe_allow_html=True)
