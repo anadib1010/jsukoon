@@ -491,27 +491,27 @@ elif st.session_state.current_page == "AgentSanctuary":
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
     
-    # 🚨 V147.0: NEW PHYSICS ENGINE FOR THE ETHER 🚨
+    # 🚨 V147.1: SLOWER PHYSICS + GENERATIVE AUDIO (FIRE RUMBLE & MANIFEST CHIME) 🚨
     ether_html = """
     <div id="ether-container" style="background:[C_BG]; border: 1px solid [C_BORDER]; border-radius: 8px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
         <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
-        <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 1s; z-index: 10;">
+        <p id="promptText" style="color:#5B96B2; font-family:sans-serif; font-size:12px; letter-spacing:3px; margin-bottom:25px; transition: opacity 2s; z-index: 10;">
             WRITE YOUR THOUGHTS INTO THE ETHER
         </p>
-        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:[C_TEXT]; border:1px solid [C_BORDER]; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 1.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
+        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent; color:[C_TEXT]; border:1px solid [C_BORDER]; border-radius:6px; padding:15px; text-align:center; font-size:16px; resize:none; outline:none; font-family:sans-serif; transition: all 4s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
         
         <div style="height: 25px; z-index: 10;"></div>
         
-        <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 1s;">
-            <button id="releaseBtn" style="background: linear-gradient(180deg, #3a1c1c 0%, #1a0b0b 100%); color: #ffbba6; border: 1px solid #5a2a2a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.2s;">
+        <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 2s;">
+            <button id="releaseBtn" style="background: linear-gradient(180deg, #3a1c1c 0%, #1a0b0b 100%); color: #ffbba6; border: 1px solid #5a2a2a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
                 BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.6;">(Negative Thoughts)</span>
             </button>
-            <button id="manifestBtn" style="background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%); color: #a6d8ff; border: 1px solid #2a415a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.2s;">
+            <button id="manifestBtn" style="background: linear-gradient(180deg, #1c2b3a 0%, #0b131a 100%); color: #a6d8ff; border: 1px solid #2a415a; border-radius: 4px; padding: 12px; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
                 MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.6;">(Positive Thoughts)</span>
             </button>
         </div>
 
-        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: [C_TEXT]; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 2s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;"></div>
+        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: [C_TEXT]; font-family: sans-serif; font-size: 14px; letter-spacing: 3px; opacity: 0; transition: opacity 3s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;"></div>
     </div>
 
     <script>
@@ -526,6 +526,59 @@ elif st.session_state.current_page == "Ether":
         const ctx = canvas.getContext('2d');
         
         let particles = []; let animating = false; let currentMode = 'star';
+        let audioCtx = null;
+
+        // --- GENERATIVE AUDIO SCRIPT ---
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+        }
+
+        function playBurnSound() {
+            initAudio();
+            const bufferSize = audioCtx.sampleRate * 4; // 4 seconds of noise
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+            
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass'; 
+            filter.frequency.value = 300; // Deep rumble tone
+            
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); // Fade in
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); // Slow fade out
+            
+            noise.connect(filter).connect(gain).connect(audioCtx.destination);
+            noise.start();
+        }
+
+        function playManifestSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine'; // Soft, pure tone
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); // Ascending pitch
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); // Slow fade in
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); // Slow fade out
+            
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 4);
+        }
+
+        // --- VISUAL PHYSICS ---
         function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } 
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
@@ -542,22 +595,22 @@ elif st.session_state.current_page == "Ether":
                     particles.push({ 
                         x: cx + (Math.random() - 0.5) * rect.width * 0.8, 
                         y: cy + (Math.random() - 0.5) * rect.height * 0.8, 
-                        vx: (Math.random() - 0.5) * 12, 
-                        vy: (Math.random() - 0.5) * 12 - 2, 
-                        ax: 0, ay: 0.4, friction: 0.92, // Gravity pulls down, high friction
+                        vx: (Math.random() - 0.5) * 6, // Slower explosion
+                        vy: (Math.random() - 0.5) * 6 - 1, 
+                        ax: 0, ay: 0.15, friction: 0.94, // Softer gravity
                         radius: Math.random() * 4 + 1.5, 
-                        alpha: 1, decay: Math.random() * 0.015 + 0.01, 
+                        alpha: 1, decay: Math.random() * 0.005 + 0.002, // Lives much longer
                         color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` 
                     }); 
                 } else { 
                     particles.push({ 
                         x: cx + (Math.random() - 0.5) * rect.width * 0.8, 
                         y: cy + (Math.random() - 0.5) * rect.height * 0.8, 
-                        vx: (Math.random() - 0.5) * 6, 
-                        vy: (Math.random() * -8) - 2, 
-                        ax: (Math.random() - 0.5) * 0.15, ay: -0.1, friction: 0.96, // Anti-gravity floats up, drifting
+                        vx: (Math.random() - 0.5) * 3, 
+                        vy: (Math.random() * -4) - 0.5, 
+                        ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, // Very slow anti-gravity
                         radius: Math.random() * 3 + 1, 
-                        alpha: 1, decay: Math.random() * 0.01 + 0.005, 
+                        alpha: 1, decay: Math.random() * 0.004 + 0.001, // Lives much longer
                         color: `rgba([C_STAR], ` 
                     }); 
                 }
@@ -572,7 +625,6 @@ elif st.session_state.current_page == "Ether":
                 let p = particles[i]; 
                 if (p.alpha > 0) { 
                     active = true; 
-                    // Apply Physics Vector Math
                     p.vx += p.ax; p.vy += p.ay;
                     p.vx *= p.friction; p.vy *= p.friction;
                     p.x += p.vx; p.y += p.vy; 
@@ -593,46 +645,48 @@ elif st.session_state.current_page == "Ether":
             if(input.value.trim() === '') return; 
             currentMode = mode;
             
-            // Haptic Feedback (Android Only)
+            // Trigger Audio
+            if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
+            
+            // Trigger Haptics
             if (navigator.vibrate) {
-                if (mode === 'fire') { navigator.vibrate([30, 50, 40, 40, 50]); } // Heavy rumble
-                else { navigator.vibrate([20, 100, 20]); } // Light heartbeat
+                if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } 
+                else { navigator.vibrate([20, 150, 20, 150, 20]); } 
             }
             
-            // Shrink and dissolve text box
+            // Slow, cinematic text dissolve
             if (mode === 'fire') { 
                 msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; 
-                input.style.filter = "blur(15px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
-                input.style.transform = "scale(0.5) translateY(50px)"; 
+                input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; 
+                input.style.transform = "scale(0.8) translateY(60px)"; 
             } else { 
                 msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; 
-                input.style.filter = "blur(12px) brightness(200%)"; 
-                input.style.transform = "scale(0.5) translateY(-50px)"; 
+                input.style.filter = "blur(15px) brightness(200%)"; 
+                input.style.transform = "scale(0.8) translateY(-60px)"; 
             }
 
             createParticles(mode); 
             input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; 
             btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
             
-            setTimeout(() => { msg.style.opacity = "1"; }, 1500);
+            // Wait longer before showing message
+            setTimeout(() => { msg.style.opacity = "1"; }, 3000);
             
+            // Wait much longer before resetting the page
             setTimeout(() => { 
                 msg.style.opacity = "0"; 
                 setTimeout(() => { 
                     input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; 
                     void input.offsetWidth; 
-                    input.style.transition = "all 1.5s cubic-bezier(0.25, 0.1, 0.25, 1)"; 
+                    input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; 
                     btnRow.style.opacity = "1"; promptText.style.opacity = "1"; 
                     btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; 
-                }, 2000); 
-            }, 6000); 
+                }, 3000); 
+            }, 8000); 
         }
 
-        // Button Click Effects
-        btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; });
-        btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
-        btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); 
-        btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
+        btnRelease.addEventListener('click', () => { triggerEther('fire'); }); 
+        btnManifest.addEventListener('click', () => { triggerEther('star'); });
     </script>
     """
     components.html(theme_it(ether_html), height=450)
@@ -773,4 +827,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v147.0 | Physics of the Ether</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v147.1 | Cinematic Ether Audio & Physics</div>", unsafe_allow_html=True)
