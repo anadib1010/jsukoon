@@ -77,7 +77,7 @@ LANG = {
         "t_sage_d": "Deep Sage", "t_oblue": "Ocean Blue", "t_ogreen": "Ocean Green",
         "t_amber": "Red Amber", "t_maroon": "Maroon", "t_tblue": "Twilight Blue",
         "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
-        "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?"
+        "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?", "btn_lab": "🛠️ UI DIRECTOR LAB"
     },
     "Hindi": {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
@@ -106,13 +106,12 @@ LANG = {
         "t_sage_d": "गहरा सेज (Deep Sage)", "t_oblue": "समुद्री नीला (Blue)", "t_ogreen": "समुद्री हरा (Green)",
         "t_amber": "लाल एम्बर (Amber)", "t_maroon": "मैरून (Maroon)", "t_tblue": "गहरा नीला (Twilight)",
         "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
-        "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?"
+        "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?", "btn_lab": "🛠️ यूआई टेस्टिंग रूम"
     }
 }
 t = LANG[st.session_state.ui_language]
 
 # --- 5. THE ULTIMATE 14-THEME ENGINE ---
-# LIGHT THEMES (6)
 if st.session_state.theme == "First Light":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FDFBF7", "#4A4A4A", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.05)", "#D4A373", "212,163,115"
 elif st.session_state.theme == "Sea Glass":
@@ -125,8 +124,6 @@ elif st.session_state.theme == "Champagne Gold":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FBF5ED", "#4A4036", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.06)", "#C5A059", "197,160,89"
 elif st.session_state.theme == "Pink Champagne":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#F8DECD", "#5A3A42", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.06)", "#C88A8E", "200,138,142"
-
-# DEEP THEMES (8)
 elif st.session_state.theme == "The Void":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#E0E0E0", "rgba(20,20,20,0.6)", "rgba(255,255,255,0.08)", "#888888", "136,136,136"
 elif st.session_state.theme == "Social Blue":
@@ -143,8 +140,6 @@ elif st.session_state.theme == "Maroon":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#2A0E13", "#EFD1D6", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#9B3D4F", "155,61,79"
 elif st.session_state.theme == "Twilight Blue":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#181830", "#D6D5F2", "rgba(255,255,255,0.04)", "rgba(255,255,255,0.08)", "#726FBA", "114,111,186"
-
-# VIP
 elif st.session_state.theme == "Liquid Gold":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#000000", "#F5E6BA", "rgba(212,175,55,0.08)", "rgba(212,175,55,0.25)", "#D4AF37", "212,175,55"
 else:
@@ -188,42 +183,20 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# --- 8. MAIN APP HEADER & NAV GRID ---
+# --- REUSABLE GLOBAL HTML COMPONENTS ---
 # ==========================================
-
-st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
-with col2:
-    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
-with col3:
-    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
-
-col4, col5, col6 = st.columns(3)
-with col4:
-    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
-with col5:
-    if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
-with col6:
-    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
-
-st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
-
-# --- REUSABLE HTML COMPONENTS ---
 base_breath_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:260px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
-    <canvas id="breathCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
+    <canvas id="[CANVAS_ID]" style="position:absolute; top:0; left:0; width:100%; height:100%;"></canvas>
 </div>
 <script>
-    const canvas = document.getElementById('breathCanvas'); const ctx = canvas.getContext('2d');
-    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    window.addEventListener('resize', resize); resize(); const start = Date.now();
-    function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width/2; const cy = canvas.height/2 - 10; let t = ((Date.now() - start) / 1000); [JS_INJECT] requestAnimationFrame(draw); }
-    draw();
+    (function() {
+        const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize(); const start = Date.now();
+        function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width/2; const cy = canvas.height/2 - 10; let t = ((Date.now() - start) / 1000); [JS_INJECT] requestAnimationFrame(draw); }
+        draw();
+    })();
 </script>
 """
 
@@ -275,52 +248,119 @@ release_game_html = """
     <div id="scoreDisplay" style="position:absolute; top:20px; width:100%; text-align:center; color:[C_ACCENT]; font-family:sans-serif; font-size:11px; font-weight:300; letter-spacing:4px; z-index:10; pointer-events:none;">
         THOUGHTS RELEASED: <span id="scoreVal">0</span>
     </div>
-    <canvas id="gameCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+    <canvas id="[CANVAS_ID]" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
 </div>
 <script>
-    const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-    let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
-    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
-    window.addEventListener('resize', resize); resize();
-    function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (!gameStarted) { ctx.fillStyle = "[C_ACCENT]"; ctx.globalAlpha = 0.5; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0; } 
-        else {
-            for (let i = bubbles.length - 1; i >= 0; i--) {
-                let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-                if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba([C_RGB], ${b.alpha})`; ctx.lineWidth = 1.5; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1); } 
-                else { b.y -= b.speed; ctx.fillStyle = `rgba([C_RGB], ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba([C_RGB], 0.3)"; if (b.y < -50) bubbles.splice(i, 1); }
-            }
-        } requestAnimationFrame(draw);
-    }
-    canvas.addEventListener('pointerdown', (e) => {
-        if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
-        const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
-        for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
-    }); draw();
+    (function() {
+        const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        let bubbles = []; let score = 0; let gameStarted = false; let bubbleInterval;
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize();
+        function createBubble() { bubbles.push({ x: Math.random() * (canvas.width - 40) + 20, y: canvas.height + 20, radius: Math.random() * 15 + 15, speed: Math.random() * 0.8 + 0.4, alpha: 0.6, popping: false }); }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!gameStarted) { ctx.fillStyle = "[C_ACCENT]"; ctx.globalAlpha = 0.5; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP SCREEN TO START", canvas.width / 2, canvas.height / 2); ctx.globalAlpha = 1.0; } 
+            else {
+                for (let i = bubbles.length - 1; i >= 0; i--) {
+                    let b = bubbles[i]; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                    if (b.popping) { b.radius += 2; b.alpha -= 0.05; ctx.strokeStyle = `rgba([C_RGB], ${b.alpha})`; ctx.lineWidth = 1.5; ctx.stroke(); if (b.alpha <= 0) bubbles.splice(i, 1); } 
+                    else { b.y -= b.speed; ctx.fillStyle = `rgba([C_RGB], ${b.alpha})`; ctx.fill(); ctx.shadowBlur = 15; ctx.shadowColor = "rgba([C_RGB], 0.3)"; if (b.y < -50) bubbles.splice(i, 1); }
+                }
+            } requestAnimationFrame(draw);
+        }
+        canvas.addEventListener('pointerdown', (e) => {
+            if (!gameStarted) { gameStarted = true; bubbleInterval = setInterval(createBubble, 1200); return; }
+            const rect = canvas.getBoundingClientRect(); const clickX = e.clientX - rect.left; const clickY = e.clientY - rect.top;
+            for (let i = 0; i < bubbles.length; i++) { let b = bubbles[i]; if (!b.popping && Math.hypot(clickX - b.x, clickY - b.y) < b.radius + 15) { b.popping = true; score++; document.getElementById('scoreVal').innerText = score; break; } }
+        }); draw();
+    })();
 </script>
 """
 
-mala_html = """
-<div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer;" id="malaContainer">
-    <div id="malaCount" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:14px; font-weight:300; letter-spacing:4px; margin-bottom: 30px;">0 / 108</div>
-    <div id="bead" style="width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, [C_ACCENT], rgba([C_RGB], 0.1)); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);"></div>
-    <div style="margin-top: 40px; font-size:10px; color:[C_TEXT]; opacity:0.4; letter-spacing:3px;">TAP TO PULL BEAD</div>
+bloom_html = """
+<div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
+    <canvas id="[CANVAS_ID]" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+    <div id="bloomMessage" style="position:absolute; z-index:10; color:[C_TEXT]; font-family:'Inter', sans-serif; font-weight:300; font-size:13px; letter-spacing:4px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:[C_GLASS]; backdrop-filter: blur(10px); padding:15px 25px; border-radius:30px; border:1px solid [C_BORDER];"></div>
 </div>
 <script>
-    let count = 0; const container = document.getElementById('malaContainer'); const bead = document.getElementById('bead'); const countDisplay = document.getElementById('malaCount');
-    container.addEventListener('pointerdown', () => {
-        count++; if(count > 108) count = 1;
-        countDisplay.innerText = count + " / 108";
-        bead.style.transform = "translateY(30px) scale(0.9)";
-        if (navigator.vibrate) navigator.vibrate([40]);
-        setTimeout(() => { bead.style.transform = "translateY(0px) scale(1)"; }, 150);
-    });
+    (function() {
+        const c = document.getElementById('[CANVAS_ID]'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
+        function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
+        function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
+        c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
+    })();
 </script>
 """
 
+ether_html = """
+<div id="ether-container" style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
+    <canvas id="[CANVAS_ID]" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+    <p id="promptText" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:11px; font-weight:400; letter-spacing:4px; margin-bottom:25px; transition: opacity 2s; z-index: 10;">
+        WRITE YOUR THOUGHTS INTO THE ETHER
+    </p>
+    <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent !important; color:[C_TEXT] !important; border:1px solid [C_BORDER] !important; border-radius:12px; padding:15px; text-align:center; font-size:16px; font-weight: 300; resize:none; outline:none; font-family:'Inter', sans-serif; transition: all 4s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
+    
+    <div style="height: 25px; z-index: 10;"></div>
+    
+    <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 2s;">
+        <button id="releaseBtn" style="background: rgba([C_RGB], 0.1); backdrop-filter: blur(5px); color: [C_TEXT]; border: 1px solid [C_BORDER]; border-radius: 20px; padding: 12px; font-family:'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
+            BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.5;">(Negative Thoughts)</span>
+        </button>
+        <button id="manifestBtn" style="background: rgba([C_RGB], 0.2); backdrop-filter: blur(5px); color: [C_TEXT]; border: 1px solid [C_BORDER]; border-radius: 20px; padding: 12px; font-family:'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
+            MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.5;">(Positive Thoughts)</span>
+        </button>
+    </div>
+
+    <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: [C_TEXT]; font-family: 'Inter', sans-serif; font-weight: 300; font-size: 13px; letter-spacing: 4px; opacity: 0; transition: opacity 3s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;"></div>
+</div>
+
+<script>
+    (function() {
+        const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        let particles = []; let animating = false; let currentMode = 'star'; let audioCtx = null;
+
+        function initAudio() { if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; audioCtx = new AudioContext(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } }
+        function playBurnSound() { initAudio(); const bufferSize = audioCtx.sampleRate * 4; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(); }
+        function playManifestSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 4); }
+
+        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        function createParticles(mode) {
+            const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left; const cx = left + rect.width / 2; const cy = top + rect.height / 2;
+            for (let i = 0; i < 150; i++) {
+                if (mode === 'fire') { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 1, ax: 0, ay: 0.15, friction: 0.94, radius: Math.random() * 4 + 1.5, alpha: 1, decay: Math.random() * 0.005 + 0.002, color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` }); } 
+                else { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -4) - 0.5, ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.004 + 0.001, color: `rgba([C_RGB], ` }); }
+            } if (!animating) { animating = true; animateParticles(); }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
+            for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.vx += p.ax; p.vy += p.ay; p.vx *= p.friction; p.vy *= p.friction; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "rgba([C_RGB], 1)"; ctx.fill(); } }
+            if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        }
+
+        function triggerEther(mode) {
+            if(input.value.trim() === '') return; currentMode = mode;
+            if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
+            if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
+            
+            if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
+            else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
+
+            createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
+            setTimeout(() => { msg.style.opacity = "1"; }, 3000);
+            setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 3000); }, 8000); 
+        }
+
+        btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; }); btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
+        btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
+    })();
+</script>
+"""
+
+# ==========================================
 # --- PAGES ---
+# ==========================================
 
 if st.session_state.current_page == "Journal":
     
@@ -422,7 +462,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "heavy": cached_reply = "I hear the heaviness you are carrying. This weight is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it without judgment. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
-                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 select के लिए सांस छोड़ें।"
                         elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
@@ -574,9 +614,9 @@ elif st.session_state.current_page == "AutoPilot":
     
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
+    components.html(theme_it(base_breath_html.replace("[CANVAS_ID]", "breath_sos").replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(release_game_html), height=370)
+    components.html(theme_it(release_game_html.replace("[CANVAS_ID]", "game_sos")), height=370)
 
 elif st.session_state.current_page == "AgentSanctuary":
     st.markdown(f"<div class='section-header' style='color: {c_accent};'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
@@ -586,77 +626,13 @@ elif st.session_state.current_page == "AgentSanctuary":
     
     selected_js = breath_js_dict.get(st.session_state.agent_breath, breath_js_dict["Box"])
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(base_breath_html.replace("[JS_INJECT]", selected_js)), height=270)
+    components.html(theme_it(base_breath_html.replace("[CANVAS_ID]", "breath_agent").replace("[JS_INJECT]", selected_js)), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
-    components.html(theme_it(release_game_html), height=370)
+    components.html(theme_it(release_game_html.replace("[CANVAS_ID]", "game_agent")), height=370)
 
 elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
-    
-    ether_html = """
-    <div id="ether-container" style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
-        <canvas id="starCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
-        <p id="promptText" style="color:[C_ACCENT]; font-family:'Inter', sans-serif; font-size:11px; font-weight:400; letter-spacing:4px; margin-bottom:25px; transition: opacity 2s; z-index: 10;">
-            WRITE YOUR THOUGHTS INTO THE ETHER
-        </p>
-        <textarea id="etherInput" placeholder="..." style="width:100%; height:120px; background: transparent !important; color:[C_TEXT] !important; border:1px solid [C_BORDER] !important; border-radius:12px; padding:15px; text-align:center; font-size:16px; font-weight: 300; resize:none; outline:none; font-family:'Inter', sans-serif; transition: all 4s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 10; position: relative;"></textarea>
-        
-        <div style="height: 25px; z-index: 10;"></div>
-        
-        <div id="buttonRow" style="display: flex; gap: 10px; z-index: 10; width: 100%; transition: opacity 2s;">
-            <button id="releaseBtn" style="background: rgba([C_RGB], 0.1); backdrop-filter: blur(5px); color: [C_TEXT]; border: 1px solid [C_BORDER]; border-radius: 20px; padding: 12px; font-family:'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
-                BURN & RELEASE<br><span style="font-size: 8px; opacity: 0.5;">(Negative Thoughts)</span>
-            </button>
-            <button id="manifestBtn" style="background: rgba([C_RGB], 0.2); backdrop-filter: blur(5px); color: [C_TEXT]; border: 1px solid [C_BORDER]; border-radius: 20px; padding: 12px; font-family:'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; flex: 1; transition: all 0.3s;">
-                MANIFEST & SEND<br><span style="font-size: 8px; opacity: 0.5;">(Positive Thoughts)</span>
-            </button>
-        </div>
-
-        <div id="messageText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: [C_TEXT]; font-family: 'Inter', sans-serif; font-weight: 300; font-size: 13px; letter-spacing: 4px; opacity: 0; transition: opacity 3s ease-in-out; pointer-events: none; width: 90%; line-height: 1.8; z-index: 15;"></div>
-    </div>
-
-    <script>
-        const btnRelease = document.getElementById('releaseBtn'); const btnManifest = document.getElementById('manifestBtn'); const btnRow = document.getElementById('buttonRow'); const input = document.getElementById('etherInput'); const promptText = document.getElementById('promptText'); const msg = document.getElementById('messageText'); const container = document.getElementById('ether-container'); const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
-        let particles = []; let animating = false; let currentMode = 'star'; let audioCtx = null;
-
-        function initAudio() { if (!audioCtx) { const AudioContext = window.AudioContext || window.webkitAudioContext; audioCtx = new AudioContext(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } }
-        function playBurnSound() { initAudio(); const bufferSize = audioCtx.sampleRate * 4; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; } const noise = audioCtx.createBufferSource(); noise.buffer = buffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.5); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(); }
-        function playManifestSound() { initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 3); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 4); osc.connect(gain).connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 4); }
-
-        function resizeCanvas() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
-        function createParticles(mode) {
-            const rect = input.getBoundingClientRect(); const containerRect = container.getBoundingClientRect(); const top = rect.top - containerRect.top; const left = rect.left - containerRect.left; const cx = left + rect.width / 2; const cy = top + rect.height / 2;
-            for (let i = 0; i < 150; i++) {
-                if (mode === 'fire') { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 1, ax: 0, ay: 0.15, friction: 0.94, radius: Math.random() * 4 + 1.5, alpha: 1, decay: Math.random() * 0.005 + 0.002, color: `rgba(${255}, ${Math.floor(Math.random() * 100 + 50)}, 0, ` }); } 
-                else { particles.push({ x: cx + (Math.random() - 0.5) * rect.width * 0.8, y: cy + (Math.random() - 0.5) * rect.height * 0.8, vx: (Math.random() - 0.5) * 3, vy: (Math.random() * -4) - 0.5, ax: (Math.random() - 0.5) * 0.05, ay: -0.05, friction: 0.98, radius: Math.random() * 3 + 1, alpha: 1, decay: Math.random() * 0.004 + 0.001, color: `rgba([C_RGB], ` }); }
-            } if (!animating) { animating = true; animateParticles(); }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); let active = false;
-            for (let i = 0; i < particles.length; i++) { let p = particles[i]; if (p.alpha > 0) { active = true; p.vx += p.ax; p.vy += p.ay; p.vx *= p.friction; p.vy *= p.friction; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(0, p.radius * p.alpha), 0, Math.PI * 2); ctx.fillStyle = p.color + `${Math.max(0, p.alpha)})`; ctx.shadowBlur = currentMode === 'fire' ? 15 : 25; ctx.shadowColor = currentMode === 'fire' ? "#ff4500" : "rgba([C_RGB], 1)"; ctx.fill(); } }
-            if (active) { requestAnimationFrame(animateParticles); } else { animating = false; particles = []; ctx.clearRect(0, 0, canvas.width, canvas.height); }
-        }
-
-        function triggerEther(mode) {
-            if(input.value.trim() === '') return; currentMode = mode;
-            if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
-            if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
-            
-            if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
-            else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
-
-            createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
-            setTimeout(() => { msg.style.opacity = "1"; }, 3000);
-            setTimeout(() => { msg.style.opacity = "0"; setTimeout(() => { input.value = ''; input.style.transition = "none"; input.style.filter = "none"; input.style.transform = "none"; input.style.opacity = "1"; void input.offsetWidth; input.style.transition = "all 4s cubic-bezier(0.25, 0.1, 0.25, 1)"; btnRow.style.opacity = "1"; promptText.style.opacity = "1"; btnRow.style.pointerEvents = "auto"; input.style.pointerEvents = "auto"; }, 3000); }, 8000); 
-        }
-
-        btnRelease.addEventListener('pointerdown', () => { btnRelease.style.transform = "scale(0.95)"; }); btnManifest.addEventListener('pointerdown', () => { btnManifest.style.transform = "scale(0.95)"; });
-        btnRelease.addEventListener('click', () => { btnRelease.style.transform = "scale(1)"; triggerEther('fire'); }); btnManifest.addEventListener('click', () => { btnManifest.style.transform = "scale(1)"; triggerEther('star'); });
-    </script>
-    """
-    components.html(theme_it(ether_html), height=450)
+    components.html(theme_it(ether_html.replace("[CANVAS_ID]", "ether_main")), height=450)
 
 elif st.session_state.current_page == "Focus":
     
@@ -694,7 +670,7 @@ elif st.session_state.current_page == "Focus":
             if st.button(t["v_lotus"], use_container_width=True): st.session_state.active_breath = "Sleep_Lotus"; st.rerun()
 
     selected_js = breath_js_dict.get(st.session_state.active_breath, breath_js_dict["Anchor"])
-    final_breath_html = base_breath_html.replace("[JS_INJECT]", selected_js)
+    final_breath_html = base_breath_html.replace("[CANVAS_ID]", "breath_focus").replace("[JS_INJECT]", selected_js)
     components.html(theme_it(final_breath_html), height=270)
 
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
@@ -716,23 +692,11 @@ elif st.session_state.current_page == "Focus":
 
     if st.session_state.active_game == "Release":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['release_desc']}</p>", unsafe_allow_html=True)
-        components.html(theme_it(release_game_html), height=370)
+        components.html(theme_it(release_game_html.replace("[CANVAS_ID]", "game_focus_release")), height=370)
 
     elif st.session_state.active_game == "Bloom":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>{t['bloom_desc']}</p>", unsafe_allow_html=True)
-        bloom_html = """
-        <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; display:flex; justify-content:center; align-items:center;">
-            <canvas id="bloomCanvas" style="width:100%; height:100%; position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
-            <div id="bloomMessage" style="position:absolute; z-index:10; color:[C_TEXT]; font-family:'Inter', sans-serif; font-weight:300; font-size:13px; letter-spacing:4px; text-align:center; opacity:0; transition: opacity 1.5s ease-in-out; pointer-events:none; background:[C_GLASS]; backdrop-filter: blur(10px); padding:15px 25px; border-radius:30px; border:1px solid [C_BORDER];"></div>
-        </div>
-        <script>
-            const c = document.getElementById('bloomCanvas'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
-            function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
-            function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
-            c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
-        </script>
-        """
-        components.html(theme_it(bloom_html), height=370)
+        components.html(theme_it(bloom_html.replace("[CANVAS_ID]", "game_focus_bloom")), height=370)
     
     elif st.session_state.active_game == "Mala":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
@@ -789,6 +753,62 @@ elif st.session_state.current_page == "Info":
     ]
     for q, a in faqs:
         st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
+
+# 🚨 THE SECRET DIRECTOR'S LAB 🚨
+elif st.session_state.current_page == "Lab":
+    st.markdown("<div class='main-title'>DIRECTOR'S LAB</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='text-align:center; font-size:12px; font-weight:300; opacity:0.6; color:{app_text}; margin-bottom:30px;'>Tap a theme below and watch the entire UI engine react instantly.</p>", unsafe_allow_html=True)
+    
+    # 1. Theme Grid
+    st.markdown(f"<div class='theme-group-header'>{t['th_light']}</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='padding: 15px 20px 5px 20px;'>", unsafe_allow_html=True)
+    l_col1, l_col2 = st.columns(2)
+    with l_col1:
+        if st.button(t["t_dawn"], use_container_width=True): st.session_state.theme = "First Light"; st.rerun()
+        if st.button(t["t_terra"], use_container_width=True): st.session_state.theme = "Terracotta Earth"; st.rerun()
+        if st.button(t["t_champagne"], use_container_width=True): st.session_state.theme = "Champagne Gold"; st.rerun()
+    with l_col2:
+        if st.button(t["t_sea"], use_container_width=True): st.session_state.theme = "Sea Glass"; st.rerun()
+        if st.button(t["t_sage_l"], use_container_width=True): st.session_state.theme = "Sage Sanctuary"; st.rerun()
+        if st.button(t["t_pink_champ"], use_container_width=True): st.session_state.theme = "Pink Champagne"; st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown(f"<div class='theme-group-header'>{t['th_dark']}</div>", unsafe_allow_html=True)
+    st.markdown("<div class='market-slab' style='padding: 15px 20px 5px 20px;'>", unsafe_allow_html=True)
+    d_col1, d_col2 = st.columns(2)
+    with d_col1:
+        if st.button(t["t_void"], use_container_width=True): st.session_state.theme = "The Void"; st.rerun()
+        if st.button(t["t_sage_d"], use_container_width=True): st.session_state.theme = "Deep Sage"; st.rerun()
+        if st.button(t["t_ogreen"], use_container_width=True): st.session_state.theme = "Ocean Green"; st.rerun()
+        if st.button(t["t_maroon"], use_container_width=True): st.session_state.theme = "Maroon"; st.rerun()
+    with d_col2:
+        if st.button(t["t_abyss"], use_container_width=True): st.session_state.theme = "Social Blue"; st.rerun()
+        if st.button(t["t_oblue"], use_container_width=True): st.session_state.theme = "Ocean Blue"; st.rerun()
+        if st.button(t["t_amber"], use_container_width=True): st.session_state.theme = "Red Amber"; st.rerun()
+        if st.button(t["t_tblue"], use_container_width=True): st.session_state.theme = "Twilight Blue"; st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # 2. Visuals
+    st.markdown("<div class='section-header'>1. BREATHING ENGINE</div>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown(f"<div style='text-align:center; font-size:10px; opacity:0.5; margin-bottom:10px; color:{app_text};'>THE BOX</div>", unsafe_allow_html=True)
+        components.html(theme_it(base_breath_html.replace("[CANVAS_ID]", "lab_box").replace("[JS_INJECT]", breath_js_dict["Box"])), height=250)
+    with c2:
+        st.markdown(f"<div style='text-align:center; font-size:10px; opacity:0.5; margin-bottom:10px; color:{app_text};'>THE LOTUS</div>", unsafe_allow_html=True)
+        components.html(theme_it(base_breath_html.replace("[CANVAS_ID]", "lab_lotus").replace("[JS_INJECT]", breath_js_dict["Sleep_Lotus"])), height=250)
+        
+    st.markdown("<div class='section-header'>2. GROUNDING GAMES</div>", unsafe_allow_html=True)
+    c3, c4 = st.columns(2)
+    with c3:
+        st.markdown(f"<div style='text-align:center; font-size:10px; opacity:0.5; margin-bottom:10px; color:{app_text};'>THE RELEASE</div>", unsafe_allow_html=True)
+        components.html(theme_it(release_game_html.replace("[CANVAS_ID]", "lab_release")), height=350)
+    with c4:
+        st.markdown(f"<div style='text-align:center; font-size:10px; opacity:0.5; margin-bottom:10px; color:{app_text};'>THE BLOOM</div>", unsafe_allow_html=True)
+        components.html(theme_it(bloom_html.replace("[CANVAS_ID]", "lab_bloom")), height=350)
+        
+    st.markdown("<div class='section-header'>3. THE ETHER</div>", unsafe_allow_html=True)
+    components.html(theme_it(ether_html.replace("[CANVAS_ID]", "lab_ether")), height=450)
 
 elif st.session_state.current_page == "Settings":
     st.markdown(f"<div class='section-header'>{t['h_lang']}</div>", unsafe_allow_html=True)
@@ -865,5 +885,11 @@ elif st.session_state.current_page == "Settings":
             st.error("Code not recognized in the Ether.")
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # 🚨 THE SECRET ENTRANCE TO THE DIRECTOR'S LAB 🚨
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+    if st.button(t["btn_lab"], use_container_width=True):
+        st.session_state.current_page = "Lab"
+        st.rerun()
+
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v153.1 | Pink Champagne Edition</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v154.0 | Director's Dashboard</div>", unsafe_allow_html=True)
