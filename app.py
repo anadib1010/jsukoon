@@ -609,6 +609,63 @@ ether_html = """
 </script>
 """
 
+waterfall_html = """
+<div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:160px; overflow:hidden;">
+    <canvas id="[CANVAS_ID]" style="width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none;"></canvas>
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:[C_TEXT]; opacity:0.3; font-family:'Inter', sans-serif; font-weight:300; font-size:10px; letter-spacing:6px; pointer-events:none; text-align:center; width: 100%;">
+        LET IT WASH AWAY
+    </div>
+</div>
+<script>
+    (function() {
+        const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d');
+        let drops = [];
+        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        for(let i=0; i<90; i++) {
+            drops.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                length: Math.random() * 40 + 15,
+                speed: Math.random() * 2.5 + 1.5,
+                alpha: Math.random() * 0.3 + 0.05,
+                width: Math.random() * 1.5 + 0.5
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for(let i=0; i<drops.length; i++) {
+                let d = drops[i];
+                let grad = ctx.createLinearGradient(d.x, d.y, d.x, d.y + d.length);
+                grad.addColorStop(0, "rgba(255,255,255,0)"); 
+                grad.addColorStop(1, `rgba([C_RGB], ${d.alpha})`); 
+                
+                ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y + d.length);
+                ctx.strokeStyle = grad; ctx.lineWidth = d.width; ctx.lineCap = "round"; ctx.stroke();
+
+                d.y += d.speed;
+                if(d.y > canvas.height) {
+                    d.y = -d.length;
+                    d.x = Math.random() * canvas.width;
+                }
+            }
+            
+            let mist = ctx.createLinearGradient(0, canvas.height - 50, 0, canvas.height);
+            mist.addColorStop(0, "rgba([C_RGB], 0)");
+            mist.addColorStop(1, "rgba([C_RGB], 0.2)");
+            ctx.fillStyle = mist;
+            ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+</script>
+"""
+
 # ==========================================
 # --- 8. MAIN APP HEADER & NAV GRID ---
 # ==========================================
@@ -913,10 +970,17 @@ elif st.session_state.current_page == "AutoPilot":
     
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    
+    # 1. The Breathing Box
     components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_sos").replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     
+    # 2. The Thought Release Game
     components.html(theme_it(release_game_html.replace("gameCanvas", "game_sos")), height=370)
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+
+    # 3. The New Waterfall Cascade
+    components.html(theme_it(waterfall_html.replace("[CANVAS_ID]", "waterfall_sos")), height=160)
 
 elif st.session_state.current_page == "AgentSanctuary":
     st.markdown(f"<div class='section-header' style='color: {c_accent};'>🤖 AI AGENT SANCTUARY 🤖</div>", unsafe_allow_html=True)
@@ -1138,4 +1202,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.4 | The Tide Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.5 | The Waterfall Update</div>", unsafe_allow_html=True)
