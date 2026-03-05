@@ -226,6 +226,50 @@ st.markdown(f"""
         100% {{ opacity: 0.8; transform: translateY(3px); }}
     }}
 
+    /* The Global Ambient Ocean */
+    .ocean {{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 12vh;
+        z-index: -1;
+        pointer-events: none;
+        overflow: hidden;
+    }}
+    .wave {{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200vw;
+        height: 100%;
+        background-color: {c_accent};
+        opacity: 0.08;
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 88.7'%3E%3Cpath d='M800 56.9c-155.5 0-204.9-50-405.5-49.9-200 0-250 49.9-394.5 49.9v31.8h800v-.2-31.6z'/%3E%3C/svg%3E");
+        -webkit-mask-size: 50vw 100%;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 88.7'%3E%3Cpath d='M800 56.9c-155.5 0-204.9-50-405.5-49.9-200 0-250 49.9-394.5 49.9v31.8h800v-.2-31.6z'/%3E%3C/svg%3E");
+        mask-size: 50vw 100%;
+        animation: waveScroll 15s linear infinite;
+    }}
+    .wave:nth-child(2) {{
+        bottom: -5px;
+        opacity: 0.12;
+        animation: waveScroll 22s linear reverse infinite;
+        -webkit-mask-size: 60vw 100%;
+        mask-size: 60vw 100%;
+    }}
+    .wave:nth-child(3) {{
+        bottom: -10px;
+        opacity: 0.15;
+        animation: waveScroll 12s linear infinite;
+        -webkit-mask-size: 70vw 100%;
+        mask-size: 70vw 100%;
+    }}
+    @keyframes waveScroll {{
+        0% {{ transform: translateX(0); }}
+        100% {{ transform: translateX(-50vw); }}
+    }}
+
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 3.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     div[data-testid="stHorizontalBlock"] {{ flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }}
     div[data-testid="column"], div[data-testid="stColumn"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; display: flex !important; justify-content: center !important; margin-bottom: 5px !important; }}
@@ -254,6 +298,14 @@ st.markdown(f"""
 st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
 if st.session_state.theme == "The Void":
     st.markdown("<div class='void-stars'></div>", unsafe_allow_html=True)
+
+st.markdown("""
+    <div class='ocean'>
+        <div class='wave'></div>
+        <div class='wave'></div>
+        <div class='wave'></div>
+    </div>
+""", unsafe_allow_html=True)
 
 # ==========================================
 # --- GLOBAL HTML COMPONENTS ---
@@ -287,10 +339,29 @@ breath_js_dict = {
         ctx.stroke(); ctx.fillStyle = "[C_TEXT]"; ctx.font = "300 12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "4px"; ctx.fillText(text, cx, cy + 90);
     """,
     "Sleep_Wave": """
-        let cycle = t % 19; let text = ""; let width = canvas.width * 0.7; let startX = cx - width/2; let amp = 50; let pathX = 0; let pathY = 0;
-        if(cycle < 4) { text = "INHALE (4)"; pathX = startX + (width * 0.2 * (cycle/4)); pathY = cy + amp - (amp * 2 * (cycle/4)); } else if(cycle < 11) { text = "HOLD (7)"; pathX = startX + (width * 0.2) + (width * 0.4 * ((cycle-4)/7)); pathY = cy - amp; } else { text = "EXHALE (8)"; pathX = startX + (width * 0.6) + (width * 0.4 * ((cycle-11)/8)); pathY = cy - amp + (amp * 2 * ((cycle-11)/8)); }
-        ctx.strokeStyle = "rgba([C_RGB], 0.15)"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(startX, cy+amp); ctx.lineTo(startX+width*0.2, cy-amp); ctx.lineTo(startX+width*0.6, cy-amp); ctx.lineTo(startX+width, cy+amp); ctx.stroke();
-        ctx.beginPath(); ctx.arc(pathX, pathY, 10, 0, Math.PI*2); ctx.fillStyle = "rgba([C_RGB], 0.9)"; ctx.fill(); ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.6)"; ctx.fillStyle = "[C_TEXT]"; ctx.shadowBlur = 0; ctx.font = "300 12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "4px"; ctx.fillText(text, cx, cy + 90);
+        let cycle = t % 19; let text = ""; let spread = 0;
+        if(cycle < 4) { text = "INHALE (4)"; spread = cycle/4; } 
+        else if(cycle < 11) { text = "HOLD (7)"; spread = 1; } 
+        else { text = "EXHALE (8)"; spread = 1 - ((cycle-11)/8); }
+        
+        let targetY = canvas.height * (0.85 - (spread * 0.5)); // The tide rises and falls
+        
+        for(let w = 0; w < 3; w++) {
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            let offset = (t * 1.5) + (w * 2);
+            let amp = 10 + (w * 5) + (spread * 5);
+            
+            for(let x = 0; x <= canvas.width + 20; x += 20) {
+                let y = targetY + Math.sin((x * 0.015) + offset) * amp + (w * 15);
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.fillStyle = `rgba([C_RGB], ${0.2 - (w * 0.05)})`;
+            ctx.fill();
+        }
+        
+        ctx.fillStyle = "[C_TEXT]"; ctx.font = "300 12px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "4px"; ctx.fillText(text, cx, cy + 90);
     """,
     "Sleep_Moon": """
         let cycle = t % 19; let text = ""; let opacity = 0.1; let yOffset = 0;
@@ -669,7 +740,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
                         if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
-                        elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें full नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
         if cached_reply:
@@ -864,7 +935,7 @@ elif st.session_state.current_page == "Ether":
     ether_ui = ether_html.replace("starCanvas", "ether_main")
     components.html(theme_it(ether_ui), height=450)
 
-# 🚨 THE FOCUS TAB WITH "THE CONVERGENCE" 🚨
+# 🚨 THE FOCUS TAB WITH "THE CONVERGENCE" & "THE TIDE" 🚨
 elif st.session_state.current_page == "Focus":
     
     st.markdown(f"<div class='section-header'>{t['h_breath']}</div>", unsafe_allow_html=True)
@@ -907,7 +978,6 @@ elif st.session_state.current_page == "Focus":
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
     st.markdown(f"<div class='section-header'>{t['h_games']}</div>", unsafe_allow_html=True)
     
-    # Updated Grid for 3 Games (or 4 if VIP)
     has_mala = st.session_state.unlocked_mala
     if has_mala:
         g_col1, g_col2, g_col3, g_col4 = st.columns(4)
@@ -1068,4 +1138,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.3 | The Atmosphere Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.4 | The Tide Update</div>", unsafe_allow_html=True)
