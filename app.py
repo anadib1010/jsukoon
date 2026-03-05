@@ -1,6 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import os
 import google.generativeai as genai
 import urllib.parse
@@ -40,12 +40,12 @@ valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue",
                 "Champagne Gold", "Pink Champagne", "Liquid Gold"]
 
 # ==========================================
-# 🚨 DYNAMIC CIRCADIAN DEFAULT INJECTION 🚨
+# 🚨 DYNAMIC CIRCADIAN DEFAULT (IST FORCED) 🚨
 # ==========================================
 if "theme" not in st.session_state or st.session_state.theme not in valid_themes: 
-    current_hour = datetime.now().hour
-    is_daytime = 6 <= current_hour < 18  # 6 AM to 6 PM
-    # Pink Champagne for Day (Warmth), The Void for Night (Melatonin Protection)
+    ist = timezone(timedelta(hours=5, minutes=30))
+    current_hour = datetime.now(ist).hour
+    is_daytime = 6 <= current_hour < 18  # 6 AM to 6 PM IST
     st.session_state.theme = "Pink Champagne" if is_daytime else "The Void"
     
 if "ui_language" not in st.session_state: st.session_state.ui_language = "English"
@@ -76,7 +76,7 @@ LANG = {
         "release_desc": "Tap the rising thoughts to release them.", "bloom_desc": "Tap the center slowly to grow your light.",
         "convergence_desc": "Your mind is the swarm. Hold to overpower the resistance.",
         "h_market": "RITUAL BUNDLES & TOOLS",
-        "order_wa": "ORDER VIA WA", "free_shipping": "+ FREE SHIPPING",
+        "order_wa": "JOIN WAITLIST VIA WA", "free_shipping": "+ FREE SHIPPING",
         "h_theme": "APP THEME", "h_lang": "UI LANGUAGE",
         "th_light": "LIGHT SANCTUARY", "th_dark": "DEEP SANCTUARY",
         "t_void": "The Void", "t_sage_l": "Sage Sanctuary", "t_terra": "Terracotta",
@@ -106,7 +106,7 @@ LANG = {
         "release_desc": "उठते हुए विचारों को छोड़ने के लिए उन्हें छुएं।", "bloom_desc": "अपने प्रकाश को बढ़ाने के लिए धीरे से केंद्र को छुएं।",
         "convergence_desc": "आपका मन यह झुंड है। इसे शांत करने के लिए स्क्रीन को दबाकर रखें।",
         "h_market": "रीचुअल बंडल और टूल्स",
-        "order_wa": "व्हाट्सएप से ऑर्डर करें", "free_shipping": "+ मुफ्त शिपिंग",
+        "order_wa": "वेटलिस्ट से जुड़ें (WA)", "free_shipping": "+ मुफ्त शिपिंग",
         "h_theme": "ऐप थीम", "h_lang": "ऐप की भाषा",
         "th_light": "हल्का अभयारण्य (Light)", "th_dark": "गहरा अभयारण्य (Deep)",
         "t_void": "शून्य (The Void)", "t_sage_l": "सेज वन (Sage)", "t_terra": "मिट्टी (Terracotta)",
@@ -164,11 +164,68 @@ if api_key:
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel("gemini-2.5-flash")
 
-# --- 7. MINIMALIST COMMAND CENTER CSS ---
+# ==========================================
+# 🚨 7. MINIMALIST COMMAND CENTER CSS & ATMOSPHERE 🚨
+# ==========================================
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
-    .stApp {{ background-color: {app_bg} !important; color: {app_text} !important; font-family: 'Inter', sans-serif; transition: background-color 0.8s ease; }}
+    
+    /* The Waking Up Reveal */
+    .stApp {{ 
+        background-color: {app_bg} !important; 
+        color: {app_text} !important; 
+        font-family: 'Inter', sans-serif; 
+        transition: background-color 1s ease; 
+        animation: smoothReveal 2.5s ease-in-out forwards;
+    }}
+    
+    @keyframes smoothReveal {{
+        0% {{ opacity: 0; filter: blur(8px); }}
+        100% {{ opacity: 1; filter: blur(0px); }}
+    }}
+
+    /* The Breathing Aura */
+    .ambient-aura {{
+        position: fixed;
+        top: -20vh;
+        left: -20vw;
+        width: 140vw;
+        height: 140vh;
+        background: radial-gradient(circle at 30% 30%, rgba({c_rgb}, 0.25) 0%, rgba({c_rgb}, 0.05) 40%, transparent 70%);
+        z-index: -1;
+        pointer-events: none;
+        animation: breatheAura 14s infinite alternate ease-in-out;
+    }}
+    
+    @keyframes breatheAura {{
+        0% {{ transform: scale(1); opacity: 0.5; }}
+        100% {{ transform: scale(1.1); opacity: 1; }}
+    }}
+
+    /* The Void Stars (Only visible in Dark Themes) */
+    .void-stars {{
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: -2;
+        pointer-events: none;
+        background-image: 
+            radial-gradient(1.5px 1.5px at 15% 25%, rgba(255,255,255,0.8), transparent),
+            radial-gradient(2px 2px at 75% 15%, rgba(255,255,255,0.6), transparent),
+            radial-gradient(1px 1px at 45% 65%, rgba(255,255,255,0.9), transparent),
+            radial-gradient(1.5px 1.5px at 85% 75%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(2px 2px at 25% 85%, rgba(255,255,255,0.7), transparent),
+            radial-gradient(1px 1px at 55% 35%, rgba(255,255,255,0.8), transparent);
+        background-size: 250px 250px;
+        opacity: 0.5;
+        animation: starTwinkle 8s infinite alternate ease-in-out;
+    }}
+    
+    @keyframes starTwinkle {{
+        0% {{ opacity: 0.2; transform: translateY(0px); }}
+        100% {{ opacity: 0.8; transform: translateY(3px); }}
+    }}
+
     .block-container {{ max-width: 600px !important; margin: auto; padding-top: 3.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     div[data-testid="stHorizontalBlock"] {{ flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }}
     div[data-testid="column"], div[data-testid="stColumn"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; display: flex !important; justify-content: center !important; margin-bottom: 5px !important; }}
@@ -192,6 +249,11 @@ st.markdown(f"""
     .journal-entry {{ background: {glass_bg}; backdrop-filter: blur(12px); border-left: 2px solid {c_accent}; padding: 20px; margin-bottom: 10px; border-radius: 12px; color: {app_text}; text-align: left; font-size: 14px; line-height: 1.6; font-weight: 300; border-top: 1px solid {btn_border}; border-right: 1px solid {btn_border}; border-bottom: 1px solid {btn_border}; }}
     </style>
     """, unsafe_allow_html=True)
+
+# 🚨 INJECT ATMOSPHERE DIVS 🚨
+st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
+if st.session_state.theme == "The Void":
+    st.markdown("<div class='void-stars'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # --- GLOBAL HTML COMPONENTS ---
@@ -254,7 +316,6 @@ breath_js_dict = {
     """
 }
 
-# 🚨 THE NEW "OBSTINATE MIND" CONVERGENCE ENGINE 🚨
 convergence_html = """
 <div style="background:[C_GLASS]; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid [C_BORDER]; border-radius: 16px; position:relative; width:100%; height:350px; overflow:hidden; touch-action: none;">
     <div id="convMsg" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:[C_ACCENT]; font-family:sans-serif; font-size:10px; font-weight:300; letter-spacing:4px; z-index:10; pointer-events:none; transition: opacity 0.5s; text-align:center; line-height:1.5;">PRESS & HOLD TO<br>GATHER THE MIND</div>
@@ -264,12 +325,11 @@ convergence_html = """
     (function() {
         const canvas = document.getElementById('[CANVAS_ID]'); const ctx = canvas.getContext('2d'); const msg = document.getElementById('convMsg');
         let isPressing = false; let particles = []; let vibeInterval; 
-        let focusPower = 0; // The algorithm for sustained focus
+        let focusPower = 0; 
         
         function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
         window.addEventListener('resize', resize); resize();
         
-        // Create the chaotic monkey mind swarm
         for(let i=0; i<120; i++) {
             particles.push({
                 x: Math.random() * canvas.width, y: Math.random() * canvas.height,
@@ -282,45 +342,29 @@ convergence_html = """
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const cx = canvas.width / 2; const cy = canvas.height / 2;
             
-            if (isPressing) {
-                // It takes roughly 4 to 5 seconds to reach max focus
-                focusPower += 0.004; 
-                if (focusPower > 1) focusPower = 1;
-            } else {
-                focusPower = 0;
-            }
+            if (isPressing) { focusPower += 0.004; if (focusPower > 1) focusPower = 1; } 
+            else { focusPower = 0; }
 
             for (let p of particles) {
                 if (isPressing) {
                     let dx = cx - p.x; let dy = cy - p.y;
                     let dist = Math.hypot(dx, dy);
-                    
-                    // THE RESISTANCE ALGORITHM
-                    // The lower the focusPower, the more the dots fight back.
                     let resistX = (Math.random() - 0.5) * (1 - focusPower) * 12;
                     let resistY = (Math.random() - 0.5) * (1 - focusPower) * 12;
 
                     if (dist > 8) {
-                        // Gravity gets stronger over time
                         let pull = 0.002 + (0.05 * focusPower);
-                        // Friction gets heavier over time to force the orbit to collapse
                         let friction = 0.99 - (0.15 * focusPower);
-                        
-                        p.vx += (dx * pull) + resistX; 
-                        p.vy += (dy * pull) + resistY;
+                        p.vx += (dx * pull) + resistX; p.vy += (dy * pull) + resistY;
                         p.vx *= friction; p.vy *= friction;
                     } else {
-                        // Once they reach the center, they vibrate slightly to show stored energy
-                        p.x = cx + (Math.random() - 0.5) * 8; 
-                        p.y = cy + (Math.random() - 0.5) * 8;
+                        p.x = cx + (Math.random() - 0.5) * 8; p.y = cy + (Math.random() - 0.5) * 8;
                         p.vx = 0; p.vy = 0;
                     }
                 } else {
-                    // CHAOS MODE
                     p.vx += (Math.random() - 0.5) * 1.5; p.vy += (Math.random() - 0.5) * 1.5;
                     let speed = Math.hypot(p.vx, p.vy);
                     if (speed > 4) { p.vx = (p.vx/speed)*4; p.vy = (p.vy/speed)*4; }
-                    
                     if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                     if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
                 }
@@ -330,7 +374,6 @@ convergence_html = """
                 ctx.fillStyle = `rgba([C_RGB], ${0.4 + (focusPower * 0.4)})`; ctx.fill();
             }
 
-            // Draw Core Glow only when focus is building
             if (isPressing && focusPower > 0.1) {
                 let glowSize = 20 + (60 * focusPower);
                 let glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowSize);
@@ -343,7 +386,6 @@ convergence_html = """
         function triggerPress() {
             isPressing = true; msg.style.opacity = 0;
             if(navigator.vibrate) vibeInterval = setInterval(()=> {
-                // Haptic heartbeat gets steadier and stronger as focus builds
                 if (Math.random() < focusPower) navigator.vibrate(30);
             }, 100);
         }
@@ -351,8 +393,7 @@ convergence_html = """
         function releasePress() {
             if(!isPressing) return;
             isPressing = false; msg.style.opacity = 1; clearInterval(vibeInterval);
-            if(navigator.vibrate) navigator.vibrate([60, 40, 60]); // The Shatter Haptic
-            // Explosive shatter velocity based on how much focus was built up
+            if(navigator.vibrate) navigator.vibrate([60, 40, 60]);
             for(let p of particles) { p.vx = (Math.random() - 0.5) * (40 * focusPower); p.vy = (Math.random() - 0.5) * (40 * focusPower); }
         }
 
@@ -628,7 +669,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
                         if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
-                        elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें full नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
         if cached_reply:
@@ -1027,4 +1068,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.2 | The Architect Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.3 | The Atmosphere Update</div>", unsafe_allow_html=True)
