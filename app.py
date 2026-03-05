@@ -38,8 +38,15 @@ if "agent_message" not in st.session_state: st.session_state.agent_message = "I 
 valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue", "First Light", "Sea Glass", 
                 "Deep Sage", "Ocean Blue", "Ocean Green", "Red Amber", "Maroon", "Twilight Blue", 
                 "Champagne Gold", "Pink Champagne", "Liquid Gold"]
+
+# ==========================================
+# 🚨 DYNAMIC CIRCADIAN DEFAULT INJECTION 🚨
+# ==========================================
 if "theme" not in st.session_state or st.session_state.theme not in valid_themes: 
-    st.session_state.theme = "The Void"
+    current_hour = datetime.now().hour
+    is_daytime = 6 <= current_hour < 18  # 6 AM to 6 PM
+    # Pink Champagne for Day (Warmth), The Void for Night (Melatonin Protection)
+    st.session_state.theme = "Pink Champagne" if is_daytime else "The Void"
     
 if "ui_language" not in st.session_state: st.session_state.ui_language = "English"
 
@@ -1020,4 +1027,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.1 | The Obstinate Mind Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.2 | The Architect Update</div>", unsafe_allow_html=True)
