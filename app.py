@@ -68,7 +68,8 @@ LANG = {
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
         "record": "Record your thoughts", "type_here": "Or type your reflection...",
         "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
-        "e_quiet": "Quiet", "e_heavy": "Heavier", "e_neutral": "Neutral", "e_steady": "Steady", "e_vibrant": "Vibrant",
+        "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
+        "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
         "h_ether": "THE ETHER", "h_breath": "BREATH STUDIO", "h_games": "GROUNDING GAMES",
         "b_anchor": "Anchor (4-2-6)", "b_box": "The Box (4-4-4-4)", "b_sleep": "Deep Sleep (4-7-8)",
         "choose_visual": "CHOOSE YOUR VISUAL GUIDE", "v_wave": "The Wave", "v_moon": "The Moon", "v_lotus": "The Lotus",
@@ -98,7 +99,8 @@ LANG = {
         "btn_short": "मार्गदर्शन (संक्षिप्त)", "btn_deep": "मार्गदर्शन (गहरा)",
         "record": "अपने विचार रिकॉर्ड करें", "type_here": "या अपना विचार यहाँ लिखें...",
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
-        "e_quiet": "शांत", "e_heavy": "भारी", "e_neutral": "तटस्थ", "e_steady": "स्थिर", "e_vibrant": "जीवंत",
+        "e_racing": "तेज़ विचार", "e_restless": "बेचैन मन", "e_overwhelmed": "अभिभूत (Overwhelmed)", 
+        "e_heavy": "भारी विचार", "e_tired": "थका हुआ मन", "e_quiet": "शांति चाहिए",
         "h_ether": "आकाश (द ईथर)", "h_breath": "सांस स्टूडियो", "h_games": "ग्राउंडिंग गेम्स",
         "b_anchor": "एंकर (4-2-6)", "b_box": "द बॉक्स (4-4-4-4)", "b_sleep": "गहरी नींद (4-7-8)",
         "choose_visual": "अपना दृश्य मार्गदर्शक चुनें", "v_wave": "लहर (Wave)", "v_moon": "चांद (Moon)", "v_lotus": "कमल (Lotus)",
@@ -171,7 +173,7 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
     
-    /* 🚨 THE PADDING TRAP: PC SCROLL FIX 🚨 */
+    /* THE PADDING TRAP: PC SCROLL FIX */
     .block-container {{ 
         max-width: 100vw !important; 
         padding-top: 3.5rem !important; 
@@ -179,7 +181,7 @@ st.markdown(f"""
         overflow-x: hidden !important; 
     }}
     
-    /* For PC (Wide Screens): Squeeze content to 600px using invisible padding */
+    /* For PC (Wide Screens) */
     @media (min-width: 601px) {{
         .block-container {{
             padding-left: calc(50vw - 300px) !important;
@@ -187,7 +189,7 @@ st.markdown(f"""
         }}
     }}
     
-    /* For Phones: Use standard padding */
+    /* For Phones */
     @media (max-width: 600px) {{
         .block-container {{
             padding-left: 1rem !important;
@@ -227,7 +229,7 @@ st.markdown(f"""
         100% {{ transform: scale(1.1); opacity: 1; }}
     }}
 
-    /* The Void Stars (Only visible in Dark Themes) */
+    /* The Void Stars */
     .void-stars {{
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
@@ -305,7 +307,7 @@ st.markdown(f"""
     .section-header {{ font-size: 11px; letter-spacing: 5px; font-weight: 500; text-transform: uppercase; margin: 35px 0 15px 0; color: {c_accent}; padding-bottom: 8px; opacity: 0.8; }}
     .theme-group-header {{ font-size: 9px; letter-spacing: 3px; font-weight: 400; text-transform: uppercase; margin: 20px 0 10px 0; color: {app_text}; opacity: 0.5; text-align: left; padding-left: 5px; }}
     div.stButton {{ width: 100% !important; }}
-    .stButton>button {{ width: 100% !important; min-width: 100% !important; background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 30px !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; min-height: 44px !important; height: 100% !important; font-size: 11px !important; font-weight: 400 !important; letter-spacing: 1px !important; display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; transition: all 0.3s ease; }}
+    .stButton>button {{ width: 100% !important; min-width: 100% !important; background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 30px !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; min-height: 44px !important; height: 100% !important; font-size: 10px !important; font-weight: 400 !important; letter-spacing: 1px !important; display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; transition: all 0.3s ease; white-space: normal !important; padding: 5px !important; line-height: 1.2 !important; }}
     .stButton>button:active {{ transform: scale(0.96); opacity: 0.7; }}
     .autopilot-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
     .agent-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
@@ -979,13 +981,25 @@ if st.session_state.current_page == "Journal":
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
+    # 🚨 THE NEW EMOTIONAL ARCHITECTURE GRID 🚨
     st.markdown(f"<div class='section-header'>{t['h_energy']}</div>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 11px; opacity: 0.6; margin-bottom: 15px; color:{app_text}; font-weight: 300;'>{t['energy_prompt']}</p>", unsafe_allow_html=True)
     
-    m_cols = st.columns(5)
-    for i, (m_key, m_label) in enumerate([("e_quiet", "Quiet"), ("e_heavy", "Heavier"), ("e_neutral", "Neutral"), ("e_steady", "Steady"), ("e_vibrant", "Vibrant")]):
-        with m_cols[i]:
-            if st.button(t[m_key], key=f"m_{m_label}", use_container_width=True): st.session_state.energy_history.append(m_label); st.rerun()
+    # Row 1 (The Mind)
+    m_cols1 = st.columns(3)
+    states1 = [("e_racing", "Racing Thoughts"), ("e_restless", "Restless Mind"), ("e_overwhelmed", "Overwhelmed")]
+    for i, (m_key, m_label) in enumerate(states1):
+        with m_cols1[i]:
+            if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
+                st.session_state.energy_history.append(m_label); st.rerun()
+
+    # Row 2 (The Body / Soul)
+    m_cols2 = st.columns(3)
+    states2 = [("e_heavy", "Heavy Thoughts"), ("e_tired", "Tired Mind"), ("e_quiet", "Need Quiet")]
+    for i, (m_key, m_label) in enumerate(states2):
+        with m_cols2[i]:
+            if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
+                st.session_state.energy_history.append(m_label); st.rerun()
 
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
@@ -1131,6 +1145,13 @@ elif st.session_state.current_page == "Market":
     st.markdown(products_html, unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Info":
+    
+    # 🚨 THE FOUNDER'S MANIFESTO 🚨
+    st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8; font-style: italic; border-left: 3px solid {c_accent};'>
+        "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your nervous system immediate shelter from a loud world. There are no forced logins to store your data, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
+    </div>""", unsafe_allow_html=True)
+
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8;'>
         <b>1.</b> Open this link in Safari (iPhone) or Chrome (Android).<br><br>
@@ -1225,4 +1246,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.8 | The True PC Scroll Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.9 | The Emotional Architecture Update</div>", unsafe_allow_html=True)
