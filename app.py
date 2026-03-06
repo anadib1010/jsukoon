@@ -61,14 +61,15 @@ LANG = {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
-        "h_ambience": "AMBIENCE", "h_mentor": "YOUR PRIVATE LISTENER", "h_energy": "ENERGY STATE",
-        "privacy_note": "✦ Private • Judgement-Free • Always Listening ✦",
+        "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
+        "mini_disclaimer": "This application does not provide medical, psychological, therapeutic, or religious advice. It makes no claims and offers no guaranteed outcomes. Use is voluntary and at your own discretion.",
+        "pause_text": "Write a few words if you wish.<br><br>Nothing is analysed.<br><br>This space simply allows a moment of pause.",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
         "agent_btn": "🤖 AI AGENT (SMART SANCTUARY) 🤖",
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
-        "record": "Speak freely. I do not judge, and I do not save your words.", 
-        "type_here": "Or pour your thoughts here. This is a safe space...",
+        "record": " ", 
+        "type_here": "...",
         "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
@@ -94,14 +95,15 @@ LANG = {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
-        "h_ambience": "माहौल", "h_mentor": "आपका निजी श्रोता", "h_energy": "ऊर्जा की स्थिति",
-        "privacy_note": "✦ निजी • बिना किसी फैसले के • हमेशा सुनने को तैयार ✦",
+        "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
+        "mini_disclaimer": "यह एप्लिकेशन चिकित्सा, मनोवैज्ञानिक, चिकित्सीय या धार्मिक सलाह नहीं देता है। यह कोई दावा नहीं करता है और कोई गारंटीकृत परिणाम नहीं देता है। इसका उपयोग स्वैच्छिक है और आपके अपने विवेक पर है।",
+        "pause_text": "यदि आप चाहें तो कुछ शब्द लिखें।<br><br>कुछ भी एनालाइज (विश्लेषण) नहीं किया जाता।<br><br>यह स्थान बस कुछ पल रुकने का अवसर देता है।",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
         "agent_btn": "🤖 एआई एजेंट (स्मार्ट अभयारण्य) 🤖",
         "btn_short": "मार्गदर्शन (संक्षिप्त)", "btn_deep": "मार्गदर्शन (गहरा)",
-        "record": "खुलकर बोलें। मैं कोई फैसला नहीं करता, और आपकी बातें सेव नहीं करता।", 
-        "type_here": "या अपने विचार यहाँ लिखें। यह एक सुरक्षित जगह है...",
+        "record": " ", 
+        "type_here": "...",
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
         "e_racing": "तेज़ विचार", "e_restless": "बेचैन मन", "e_overwhelmed": "अभिभूत (Overwhelmed)", 
         "e_heavy": "भारी विचार", "e_tired": "थका हुआ मन", "e_quiet": "शांति चाहिए",
@@ -835,8 +837,9 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
     
-    st.markdown(f"<div class='section-header'>{t['h_mentor']}</div>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 10px; opacity: 0.85; margin-top: -5px; margin-bottom: 15px; color:{app_text}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
+    # 🚨 THE NEUTRAL PAUSE REFRAME 🚨
+    st.markdown(f"<div class='disclaimer-box' style='text-align:center; font-size:10px; font-weight:300; color: {app_text}; opacity: 0.6; line-height:1.6; border: 1px solid {btn_border}; margin-bottom: 25px;'>{t['mini_disclaimer']}</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 13px; opacity: 0.85; margin-bottom: 15px; color:{app_text}; font-weight: 300; text-align: center; letter-spacing: 1px; line-height: 1.8;'>{t['pause_text']}</p>", unsafe_allow_html=True)
 
     voice_input = st.audio_input(t["record"])
     text_msg = st.text_area(t["type_here"], height=150)
@@ -1225,7 +1228,6 @@ elif st.session_state.current_page == "Market":
     products_html += '</div>'
     st.markdown(products_html, unsafe_allow_html=True)
 
-# 🚨 THE INFO PAGE WITH THE NEW DISCLAIMER BUTTON 🚨
 elif st.session_state.current_page == "Info":
     
     st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
@@ -1243,7 +1245,7 @@ elif st.session_state.current_page == "Info":
 
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
     faqs = [
-        ("Is the Private Listener free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
+        ("Is the Space free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
         ("What is the 4-2-6 Rhythm?", "It is a breathing pacing technique designed to help you slow down and find stillness."),
         ("Is this therapy?", "No. Sukoon is purely a lifestyle companion for personal reflection. It is not therapy or psychology."),
         ("Are the objects religious?", "No. They are entirely secular, tactile tools intended only for physical grounding and focus.")
@@ -1251,25 +1253,12 @@ elif st.session_state.current_page == "Info":
     for q, a in faqs:
         st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
 
-    st.markdown("<div class='section-header'>IMPORTANT DISCLAIMER</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='disclaimer-box' style='text-align:left; font-size:11px; font-weight:300; color: {app_text}; line-height:1.8; border-left: 3px solid #ff4b4b; background: rgba(255, 75, 75, 0.05); margin-bottom: 20px;'>
-        <b>Sukoon is an interactive art and lifestyle project.</b><br><br>
-        • <b>Not Medical:</b> It is not a medical device, therapy tool, or psychological service. It does not treat, diagnose, or prevent any condition.<br>
-        • <b>Not Spiritual:</b> It is a strictly secular environment. It is not affiliated with any religion, spiritual practice, or belief system.<br><br>
-        <i>If you are experiencing a mental health emergency or severe overwhelm, please contact a qualified healthcare professional or emergency services immediately.</i>
-    </div>""", unsafe_allow_html=True)
-    
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    if st.button("Read Full Legal Disclaimer", use_container_width=True):
-        st.session_state.current_page = "Disclaimer"
-        st.rerun()
-
 # 🚨 THE FULL LEGAL DISCLAIMER PAGE 🚨
 elif st.session_state.current_page == "Disclaimer":
     st.markdown("<div class='section-header'>LEGAL DISCLAIMER & TERMS</div>", unsafe_allow_html=True)
     
-    if st.button("← Return to Info", use_container_width=True):
-        st.session_state.current_page = "Info"
+    if st.button("← Return to Space", use_container_width=True):
+        st.session_state.current_page = "Journal"
         st.rerun()
         
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
@@ -1465,5 +1454,12 @@ elif st.session_state.current_page == "Settings":
             st.error("Code not recognized in the Ether.")
     st.markdown("</div>", unsafe_allow_html=True)
 
+# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON 🚨
+if st.session_state.current_page != "Disclaimer":
+    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+    if st.button("Read Full Legal Disclaimer", use_container_width=True):
+        st.session_state.current_page = "Disclaimer"
+        st.rerun()
+
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.17</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.18</div>", unsafe_allow_html=True)
