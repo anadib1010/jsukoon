@@ -169,13 +169,16 @@ if api_key:
 # ==========================================
 st.markdown(f"""
     <style>
-    /* The Global Scroll Fix */
-    html, body, [data-testid="stApp"], [data-testid="stMain"] {
-        overflow-y: auto !important;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+    
+    /* THE GLOBAL SCROLL FIX FOR PC */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], [data-testid="stMain"] {{
         overflow-x: hidden !important;
         width: 100vw !important;
-    }
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+    }}
+    [data-testid="stAppViewContainer"] {{
+        overflow-y: auto !important;
+    }}
     
     /* The Waking Up Reveal */
     .stApp {{ 
@@ -985,7 +988,7 @@ elif st.session_state.current_page == "AutoPilot":
     components.html(theme_it(release_game_html.replace("gameCanvas", "game_sos")), height=370)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
 
-    # 3. The New Waterfall Cascade
+    # 3. The Waterfall Cascade
     components.html(theme_it(waterfall_html.replace("[CANVAS_ID]", "waterfall_sos")), height=160)
 
 elif st.session_state.current_page == "AgentSanctuary":
@@ -1208,4 +1211,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.5 | The Waterfall Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.6 | The Performance Update</div>", unsafe_allow_html=True)
