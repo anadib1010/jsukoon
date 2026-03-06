@@ -32,7 +32,7 @@ if "active_game" not in st.session_state: st.session_state.active_game = "Conver
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.mp3"
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
-if "agent_message" not in st.session_state: st.session_state.agent_message = "I have prepared this space for you."
+if "agent_message" not in st.session_state: st.session_state.agent_message = "The sanctuary is ready."
 
 # Ensure valid theme
 valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue", "First Light", "Sea Glass", 
@@ -61,7 +61,8 @@ LANG = {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
-        "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
+        "h_ambience": "AMBIENCE", "h_mentor": "THE SPACE", "h_energy": "ENERGY STATE",
+        "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
         "mini_disclaimer": "This application does not provide medical, psychological, therapeutic, or religious advice. It makes no claims and offers no guaranteed outcomes. Use is voluntary and at your own discretion.",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
@@ -69,7 +70,7 @@ LANG = {
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
         "record": " ", 
         "type_here": "Write a few words if you wish.\n\nThis page offers a quiet moment of pause.",
-        "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
+        "energy_prompt": "Pause and acknowledge how your body feels to guide the engine.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
         "h_ether": "THE ETHER", "h_breath": "BREATH STUDIO", "h_games": "GROUNDING GAMES",
@@ -94,7 +95,8 @@ LANG = {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
-        "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
+        "h_ambience": "माहौल", "h_mentor": "स्थान (THE SPACE)", "h_energy": "ऊर्जा की स्थिति",
+        "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
         "mini_disclaimer": "यह एप्लिकेशन चिकित्सा, मनोवैज्ञानिक, चिकित्सीय या धार्मिक सलाह नहीं देता है। यह कोई दावा नहीं करता है और कोई गारंटीकृत परिणाम नहीं देता है। इसका उपयोग स्वैच्छिक है और आपके अपने विवेक पर है।",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
@@ -329,7 +331,7 @@ st.markdown(f"""
     .market-slab {{ background: {glass_bg}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid {btn_border}; padding: 20px; margin-bottom: 15px; text-align: center; transition: all 0.5s ease; }}
     .disclaimer-box {{ text-align: left; font-size: 11px; opacity: 0.6; line-height: 1.8; background: transparent; padding: 15px; border-radius: 12px; border: 1px solid {btn_border}; margin-bottom: 20px; }}
     
-    /* 🚨 PLACEHOLDER READABILITY FIX & OPACITY 🚨 */
+    /* PLACEHOLDER READABILITY FIX & OPACITY */
     textarea, input {{ background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 16px !important; backdrop-filter: blur(12px) !important; text-align: center !important; font-size: 14px !important; font-weight: 300 !important; font-family: 'Inter', sans-serif !important; padding: 15px !important; box-shadow: none !important; }}
     textarea:focus, input:focus {{ border-color: {c_accent} !important; outline: none !important; }}
     textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.5 !important; font-weight: 300 !important; }}
@@ -561,7 +563,7 @@ bloom_html = """
 </div>
 <script>
     (function() {
-        const c = document.getElementById('[CANVAS_ID]'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["BEAUTIFUL FOCUS", "YOU ARE GROWING", "A MOMENT OF PEACE", "PERFECT HARMONY", "YOU ARE ENOUGH"];
+        const c = document.getElementById('[CANVAS_ID]'); const ctx = c.getContext('2d'); const msg = document.getElementById('bloomMessage'); let taps = 0; const maxTaps = 6; const affirmations = ["CLEAR FOCUS", "STEADY RHYTHM", "A MOMENT OF PEACE", "PERFECT HARMONY", "CALM PRESENCE"];
         function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; draw(); } window.addEventListener('resize', resize);
         function draw() { ctx.clearRect(0, 0, c.width, c.height); const cx = c.width / 2; const cy = c.height / 2; if (taps === 0) { ctx.fillStyle = "rgba([C_RGB], 0.6)"; ctx.font = "300 11px sans-serif"; ctx.textAlign = "center"; ctx.letterSpacing = "3px"; ctx.fillText("TAP TO BLOOM", cx, cy); return; } for (let i = 1; i <= taps; i++) { ctx.beginPath(); ctx.arc(cx, cy, i * 25, 0, Math.PI * 2); ctx.strokeStyle = "rgba([C_RGB], " + (0.2 + (i * 0.1)) + ")"; ctx.lineWidth = 1.5; ctx.stroke(); for (let j = 0; j < 8; j++) { let angle = (j * Math.PI / 4) + (i * 0.2); let px = cx + Math.cos(angle) * (i * 25); let py = cy + Math.sin(angle) * (i * 25); ctx.beginPath(); ctx.arc(px, py, 4 + i, 0, Math.PI * 2); ctx.fillStyle = "rgba([C_RGB], 0.8)"; ctx.shadowBlur = 20; ctx.shadowColor = "rgba([C_RGB], 0.5)"; ctx.fill(); } } }
         c.addEventListener('pointerdown', () => { if (taps < maxTaps) { taps++; draw(); if (taps === maxTaps) { msg.innerText = affirmations[Math.floor(Math.random() * affirmations.length)]; msg.style.opacity = 1; setTimeout(() => { msg.style.opacity = 0; setTimeout(() => { taps = 0; draw(); }, 1500); }, 3500); } } }); resize();
@@ -835,10 +837,15 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
     
-    # 🚨 THE NEW MINIMALIST DISCLAIMER & VANISHING PLACEHOLDER 🚨
+    # 🚨 SCRUBBED OF ALL EMOTIONAL PROMISES 🚨
+    st.markdown(f"<div class='section-header'>{t['h_mentor']}</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 10px; opacity: 0.85; margin-top: -5px; margin-bottom: 15px; color:{app_text}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
+    
+    # The Mini-Disclaimer
     st.markdown(f"<div class='disclaimer-box' style='text-align:center; font-size:10px; font-weight:300; color: {app_text}; opacity: 0.6; line-height:1.6; border: 1px solid {btn_border}; margin-bottom: 25px;'>{t['mini_disclaimer']}</div>", unsafe_allow_html=True)
     
     voice_input = st.audio_input(t["record"], label_visibility="collapsed")
+    # The Clean Placeholder
     text_msg = st.text_area("Journal Input", label_visibility="collapsed", placeholder=t["type_here"], height=150)
     
     c_short, c_deep = st.columns(2)
@@ -884,18 +891,18 @@ if st.session_state.current_page == "Journal":
                 else:
                     if st.session_state.ui_language == "English":
                         if cat == "sleep": cached_reply = "The night is quiet, but your mind is loud. You are not your racing thoughts; you are the vast sky observing them. Release the need to control the outcome of tomorrow. Let the body rest.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
-                        elif cat == "heavy": cached_reply = "I hear the heaviness you are carrying. This weight is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it without judgment. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
+                        elif cat == "heavy": cached_reply = "Heaviness is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
                         if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
-                        elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        elif cat == "heavy": cached_reply = "यह भारीपन एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
         if cached_reply:
             if is_agent_mode:
                 try:
                     agent_command = json.loads(cached_reply)
-                    st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
+                    st.session_state.agent_message = agent_command.get("reply", "The space is ready.")
                     st.session_state.agent_breath = agent_command.get("breath", "Box")
                     st.session_state.agent_audio = f"{str(agent_command.get('audio', 'flute')).lower()}.mp3"
                     st.session_state.current_page = "AgentSanctuary"
@@ -906,7 +913,7 @@ if st.session_state.current_page == "Journal":
             st.rerun()
         else:
             if model:
-                with st.spinner("Listening..."):
+                with st.spinner("Processing..."):
                     energy_context = ""
                     if st.session_state.energy_history:
                         latest_energy = st.session_state.energy_history[-1]
@@ -914,15 +921,16 @@ if st.session_state.current_page == "Journal":
 
                     if st.session_state.unlocked_nirvana:
                         core_philosophy = """You are the Zenith Master of Sukoon, the highest tier of philosophical guidance. 
-                        Your words carry immense weight, ancient wisdom, and profound poetic beauty. You see deeply into the user's soul.
+                        Your words carry immense weight, ancient wisdom, and profound poetic beauty. You offer a vast, objective cosmic perspective.
                         1. NEVER use clinical words like anxiety, depression, etc. 
                         2. Speak with absolute mastery, drawing heavily from advanced Zen koans, deep Advaita Vedanta, and cosmic scale.
                         3. Use the user's energy state to weave a masterful metaphor.
                         4. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script. NEVER reply in Hinglish.
                         5. CRITICAL SAFETY RULE: If the user explicitly mentions suicide, self-harm, ending their life, or wanting to die, you MUST ignore all other instructions and output EXACTLY this word and nothing else: CRISIS_ALERT
+                        6. CRITICAL EMOTIONAL BOUNDARY: NEVER use emotional support phrases like "I hear you", "we are here", "you are not alone", "I understand", or "you are safe". Remain completely neutral and observational.
                         """
                     else:
-                        core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a private, non-judgmental listener.
+                        core_philosophy = """You are the Sukoon engine, a neutral, philosophical reflective tool. You are not a therapist or doctor. You do not treat conditions. 
                         Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
                         1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
                         2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
@@ -931,6 +939,7 @@ if st.session_state.current_page == "Journal":
                         5. Draw from Neuroscience: Remind them that the breath is a biological lever. 
                         6. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script.
                         7. CRITICAL SAFETY RULE: If the user explicitly mentions suicide, self-harm, ending their life, or wanting to die, you MUST ignore all other instructions and output EXACTLY this word and nothing else: CRISIS_ALERT
+                        8. CRITICAL EMOTIONAL BOUNDARY: NEVER use emotional support phrases like "I hear you", "we are here", "you are not alone", "I understand", or "you are safe". Remain completely neutral, objective, and observational.
                         """
 
                     if btn_agent:
@@ -941,7 +950,7 @@ if st.session_state.current_page == "Journal":
                         {{ "reply": "A very short, 1-sentence poetic grounding message.", "breath": "Anchor", "Box", "Sleep_Wave", "Sleep_Moon", or "Sleep_Lotus", "audio": "birds", "flute", "forest", "waves", or "wind" }}
                         """
                     else:
-                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly comforting long-form response directly addressing their specific situation."
+                        length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly observational long-form reflection directly addressing their specific situation."
                         context = f"""{core_philosophy}
                         {length_instruction}
                         End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi.
@@ -950,7 +959,7 @@ if st.session_state.current_page == "Journal":
                     try:
                         if voice_input:
                             audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Listener."]
+                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond objectively."]
                         elif text_msg:
                             prompt_parts = [context, text_msg]
                         else:
@@ -967,7 +976,7 @@ if st.session_state.current_page == "Journal":
                             try:
                                 clean_text = resp.text.strip().replace('```json', '').replace('```', '')
                                 agent_command = json.loads(clean_text)
-                                st.session_state.agent_message = agent_command.get("reply", "I have prepared this space for you.")
+                                st.session_state.agent_message = agent_command.get("reply", "The space is ready.")
                                 st.session_state.agent_breath = agent_command.get("breath", "Box")
                                 raw_audio = str(agent_command.get("audio", "flute")).lower()
                                 st.session_state.agent_audio = f"{raw_audio}.mp3"
@@ -983,9 +992,9 @@ if st.session_state.current_page == "Journal":
                             st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": ai_reply, "id": unique_id})
                         st.rerun()
                     except Exception as e:
-                        st.error("The Listener needs a moment of quiet. Please try again.")
+                        st.error("The engine needs a moment of quiet. Please try again.")
             else:
-                st.warning("The Listener is resting. Please try again in an hour.")
+                st.warning("The engine is offline. Please try again in an hour.")
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
@@ -1459,4 +1468,4 @@ if st.session_state.current_page != "Disclaimer":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.19</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.20</div>", unsafe_allow_html=True)
