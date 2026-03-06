@@ -61,12 +61,14 @@ LANG = {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
-        "h_ambience": "AMBIENCE", "h_mentor": "PRIVATE AI MENTOR", "h_energy": "ENERGY STATE",
+        "h_ambience": "AMBIENCE", "h_mentor": "YOUR PRIVATE LISTENER", "h_energy": "ENERGY STATE",
+        "privacy_note": "✦ Anonymous • Zero Data Stored • Always Listening ✦",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
         "agent_btn": "🤖 AI AGENT (SMART SANCTUARY) 🤖",
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
-        "record": "Record your thoughts", "type_here": "Or type your reflection...",
+        "record": "Speak freely. I do not judge, and I do not store your voice.", 
+        "type_here": "Or pour your thoughts here. You are completely safe...",
         "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
@@ -92,12 +94,14 @@ LANG = {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
-        "h_ambience": "माहौल", "h_mentor": "निजी एआई मेंटर", "h_energy": "ऊर्जा की स्थिति",
+        "h_ambience": "माहौल", "h_mentor": "आपका निजी श्रोता", "h_energy": "ऊर्जा की स्थिति",
+        "privacy_note": "✦ अनाम • कोई डेटा सेव नहीं • हमेशा सुनने को तैयार ✦",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
         "agent_btn": "🤖 एआई एजेंट (स्मार्ट अभयारण्य) 🤖",
         "btn_short": "मार्गदर्शन (संक्षिप्त)", "btn_deep": "मार्गदर्शन (गहरा)",
-        "record": "अपने विचार रिकॉर्ड करें", "type_here": "या अपना विचार यहाँ लिखें...",
+        "record": "खुलकर बोलें। मैं कोई फैसला नहीं करता, और कुछ याद नहीं रखता।", 
+        "type_here": "या अपने विचार यहाँ लिखें। आप यहाँ पूरी तरह सुरक्षित हैं...",
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
         "e_racing": "तेज़ विचार", "e_restless": "बेचैन मन", "e_overwhelmed": "अभिभूत (Overwhelmed)", 
         "e_heavy": "भारी विचार", "e_tired": "थका हुआ मन", "e_quiet": "शांति चाहिए",
@@ -723,7 +727,7 @@ st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
 if st.session_state.current_page == "Journal":
     
-    # 🚨 THE DYNAMIC SOMATIC MOOD GRID (MOVED TO TOP) 🚨
+    # 🚨 THE DYNAMIC SOMATIC MOOD GRID 🚨
     st.markdown(f"<div class='section-header'>{t['h_energy']}</div>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 11px; opacity: 0.6; margin-bottom: 15px; color:{app_text}; font-weight: 300;'>{t['energy_prompt']}</p>", unsafe_allow_html=True)
     
@@ -737,7 +741,7 @@ if st.session_state.current_page == "Journal":
         with m_cols1[i]:
             if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
                 st.session_state.energy_history.append(m_label)
-                st.session_state.theme = m_theme  # 🚨 This changes the app theme instantly
+                st.session_state.theme = m_theme
                 st.rerun()
 
     # Row 2 (The Body / Soul)
@@ -750,7 +754,7 @@ if st.session_state.current_page == "Journal":
         with m_cols2[i]:
             if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
                 st.session_state.energy_history.append(m_label)
-                st.session_state.theme = m_theme  # 🚨 This changes the app theme instantly
+                st.session_state.theme = m_theme
                 st.rerun()
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
@@ -815,7 +819,10 @@ if st.session_state.current_page == "Journal":
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
+    
+    # 🚨 THE PRIVATE LISTENER REFRAME 🚨
     st.markdown(f"<div class='section-header'>{t['h_mentor']}</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 10px; opacity: 0.5; margin-top: -5px; margin-bottom: 15px; color:{c_accent}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
 
     voice_input = st.audio_input(t["record"])
     text_msg = st.text_area(t["type_here"], height=150)
@@ -1259,4 +1266,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.10 | The Dynamic Somatic Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.11 | The Private Listener Update</div>", unsafe_allow_html=True)
