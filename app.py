@@ -381,45 +381,50 @@ st.markdown(f"""
 # 🚨 THE 30-SECOND THRESHOLD RITUAL 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
-    st.markdown("""
+    st.markdown(f"""
     <style>
-    .stApp { background-color: #050505 !important; color: #E0E0E0 !important; }
-    header, footer { display: none !important; }
+    .stApp {{ background-color: #050505 !important; color: #E0E0E0 !important; }}
+    header, footer {{ display: none !important; }}
     
-    .r-wrap { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }
+    .r-wrap {{ position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }}
     
-    .p1 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; }
-    .p1-main { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; }
-    .p1-sub { font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: #888; }
+    .p1 {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; }}
+    .p1-main {{ font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; color: #E0E0E0; }}
+    .p1-sub {{ font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: #888; }}
     
-    .p2 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }
-    .p2-circle { width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }
-    .p2-text { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; }
+    .p2 {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }}
+    .p2-circle {{ width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }}
+    .p2-text {{ font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: #E0E0E0; }}
     
-    /* Delay the main choice buttons */
-    div[data-testid="stHorizontalBlock"] {
-        position: fixed; top: 65vh; left: 50%; transform: translateX(-50%);
-        width: 90%; max-width: 350px; z-index: 200; pointer-events: auto;
+    /* Strict Flexbox row rules to prevent overlap of choices */
+    div[data-testid="stHorizontalBlock"] {{
+        position: fixed !important; top: 65vh !important; left: 50% !important; transform: translateX(-50%) !important;
+        width: 90% !important; max-width: 380px !important; z-index: 200 !important; pointer-events: auto !important;
         opacity: 0; animation: rFadeIn 2s 20s forwards;
-    }
-    div[data-testid="stHorizontalBlock"] button {
+        display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 15px !important; justify-content: center !important;
+    }}
+    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"], div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+        width: calc(50% - 7.5px) !important; min-width: calc(50% - 7.5px) !important; max-width: calc(50% - 7.5px) !important; flex: 1 1 calc(50% - 7.5px) !important; margin-bottom: 0 !important;
+    }}
+    div[data-testid="stHorizontalBlock"] button {{
         background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.1) !important;
         color: #E0E0E0 !important; font-weight: 300 !important; border-radius: 30px !important; backdrop-filter: blur(10px) !important;
-    }
+        width: 100% !important; height: 100% !important; min-height: 44px !important; white-space: normal !important; padding: 5px !important;
+    }}
     
     /* Delay the skip button */
-    div[data-testid="stVerticalBlock"] > div:last-child {
+    div[data-testid="stVerticalBlock"] > div:last-child {{
         position: fixed; bottom: 20px; right: 20px; z-index: 200; pointer-events: auto;
         width: auto !important; opacity: 0; animation: rFadeIn 2s 3s forwards;
-    }
-    div[data-testid="stVerticalBlock"] > div:last-child button {
+    }}
+    div[data-testid="stVerticalBlock"] > div:last-child button {{
         background: transparent !important; border: none !important; color: #555 !important; font-size: 10px !important; box-shadow: none !important;
-    }
+    }}
 
-    @keyframes fadeP1 { 0%{opacity:0;} 10%{opacity:1;} 80%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
-    @keyframes fadeP2 { 0%{opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
-    @keyframes rFadeIn { to {opacity:1;} }
-    @keyframes rBreathe { 0%{transform:scale(0.8); opacity:0.3;} 40%{transform:scale(1.8); opacity:0.8;} 100%{transform:scale(0.8); opacity:0.3;} }
+    @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
+    @keyframes fadeP2 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 90%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
+    @keyframes rFadeIn {{ to {{opacity:1;}} }}
+    @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
     </style>
     """, unsafe_allow_html=True)
     
@@ -1625,12 +1630,12 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON (HIDDEN IF IN EXIT MODE) 🚨
-if st.session_state.current_page not in ["Disclaimer", "SilentExit"]:
+if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     if st.button("Read Full Legal Disclaimer", use_container_width=True):
         st.session_state.current_page = "Disclaimer"
         st.rerun()
 
-if st.session_state.current_page != "SilentExit":
+if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.24</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.25</div>", unsafe_allow_html=True)
