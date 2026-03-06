@@ -126,6 +126,17 @@ LANG = {
 }
 t = LANG[st.session_state.ui_language]
 
+# 🚨 THE EXHAUSTIVE CRISIS WORD LIST 🚨
+CRISIS_WORDS = [
+    "suicide", "suicidal", "kill myself", "end my life", "want to die", 
+    "self harm", "cut myself", "overdose", "jump off", "hang myself", 
+    "take my own life", "better off dead", "tired of living", "sleep forever", 
+    "no point in living", "end it all", "slit my wrists", "drink poison", 
+    "kill me", "i want to end things", "mar jana", "khudkushi", "aatmahatya", 
+    "jaan de dunga", "jaan de dungi", "nas kaat", "jeene ka man nahi", 
+    "marne ka man", "zindagi khatam", "zeher", "suli"
+]
+
 # --- 5. THE ULTIMATE 14-THEME ENGINE ---
 if st.session_state.theme == "First Light":
     app_bg, app_text, glass_bg, btn_border, c_accent, c_rgb = "#FDFBF7", "#4A4A4A", "rgba(255,255,255,0.5)", "rgba(0,0,0,0.05)", "#D4A373", "212,163,115"
@@ -175,7 +186,7 @@ if api_key:
 # ==========================================
 st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
     
     /* THE PADDING TRAP: PC SCROLL FIX */
     .block-container {{ 
@@ -824,7 +835,6 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
     
-    # 🚨 THE PRIVATE LISTENER REFRAME & BRIGHTER TEXT 🚨
     st.markdown(f"<div class='section-header'>{t['h_mentor']}</div>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 10px; opacity: 0.85; margin-top: -5px; margin-bottom: 15px; color:{app_text}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
 
@@ -846,6 +856,18 @@ if st.session_state.current_page == "Journal":
         cached_reply = None
         is_agent_mode = bool(btn_agent)
         
+        # 🚨 LAYER 1: LOCAL CRISIS INTERCEPTION 🚨
+        is_crisis = False
+        if text_msg:
+            t_low_check = text_msg.lower().strip()
+            if any(cw in t_low_check for cw in CRISIS_WORDS):
+                is_crisis = True
+                
+        if is_crisis:
+            st.session_state.current_page = "Crisis"
+            st.rerun()
+            
+        # Standard lightweight categorization
         if text_msg and not voice_input:
             t_low = text_msg.lower().strip()
             word_count = len(t_low.split())
@@ -897,6 +919,7 @@ if st.session_state.current_page == "Journal":
                         2. Speak with absolute mastery, drawing heavily from advanced Zen koans, deep Advaita Vedanta, and cosmic scale.
                         3. Use the user's energy state to weave a masterful metaphor.
                         4. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script. NEVER reply in Hinglish.
+                        5. CRITICAL SAFETY RULE: If the user explicitly mentions suicide, self-harm, ending their life, or wanting to die, you MUST ignore all other instructions and output EXACTLY this word and nothing else: CRISIS_ALERT
                         """
                     else:
                         core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a private, non-judgmental listener.
@@ -907,6 +930,7 @@ if st.session_state.current_page == "Journal":
                         4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
                         5. Draw from Neuroscience: Remind them that the breath is a biological lever. 
                         6. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script.
+                        7. CRITICAL SAFETY RULE: If the user explicitly mentions suicide, self-harm, ending their life, or wanting to die, you MUST ignore all other instructions and output EXACTLY this word and nothing else: CRISIS_ALERT
                         """
 
                     if btn_agent:
@@ -933,6 +957,11 @@ if st.session_state.current_page == "Journal":
                             prompt_parts = [context, "I am seeking silence. My mind is heavy."]
                             
                         resp = model.generate_content(prompt_parts)
+                        
+                        # 🚨 LAYER 2: LLM CRISIS INTERCEPTION (Catches Voice Notes) 🚨
+                        if "CRISIS_ALERT" in resp.text:
+                            st.session_state.current_page = "Crisis"
+                            st.rerun()
                         
                         if btn_agent:
                             try:
@@ -1024,6 +1053,38 @@ if st.session_state.current_page == "Journal":
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+# 🚨 THE NEW CRISIS INTERVENTION SCREEN 🚨
+elif st.session_state.current_page == "Crisis":
+    st.markdown("<div class='section-header' style='color: #ff4b4b;'>PLEASE READ THIS</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 16px; margin-bottom: 25px; color:{app_text}; font-weight: 400; text-align: center;'>You are not alone. There is help available right now.</p>", unsafe_allow_html=True)
+
+    crisis_html = """
+    <div style="background: rgba(255, 75, 75, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 75, 75, 0.3); border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 20px; font-family: 'Inter', sans-serif;">
+        <h3 style="color: #ff4b4b; margin-bottom: 15px; font-weight: 500; font-size: 14px; letter-spacing: 2px;">NATIONAL HELPLINE (KIRAN)</h3>
+        <a href="tel:18005990019" style="text-decoration: none;">
+            <div style="background: #ff4b4b; color: white; padding: 15px; border-radius: 30px; font-size: 18px; font-weight: 600; letter-spacing: 2px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(255, 75, 75, 0.2);">📞 1800-599-0019</div>
+        </a>
+        
+        <h3 style="color: [C_TEXT]; margin-bottom: 10px; font-weight: 400; font-size: 12px; opacity: 0.8;">VANDREVALA FOUNDATION</h3>
+        <a href="tel:9999666555" style="text-decoration: none;">
+            <div style="background: rgba([C_RGB], 0.1); border: 1px solid rgba([C_RGB], 0.2); color: [C_TEXT]; padding: 12px; border-radius: 30px; font-size: 13px; margin-bottom: 20px;">📞 9999 666 555</div>
+        </a>
+
+        <h3 style="color: [C_TEXT]; margin-bottom: 10px; font-weight: 400; font-size: 12px; opacity: 0.8;">AASRA</h3>
+        <a href="tel:9820466726" style="text-decoration: none;">
+            <div style="background: rgba([C_RGB], 0.1); border: 1px solid rgba([C_RGB], 0.2); color: [C_TEXT]; padding: 12px; border-radius: 30px; font-size: 13px; margin-bottom: 15px;">📞 9820 466 726</div>
+        </a>
+        
+        <p style="font-size: 11px; opacity: 0.5; color: [C_TEXT]; margin-top: 25px; letter-spacing: 1px;">EMERGENCY POLICE: 112</p>
+    </div>
+    """
+    components.html(theme_it(crisis_html), height=420)
+    
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    if st.button("Return to Sanctuary", use_container_width=True):
+        st.session_state.current_page = "Journal"
+        st.rerun()
 
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
@@ -1170,7 +1231,6 @@ elif st.session_state.current_page == "Market":
 
 elif st.session_state.current_page == "Info":
     
-    # 🚨 THE FOUNDER'S MANIFESTO 🚨
     st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8; font-style: italic; border-left: 3px solid {c_accent};'>
         "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your overwhelmed mind immediate shelter from a loud world. There are no forced logins to track your identity, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
@@ -1194,7 +1254,6 @@ elif st.session_state.current_page == "Info":
     for q, a in faqs:
         st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
 
-    # 🚨 THE IRONCLAD LEGAL DISCLAIMER 🚨
     st.markdown("<div class='section-header'>IMPORTANT DISCLAIMER</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='disclaimer-box' style='text-align:left; font-size:11px; font-weight:300; color: {app_text}; line-height:1.8; border-left: 3px solid #ff4b4b; background: rgba(255, 75, 75, 0.05); margin-bottom: 20px;'>
         <b>Sukoon is an interactive art and lifestyle project.</b><br><br>
@@ -1279,4 +1338,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.14</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.15</div>", unsafe_allow_html=True)
