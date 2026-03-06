@@ -5,6 +5,7 @@ import os
 import google.generativeai as genai
 import urllib.parse
 import json
+import random
 
 # --- 1. CORE VARIABLES ---
 MY_PHONE = "918882850790"
@@ -32,7 +33,7 @@ if "active_game" not in st.session_state: st.session_state.active_game = "Conver
 if "active_breath" not in st.session_state: st.session_state.active_breath = "Anchor"
 if "agent_audio" not in st.session_state: st.session_state.agent_audio = "flute.mp3"
 if "agent_breath" not in st.session_state: st.session_state.agent_breath = "Box"
-if "agent_message" not in st.session_state: st.session_state.agent_message = "The sanctuary is ready."
+if "agent_message" not in st.session_state: st.session_state.agent_message = "The space is ready."
 
 # Ensure valid theme
 valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue", "First Light", "Sea Glass", 
@@ -61,8 +62,7 @@ LANG = {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
-        "h_ambience": "AMBIENCE", "h_mentor": "THE SPACE", "h_energy": "ENERGY STATE",
-        "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
+        "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "mini_disclaimer": "This application does not provide medical, psychological, therapeutic, or religious advice. It makes no claims and offers no guaranteed outcomes. Use is voluntary and at your own discretion.",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
@@ -89,14 +89,25 @@ LANG = {
         "t_sage_d": "Deep Sage", "t_oblue": "Ocean Blue", "t_ogreen": "Ocean Green",
         "t_amber": "Red Amber", "t_maroon": "Maroon", "t_tblue": "Twilight Blue",
         "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
-        "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?"
+        "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?",
+        "park_bench": [
+            "Some days pass quietly. That is enough.", "Not every moment needs to be solved.", 
+            "It is alright to pause before continuing.", "You do not need to explain this moment.", 
+            "Nothing is required from you here.", "You may simply sit with this moment.", 
+            "You are free to continue whenever you wish.", "This moment does not need to become anything.", 
+            "A few quiet seconds can change the rhythm of a day.", "Moments like this often pass quietly.", 
+            "This moment will move on when it is ready.", "Every day contains small pauses like this.", 
+            "The mind sometimes moves quickly.", "Breathing often becomes quieter when we notice it.", 
+            "Silence can be unfamiliar at first.", "Stillness sometimes appears in unexpected moments.", 
+            "You may return to your day whenever you wish.", "This moment can end here.", 
+            "The page will remain whenever you return.", "You are free to continue."
+        ]
     },
     "Hindi": {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
-        "h_ambience": "माहौल", "h_mentor": "स्थान (THE SPACE)", "h_energy": "ऊर्जा की स्थिति",
-        "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
+        "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
         "mini_disclaimer": "यह एप्लिकेशन चिकित्सा, मनोवैज्ञानिक, चिकित्सीय या धार्मिक सलाह नहीं देता है। यह कोई दावा नहीं करता है और कोई गारंटीकृत परिणाम नहीं देता है। इसका उपयोग स्वैच्छिक है और आपके अपने विवेक पर है।",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
@@ -123,7 +134,19 @@ LANG = {
         "t_sage_d": "गहरा सेज (Deep Sage)", "t_oblue": "समुद्री नीला (Blue)", "t_ogreen": "समुद्री हरा (Green)",
         "t_amber": "लाल एम्बर (Amber)", "t_maroon": "मैरून (Maroon)", "t_tblue": "गहरा नीला (Twilight)",
         "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
-        "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?"
+        "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?",
+        "park_bench": [
+            "कुछ दिन शांति से गुज़र जाते हैं। इतना काफी है।", "हर पल को सुलझाने की ज़रूरत नहीं है।", 
+            "आगे बढ़ने से पहले थोड़ा रुकना ठीक है।", "आपको इस पल को समझाने की ज़रूरत नहीं है।", 
+            "यहाँ आपसे कुछ भी अपेक्षित नहीं है।", "आप बस इस पल के साथ बैठ सकते हैं।", 
+            "जब चाहें, आप आगे बढ़ने के लिए स्वतंत्र हैं।", "इस पल को कुछ भी बनने की ज़रूरत नहीं है।", 
+            "चंद शांत सेकंड दिन की लय बदल सकते हैं।", "ऐसे पल अक्सर शांति से गुज़र जाते हैं।", 
+            "यह पल जब तैयार होगा, तब आगे बढ़ जाएगा।", "हर दिन में ऐसे छोटे ठहराव होते हैं।", 
+            "मन कभी-कभी तेज़ी से भागता है।", "जब हम ध्यान देते हैं तो सांसें अक्सर शांत हो जाती हैं।", 
+            "शुरुआत में मौन अपरिचित लग सकता है।", "ठहराव कभी-कभी अप्रत्याशित पलों में प्रकट होता है।", 
+            "आप जब चाहें अपने दिनचर्या में लौट सकते हैं।", "यह पल यहाँ समाप्त हो सकता है।", 
+            "जब भी आप लौटेंगे, यह पेज यहीं रहेगा।", "आप आगे बढ़ने के लिए स्वतंत्र हैं।"
+        ]
     }
 }
 t = LANG[st.session_state.ui_language]
@@ -175,6 +198,11 @@ else:
 
 def theme_it(html_str):
     return html_str.replace("[C_BG]", "transparent").replace("[C_GLASS]", glass_bg).replace("[C_BORDER]", btn_border).replace("[C_TEXT]", app_text).replace("[C_ACCENT]", c_accent).replace("[C_RGB]", c_rgb)
+
+# --- THE PARK BENCH ENGINE ---
+def get_park_bench_sentence():
+    sentence = random.choice(t['park_bench'])
+    return f"<div style='text-align: center; opacity: 0.3; font-size: 11px; font-weight: 300; margin-top: 30px; margin-bottom: 20px; color: {app_text}; letter-spacing: 1px;'>{sentence}</div>"
 
 # --- 6. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
@@ -641,8 +669,8 @@ ether_html = """
             if (mode === 'fire') { playBurnSound(); } else { playManifestSound(); }
             if (navigator.vibrate) { if (mode === 'fire') { navigator.vibrate([40, 60, 50, 50, 60]); } else { navigator.vibrate([20, 150, 20, 150, 20]); } }
             
-            if (mode === 'fire') { msg.innerHTML = "THE ETHER HAS BURNED IT.<br>YOU HAVE CHOSEN TO LET IT GO."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
-            else { msg.innerHTML = "THE ETHER HAS HEARD YOU.<br>YOUR INTENTION HAS BEEN SET."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
+            if (mode === 'fire') { msg.innerHTML = "THE ETHER ACCEPTS THIS.<br>This moment will move on when it is ready."; input.style.filter = "blur(20px) contrast(200%) sepia(100%) hue-rotate(330deg) saturate(300%)"; input.style.transform = "scale(0.8) translateY(60px)"; } 
+            else { msg.innerHTML = "THE INTENTION IS SET.<br>You are free to continue whenever you wish."; input.style.filter = "blur(15px) brightness(200%)"; input.style.transform = "scale(0.8) translateY(-60px)"; }
 
             createParticles(mode); input.style.opacity = "0"; btnRow.style.opacity = "0"; promptText.style.opacity = "0"; btnRow.style.pointerEvents = "none"; input.style.pointerEvents = "none";
             setTimeout(() => { msg.style.opacity = "1"; }, 3000);
@@ -1062,6 +1090,9 @@ if st.session_state.current_page == "Journal":
         formatted_text = entry['ai'].replace('\n', '<br>')
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+        
+    # 🚨 THE PARK BENCH ENGINE INJECTION 🚨
+    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
 
 # 🚨 THE GLOBAL SAFETY & CRISIS REDIRECT SCREEN 🚨
 elif st.session_state.current_page == "Crisis":
@@ -1087,7 +1118,7 @@ elif st.session_state.current_page == "Crisis":
     components.html(theme_it(crisis_html), height=350)
     
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    if st.button("Return to Sanctuary", use_container_width=True):
+    if st.button("Return to Space", use_container_width=True):
         st.session_state.current_page = "Journal"
         st.rerun()
 
@@ -1125,6 +1156,9 @@ elif st.session_state.current_page == "Ether":
     st.markdown(f"<div class='section-header'>{t['h_ether']}</div>", unsafe_allow_html=True)
     ether_ui = ether_html.replace("starCanvas", "ether_main")
     components.html(theme_it(ether_ui), height=450)
+    
+    # 🚨 THE PARK BENCH ENGINE INJECTION 🚨
+    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
 
 # 🚨 THE FOCUS TAB WITH "THE CONVERGENCE" & "THE TIDE" 🚨
 elif st.session_state.current_page == "Focus":
@@ -1200,6 +1234,9 @@ elif st.session_state.current_page == "Focus":
     elif st.session_state.active_game == "Mala":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
         components.html(theme_it(mala_html), height=370)
+
+    # 🚨 THE PARK BENCH ENGINE INJECTION 🚨
+    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Market":
     st.markdown(f"<div class='section-header'>{t['h_market']}</div>", unsafe_allow_html=True)
@@ -1468,4 +1505,4 @@ if st.session_state.current_page != "Disclaimer":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.20</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.21</div>", unsafe_allow_html=True)
