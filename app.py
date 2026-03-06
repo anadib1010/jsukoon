@@ -169,6 +169,12 @@ if api_key:
 # ==========================================
 st.markdown(f"""
     <style>
+    /* The Global Scroll Fix */
+    html, body, [data-testid="stApp"], [data-testid="stMain"] {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        width: 100vw !important;
+    }
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
     
     /* The Waking Up Reveal */
