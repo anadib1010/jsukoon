@@ -56,7 +56,6 @@ if "unlocked_flame" not in st.session_state: st.session_state.unlocked_flame = F
 if "unlocked_nirvana" not in st.session_state: st.session_state.unlocked_nirvana = False
 
 # --- 4. ZERO-COST UI DICTIONARY ---
-# 🚨 LEGALLY SAFER, PSYCHOLOGICALLY COMFORTING REFRAMES APPLIED HERE 🚨
 LANG = {
     "English": {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
@@ -317,9 +316,9 @@ st.markdown(f"""
     .autopilot-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
     .agent-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
     .market-slab {{ background: {glass_bg}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid {btn_border}; padding: 20px; margin-bottom: 15px; text-align: center; transition: all 0.5s ease; }}
-    .disclaimer-box {{ text-align: left; font-size: 11px; opacity: 0.6; line-height: 1.8; background: transparent; padding: 15px; border-radius: 12px; border: 1px solid {btn_border}; }}
+    .disclaimer-box {{ text-align: left; font-size: 11px; opacity: 0.6; line-height: 1.8; background: transparent; padding: 15px; border-radius: 12px; border: 1px solid {btn_border}; margin-bottom: 20px; }}
     
-    /* 🚨 PLACEHOLDER READABILITY FIX 🚨 */
+    /* PLACEHOLDER READABILITY FIX */
     textarea, input {{ background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 16px !important; backdrop-filter: blur(12px) !important; text-align: center !important; font-size: 14px !important; font-weight: 300 !important; font-family: 'Inter', sans-serif !important; padding: 15px !important; box-shadow: none !important; }}
     textarea:focus, input:focus {{ border-color: {c_accent} !important; outline: none !important; }}
     textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.7 !important; font-weight: 300 !important; }}
@@ -866,7 +865,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "heavy": cached_reply = "I hear the heaviness you are carrying. This weight is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it without judgment. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
-                        if cat == "sleep": cached_reply = "रात शांत है, কুল (शांत) रहें। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
@@ -1187,13 +1186,22 @@ elif st.session_state.current_page == "Info":
 
     st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
     faqs = [
-        ("Is the AI Mentor free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
-        ("What is the 4-2-6 Rhythm?", "It is a breathing pattern designed to reduce stress and clear the mind."),
-        ("Is this therapy?", "No. Sukoon is a lifestyle companion for mindfulness and well-being."),
-        ("Are the objects religious?", "No. They are tactile grounding tools intended for sensory focus.")
+        ("Is the Private Listener free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
+        ("What is the 4-2-6 Rhythm?", "It is a breathing pacing technique designed to help you slow down and find stillness."),
+        ("Is this therapy?", "No. Sukoon is purely a lifestyle companion for personal reflection. It is not therapy or psychology."),
+        ("Are the objects religious?", "No. They are entirely secular, tactile tools intended only for physical grounding and focus.")
     ]
     for q, a in faqs:
         st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
+
+    # 🚨 THE IRONCLAD LEGAL DISCLAIMER 🚨
+    st.markdown("<div class='section-header'>IMPORTANT DISCLAIMER</div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='disclaimer-box' style='text-align:left; font-size:11px; font-weight:300; color: {app_text}; line-height:1.8; border-left: 3px solid #ff4b4b; background: rgba(255, 75, 75, 0.05);'>
+        <b>Sukoon is an interactive art and lifestyle project.</b><br><br>
+        • <b>Not Medical:</b> It is not a medical device, therapy tool, or psychological service. It does not treat, diagnose, or prevent any condition.<br>
+        • <b>Not Spiritual:</b> It is a strictly secular environment. It is not affiliated with any religion, spiritual practice, or belief system.<br><br>
+        <i>If you are experiencing a mental health emergency or severe overwhelm, please contact a qualified healthcare professional or emergency services immediately.</i>
+    </div>""", unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Settings":
     st.markdown(f"<div class='section-header'>{t['h_lang']}</div>", unsafe_allow_html=True)
@@ -1271,4 +1279,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.12 | The Clarity & Compliance Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.13 | The Legal Armor Update</div>", unsafe_allow_html=True)
