@@ -13,7 +13,8 @@ REPO_NAME = "jsukoon"
 GA_ID = "G-29F4EM37KE"
 
 # --- 2. CONFIG & PWA META TAGS ---
-st.set_page_config(page_title="Sukoon", layout="centered", initial_sidebar_state="collapsed")
+# 🚨 CHANGED TO 'WIDE' TO FIX PC SCROLLING DEAD ZONES 🚨
+st.set_page_config(page_title="Sukoon", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown(f"""
     <head>
@@ -171,14 +172,9 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
     
-    /* THE GLOBAL SCROLL FIX FOR PC */
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], [data-testid="stMain"] {{
-        overflow-x: hidden !important;
-        width: 100vw !important;
-    }}
-    [data-testid="stAppViewContainer"] {{
-        overflow-y: auto !important;
-    }}
+    /* 🚨 THE TRUE PC SCROLL FIX 🚨 */
+    /* Forces the content to stay centered at 600px, even though the layout is now 'Wide' */
+    .block-container {{ max-width: 600px !important; margin: auto !important; padding-top: 3.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     
     /* The Waking Up Reveal */
     .stApp {{ 
@@ -279,7 +275,6 @@ st.markdown(f"""
         100% {{ transform: translateX(-50vw); }}
     }}
 
-    .block-container {{ max-width: 600px !important; margin: auto; padding-top: 3.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
     div[data-testid="stHorizontalBlock"] {{ flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }}
     div[data-testid="column"], div[data-testid="stColumn"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; display: flex !important; justify-content: center !important; margin-bottom: 5px !important; }}
     div[data-testid="stHorizontalBlock"]:has(> div:nth-child(2):last-child) > div[data-testid="column"] {{ width: calc(50% - 8px) !important; min-width: calc(50% - 8px) !important; max-width: calc(50% - 8px) !important; flex: 1 1 calc(50% - 8px) !important; }}
@@ -1211,4 +1206,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.6 | The Performance Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.7 | The PC Scroll Fix</div>", unsafe_allow_html=True)
