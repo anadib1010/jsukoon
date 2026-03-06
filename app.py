@@ -25,6 +25,7 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # --- 3. SESSION STATE INITIALIZATION ---
+if "has_completed_ritual" not in st.session_state: st.session_state.has_completed_ritual = False
 if "core_journal" not in st.session_state: st.session_state.core_journal = []
 if "current_page" not in st.session_state: st.session_state.current_page = "Journal"
 if "energy_history" not in st.session_state: st.session_state.energy_history = []
@@ -62,6 +63,8 @@ LANG = {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "nav_exit": "✧ LEAVE SANCTUARY ✧", "exit_msg": "This moment is yours.",
+        "r_arrive": "You have arrived.", "r_nothing": "Nothing is required here.",
+        "r_breath": "Take one slow breath.", "r_sit": "Sit quietly", "r_write": "Write a few words",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
@@ -109,6 +112,8 @@ LANG = {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "nav_exit": "✧ प्रस्थान (LEAVE) ✧", "exit_msg": "यह पल आपका है।",
+        "r_arrive": "आप पहुँच गए हैं।", "r_nothing": "यहाँ आपसे कुछ भी अपेक्षित नहीं है।",
+        "r_breath": "एक धीमी सांस लें।", "r_sit": "शांति से बैठें", "r_write": "कुछ शब्द लिखें",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
         "h_mentor": "स्थान (THE SPACE)", "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
@@ -372,6 +377,84 @@ st.markdown(f"""
     </style>
     """, unsafe_allow_html=True)
 
+# ==========================================
+# 🚨 THE 30-SECOND THRESHOLD RITUAL 🚨
+# ==========================================
+if not st.session_state.has_completed_ritual:
+    st.markdown("""
+    <style>
+    .stApp { background-color: #050505 !important; color: #E0E0E0 !important; }
+    header, footer { display: none !important; }
+    
+    .r-wrap { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }
+    
+    .p1 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; }
+    .p1-main { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; }
+    .p1-sub { font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: #888; }
+    
+    .p2 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }
+    .p2-circle { width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }
+    .p2-text { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; }
+    
+    /* Delay the main choice buttons */
+    div[data-testid="stHorizontalBlock"] {
+        position: fixed; top: 65vh; left: 50%; transform: translateX(-50%);
+        width: 90%; max-width: 350px; z-index: 200; pointer-events: auto;
+        opacity: 0; animation: rFadeIn 2s 20s forwards;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #E0E0E0 !important; font-weight: 300 !important; border-radius: 30px !important; backdrop-filter: blur(10px) !important;
+    }
+    
+    /* Delay the skip button */
+    div[data-testid="stVerticalBlock"] > div:last-child {
+        position: fixed; bottom: 20px; right: 20px; z-index: 200; pointer-events: auto;
+        width: auto !important; opacity: 0; animation: rFadeIn 2s 3s forwards;
+    }
+    div[data-testid="stVerticalBlock"] > div:last-child button {
+        background: transparent !important; border: none !important; color: #555 !important; font-size: 10px !important; box-shadow: none !important;
+    }
+
+    @keyframes fadeP1 { 0%{opacity:0;} 10%{opacity:1;} 80%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
+    @keyframes fadeP2 { 0%{opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
+    @keyframes rFadeIn { to {opacity:1;} }
+    @keyframes rBreathe { 0%{transform:scale(0.8); opacity:0.3;} 40%{transform:scale(1.8); opacity:0.8;} 100%{transform:scale(0.8); opacity:0.3;} }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <div class="r-wrap">
+        <div class="p1">
+            <div class="p1-main">{t['r_arrive']}</div>
+            <div class="p1-sub">{t['r_nothing']}</div>
+        </div>
+        <div class="p2">
+            <div class="p2-circle"></div>
+            <div class="p2-text">{t['r_breath']}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(t['r_sit'], use_container_width=True):
+            st.session_state.has_completed_ritual = True
+            st.session_state.current_page = "Focus"
+            st.rerun()
+    with col2:
+        if st.button(t['r_write'], use_container_width=True):
+            st.session_state.has_completed_ritual = True
+            st.session_state.current_page = "Journal"
+            st.rerun()
+            
+    st.markdown("<div></div>", unsafe_allow_html=True) # Spacer
+    if st.button("(skip)"):
+        st.session_state.has_completed_ritual = True
+        st.rerun()
+        
+    st.stop()
+
 # 🚨 THE SILENT EXIT TAKEOVER 🚨
 if st.session_state.current_page == "SilentExit":
     st.markdown(f"""
@@ -413,7 +496,7 @@ if st.session_state.current_page == "SilentExit":
         <div class="exit-text">{t['exit_msg']}</div>
     </div>
     """, unsafe_allow_html=True)
-    st.stop() # Prevents any other UI from loading
+    st.stop() 
 
 # 🚨 INJECT ATMOSPHERE DIVS 🚨
 st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
@@ -920,15 +1003,12 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
     
-    # 🚨 SCRUBBED OF ALL EMOTIONAL PROMISES 🚨
     st.markdown(f"<div class='section-header'>{t['h_mentor']}</div>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 10px; opacity: 0.85; margin-top: -5px; margin-bottom: 15px; color:{app_text}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
     
-    # The Mini-Disclaimer
     st.markdown(f"<div class='disclaimer-box' style='text-align:center; font-size:10px; font-weight:300; color: {app_text}; opacity: 0.6; line-height:1.6; border: 1px solid {btn_border}; margin-bottom: 25px;'>{t['mini_disclaimer']}</div>", unsafe_allow_html=True)
     
     voice_input = st.audio_input(t["record"], label_visibility="collapsed")
-    # The Clean Placeholder
     text_msg = st.text_area("Journal Input", label_visibility="collapsed", placeholder=t["type_here"], height=150)
     
     c_short, c_deep = st.columns(2)
@@ -946,7 +1026,6 @@ if st.session_state.current_page == "Journal":
         cached_reply = None
         is_agent_mode = bool(btn_agent)
         
-        # 🚨 LAYER 1: LOCAL CRISIS INTERCEPTION 🚨
         is_crisis = False
         if text_msg:
             t_low_check = text_msg.lower().strip()
@@ -957,7 +1036,6 @@ if st.session_state.current_page == "Journal":
             st.session_state.current_page = "Crisis"
             st.rerun()
             
-        # Standard lightweight categorization
         if text_msg and not voice_input:
             t_low = text_msg.lower().strip()
             word_count = len(t_low.split())
@@ -1050,7 +1128,6 @@ if st.session_state.current_page == "Journal":
                             
                         resp = model.generate_content(prompt_parts)
                         
-                        # 🚨 LAYER 2: LLM CRISIS INTERCEPTION (Catches Voice Notes) 🚨
                         if "CRISIS_ALERT" in resp.text:
                             st.session_state.current_page = "Crisis"
                             st.rerun()
@@ -1146,10 +1223,8 @@ if st.session_state.current_page == "Journal":
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
         
-    # 🚨 THE PARK BENCH ENGINE INJECTION 🚨
     st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
 
-# 🚨 THE GLOBAL SAFETY & CRISIS REDIRECT SCREEN 🚨
 elif st.session_state.current_page == "Crisis":
     
     st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
@@ -1212,10 +1287,8 @@ elif st.session_state.current_page == "Ether":
     ether_ui = ether_html.replace("starCanvas", "ether_main")
     components.html(theme_it(ether_ui), height=450)
     
-    # 🚨 THE PARK BENCH ENGINE INJECTION 🚨
     st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
 
-# 🚨 THE FOCUS TAB WITH "THE CONVERGENCE" & "THE TIDE" 🚨
 elif st.session_state.current_page == "Focus":
     
     st.markdown(f"<div class='section-header'>{t['h_breath']}</div>", unsafe_allow_html=True)
@@ -1290,7 +1363,6 @@ elif st.session_state.current_page == "Focus":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
         components.html(theme_it(mala_html), height=370)
 
-    # 🚨 THE PARK BENCH ENGINE INJECTION 🚨
     st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Market":
@@ -1561,4 +1633,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"]:
 
 if st.session_state.current_page != "SilentExit":
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.23</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.24</div>", unsafe_allow_html=True)
