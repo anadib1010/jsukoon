@@ -63,6 +63,7 @@ LANG = {
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
+        "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
         "mini_disclaimer": "This application does not provide medical, psychological, therapeutic, or religious advice. It makes no claims and offers no guaranteed outcomes. Use is voluntary and at your own discretion.",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
@@ -108,6 +109,7 @@ LANG = {
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
+        "h_mentor": "स्थान (THE SPACE)", "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
         "mini_disclaimer": "यह एप्लिकेशन चिकित्सा, मनोवैज्ञानिक, चिकित्सीय या धार्मिक सलाह नहीं देता है। यह कोई दावा नहीं करता है और कोई गारंटीकृत परिणाम नहीं देता है। इसका उपयोग स्वैच्छिक है और आपके अपने विवेक पर है।",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
@@ -362,7 +364,7 @@ st.markdown(f"""
     /* PLACEHOLDER READABILITY FIX & OPACITY */
     textarea, input {{ background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 16px !important; backdrop-filter: blur(12px) !important; text-align: center !important; font-size: 14px !important; font-weight: 300 !important; font-family: 'Inter', sans-serif !important; padding: 15px !important; box-shadow: none !important; }}
     textarea:focus, input:focus {{ border-color: {c_accent} !important; outline: none !important; }}
-    textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.5 !important; font-weight: 300 !important; }}
+    textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.5 !important; font-weight: 300 !important; line-height: 1.6 !important; }}
     
     .journal-entry {{ background: {glass_bg}; backdrop-filter: blur(12px); border-left: 2px solid {c_accent}; padding: 20px; margin-bottom: 10px; border-radius: 12px; color: {app_text}; text-align: left; font-size: 14px; line-height: 1.6; font-weight: 300; border-top: 1px solid {btn_border}; border-right: 1px solid {btn_border}; border-bottom: 1px solid {btn_border}; }}
     </style>
@@ -1505,4 +1507,4 @@ if st.session_state.current_page != "Disclaimer":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.21</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.22</div>", unsafe_allow_html=True)
