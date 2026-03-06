@@ -56,19 +56,20 @@ if "unlocked_flame" not in st.session_state: st.session_state.unlocked_flame = F
 if "unlocked_nirvana" not in st.session_state: st.session_state.unlocked_nirvana = False
 
 # --- 4. ZERO-COST UI DICTIONARY ---
+# 🚨 LEGALLY SAFER, PSYCHOLOGICALLY COMFORTING REFRAMES APPLIED HERE 🚨
 LANG = {
     "English": {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_mentor": "YOUR PRIVATE LISTENER", "h_energy": "ENERGY STATE",
-        "privacy_note": "✦ Anonymous • Zero Data Stored • Always Listening ✦",
+        "privacy_note": "✦ Private • Judgement-Free • Always Listening ✦",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
         "agent_btn": "🤖 AI AGENT (SMART SANCTUARY) 🤖",
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
-        "record": "Speak freely. I do not judge, and I do not store your voice.", 
-        "type_here": "Or pour your thoughts here. You are completely safe...",
+        "record": "Speak freely. I do not judge, and I do not save your words.", 
+        "type_here": "Or pour your thoughts here. This is a safe space...",
         "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
@@ -95,13 +96,13 @@ LANG = {
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_mentor": "आपका निजी श्रोता", "h_energy": "ऊर्जा की स्थिति",
-        "privacy_note": "✦ अनाम • कोई डेटा सेव नहीं • हमेशा सुनने को तैयार ✦",
+        "privacy_note": "✦ निजी • बिना किसी फैसले के • हमेशा सुनने को तैयार ✦",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
         "agent_btn": "🤖 एआई एजेंट (स्मार्ट अभयारण्य) 🤖",
         "btn_short": "मार्गदर्शन (संक्षिप्त)", "btn_deep": "मार्गदर्शन (गहरा)",
-        "record": "खुलकर बोलें। मैं कोई फैसला नहीं करता, और कुछ याद नहीं रखता।", 
-        "type_here": "या अपने विचार यहाँ लिखें। आप यहाँ पूरी तरह सुरक्षित हैं...",
+        "record": "खुलकर बोलें। मैं कोई फैसला नहीं करता, और आपकी बातें सेव नहीं करता।", 
+        "type_here": "या अपने विचार यहाँ लिखें। यह एक सुरक्षित जगह है...",
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
         "e_racing": "तेज़ विचार", "e_restless": "बेचैन मन", "e_overwhelmed": "अभिभूत (Overwhelmed)", 
         "e_heavy": "भारी विचार", "e_tired": "थका हुआ मन", "e_quiet": "शांति चाहिए",
@@ -317,8 +318,12 @@ st.markdown(f"""
     .agent-btn>button {{ border: 1px solid rgba({c_rgb}, 0.5) !important; color: {c_accent} !important; letter-spacing: 2px; font-weight: 500 !important; }}
     .market-slab {{ background: {glass_bg}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid {btn_border}; padding: 20px; margin-bottom: 15px; text-align: center; transition: all 0.5s ease; }}
     .disclaimer-box {{ text-align: left; font-size: 11px; opacity: 0.6; line-height: 1.8; background: transparent; padding: 15px; border-radius: 12px; border: 1px solid {btn_border}; }}
+    
+    /* 🚨 PLACEHOLDER READABILITY FIX 🚨 */
     textarea, input {{ background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 16px !important; backdrop-filter: blur(12px) !important; text-align: center !important; font-size: 14px !important; font-weight: 300 !important; font-family: 'Inter', sans-serif !important; padding: 15px !important; box-shadow: none !important; }}
     textarea:focus, input:focus {{ border-color: {c_accent} !important; outline: none !important; }}
+    textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.7 !important; font-weight: 300 !important; }}
+    
     .journal-entry {{ background: {glass_bg}; backdrop-filter: blur(12px); border-left: 2px solid {c_accent}; padding: 20px; margin-bottom: 10px; border-radius: 12px; color: {app_text}; text-align: left; font-size: 14px; line-height: 1.6; font-weight: 300; border-top: 1px solid {btn_border}; border-right: 1px solid {btn_border}; border-bottom: 1px solid {btn_border}; }}
     </style>
     """, unsafe_allow_html=True)
@@ -820,9 +825,9 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
     
-    # 🚨 THE PRIVATE LISTENER REFRAME 🚨
+    # 🚨 THE PRIVATE LISTENER REFRAME & BRIGHTER TEXT 🚨
     st.markdown(f"<div class='section-header'>{t['h_mentor']}</div>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 10px; opacity: 0.5; margin-top: -5px; margin-bottom: 15px; color:{c_accent}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 10px; opacity: 0.85; margin-top: -5px; margin-bottom: 15px; color:{app_text}; font-weight: 400; text-align: center; letter-spacing: 1px;'>{t['privacy_note']}</p>", unsafe_allow_html=True)
 
     voice_input = st.audio_input(t["record"])
     text_msg = st.text_area(t["type_here"], height=150)
@@ -861,7 +866,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "heavy": cached_reply = "I hear the heaviness you are carrying. This weight is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it without judgment. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
-                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        if cat == "sleep": cached_reply = "रात शांत है, কুল (शांत) रहें। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "heavy": cached_reply = "मैं उस भारीपन को महसूस कर सकता हूँ। यह बोझ एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
@@ -880,7 +885,7 @@ if st.session_state.current_page == "Journal":
             st.rerun()
         else:
             if model:
-                with st.spinner("Channeling Wisdom..."):
+                with st.spinner("Listening..."):
                     energy_context = ""
                     if st.session_state.energy_history:
                         latest_energy = st.session_state.energy_history[-1]
@@ -895,7 +900,7 @@ if st.session_state.current_page == "Journal":
                         4. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script. NEVER reply in Hinglish.
                         """
                     else:
-                        core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a philosophical companion.
+                        core_philosophy = """You are the Sukoon Mentor, a proprietary digital guide. You are not a therapist or doctor. You do not treat conditions. You are a private, non-judgmental listener.
                         Your personality is a blend of Ancient Indian wisdom (Vedanta/Vipassana), Stoic philosophy, Zen minimalism, and practical neuroscience. 
                         1. NEVER use clinical words like 'anxiety', 'stress', 'depression', 'panic', 'patient', or 'treatment'. You must use lifestyle words: 'the noise', 'heaviness', 'a racing mind', 'overwhelm', 'finding stillness', 'focus', 'presence'.
                         2. Keep sentences short, piercing, and poetic. Zero fluff. Zero emojis. 
@@ -922,7 +927,7 @@ if st.session_state.current_page == "Journal":
                     try:
                         if voice_input:
                             audio_part = {"mime_type": "audio/wav", "data": voice_input.getvalue()}
-                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Mentor."]
+                            prompt_parts = [context, audio_part, "Listen to my voice note, transcribe it exactly, then respond as the Listener."]
                         elif text_msg:
                             prompt_parts = [context, text_msg]
                         else:
@@ -950,9 +955,9 @@ if st.session_state.current_page == "Journal":
                             st.session_state.core_journal.append({"time": datetime.now().strftime("%H:%M"), "ai": ai_reply, "id": unique_id})
                         st.rerun()
                     except Exception as e:
-                        st.error("The Mentor needs a moment of quiet. Please try again.")
+                        st.error("The Listener needs a moment of quiet. Please try again.")
             else:
-                st.warning("The Mentor is resting. Please try again in an hour.")
+                st.warning("The Listener is resting. Please try again in an hour.")
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
     
@@ -1266,4 +1271,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.11 | The Private Listener Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.12 | The Clarity & Compliance Update</div>", unsafe_allow_html=True)
