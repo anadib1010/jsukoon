@@ -723,6 +723,39 @@ st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
 if st.session_state.current_page == "Journal":
     
+    # 🚨 THE DYNAMIC SOMATIC MOOD GRID (MOVED TO TOP) 🚨
+    st.markdown(f"<div class='section-header'>{t['h_energy']}</div>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 11px; opacity: 0.6; margin-bottom: 15px; color:{app_text}; font-weight: 300;'>{t['energy_prompt']}</p>", unsafe_allow_html=True)
+    
+    # Row 1 (The Mind)
+    m_cols1 = st.columns(3)
+    states1 = [("e_racing", "Racing Thoughts", "Deep Sage"), 
+               ("e_restless", "Restless Mind", "Ocean Blue"), 
+               ("e_overwhelmed", "Overwhelmed", "The Void")]
+    
+    for i, (m_key, m_label, m_theme) in enumerate(states1):
+        with m_cols1[i]:
+            if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
+                st.session_state.energy_history.append(m_label)
+                st.session_state.theme = m_theme  # 🚨 This changes the app theme instantly
+                st.rerun()
+
+    # Row 2 (The Body / Soul)
+    m_cols2 = st.columns(3)
+    states2 = [("e_heavy", "Heavy Thoughts", "First Light"), 
+               ("e_tired", "Tired Mind", "Sea Glass"), 
+               ("e_quiet", "Need Quiet", "Twilight Blue")]
+               
+    for i, (m_key, m_label, m_theme) in enumerate(states2):
+        with m_cols2[i]:
+            if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
+                st.session_state.energy_history.append(m_label)
+                st.session_state.theme = m_theme  # 🚨 This changes the app theme instantly
+                st.rerun()
+
+    st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
+
+    # --- AMBIENCE ---
     st.markdown(f"<div class='section-header'>{t['h_ambience']}</div>", unsafe_allow_html=True)
     aud_cols = st.columns(5)
     sounds = {"Birds": "birds.mp3", "Flute": "flute.mp3", "Forest": "forest.mp3", "Waves": "waves.mp3", "Wind": "wind.mp3"}
@@ -981,26 +1014,6 @@ if st.session_state.current_page == "Journal":
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-    # 🚨 THE NEW EMOTIONAL ARCHITECTURE GRID 🚨
-    st.markdown(f"<div class='section-header'>{t['h_energy']}</div>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 11px; opacity: 0.6; margin-bottom: 15px; color:{app_text}; font-weight: 300;'>{t['energy_prompt']}</p>", unsafe_allow_html=True)
-    
-    # Row 1 (The Mind)
-    m_cols1 = st.columns(3)
-    states1 = [("e_racing", "Racing Thoughts"), ("e_restless", "Restless Mind"), ("e_overwhelmed", "Overwhelmed")]
-    for i, (m_key, m_label) in enumerate(states1):
-        with m_cols1[i]:
-            if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
-                st.session_state.energy_history.append(m_label); st.rerun()
-
-    # Row 2 (The Body / Soul)
-    m_cols2 = st.columns(3)
-    states2 = [("e_heavy", "Heavy Thoughts"), ("e_tired", "Tired Mind"), ("e_quiet", "Need Quiet")]
-    for i, (m_key, m_label) in enumerate(states2):
-        with m_cols2[i]:
-            if st.button(t[m_key], key=f"m_{m_key}", use_container_width=True): 
-                st.session_state.energy_history.append(m_label); st.rerun()
-
 elif st.session_state.current_page == "AutoPilot":
     st.markdown("<div class='section-header' style='color: #a6d8ff;'>⚡ EMERGENCY SANCTUARY ⚡</div>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 13px; opacity: 0.8; margin-bottom: 25px; color:{app_text}; font-weight: 300;'>I have taken over. Let the sound wash over you. Tap the screen to pop your thoughts, and breathe with the box.</p>", unsafe_allow_html=True)
@@ -1246,4 +1259,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.9 | The Emotional Architecture Update</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.10 | The Dynamic Somatic Update</div>", unsafe_allow_html=True)
