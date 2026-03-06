@@ -1225,6 +1225,7 @@ elif st.session_state.current_page == "Market":
     products_html += '</div>'
     st.markdown(products_html, unsafe_allow_html=True)
 
+# 🚨 THE INFO PAGE WITH THE NEW DISCLAIMER BUTTON 🚨
 elif st.session_state.current_page == "Info":
     
     st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
@@ -1257,6 +1258,137 @@ elif st.session_state.current_page == "Info":
         • <b>Not Spiritual:</b> It is a strictly secular environment. It is not affiliated with any religion, spiritual practice, or belief system.<br><br>
         <i>If you are experiencing a mental health emergency or severe overwhelm, please contact a qualified healthcare professional or emergency services immediately.</i>
     </div>""", unsafe_allow_html=True)
+    
+    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+    if st.button("Read Full Legal Disclaimer", use_container_width=True):
+        st.session_state.current_page = "Disclaimer"
+        st.rerun()
+
+# 🚨 THE FULL LEGAL DISCLAIMER PAGE 🚨
+elif st.session_state.current_page == "Disclaimer":
+    st.markdown("<div class='section-header'>LEGAL DISCLAIMER & TERMS</div>", unsafe_allow_html=True)
+    
+    if st.button("← Return to Info", use_container_width=True):
+        st.session_state.current_page = "Info"
+        st.rerun()
+        
+    st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    
+    disclaimer_full_html = f"""
+    <div class='market-slab' style='text-align:left; font-size:12px; font-weight:300; color: {app_text}; line-height:1.8; padding: 25px;'>
+        <strong style="font-weight: 500; font-size: 14px; letter-spacing: 1px; color: {c_accent};">SUKOON — LEGAL DISCLAIMER & TERMS OF USE (WELLBEING PLATFORM)</strong><br>
+        <i style="opacity: 0.5; font-size: 10px;">Last updated: March 2026</i><br><br>
+        
+        <strong style="color: {c_accent};">1. PURPOSE OF THE APPLICATION</strong><br>
+        SUKOON is a general wellbeing and reflection platform designed to offer calm spaces, neutral prompts, and optional self-guided tools intended for relaxation, reflection, and personal awareness.<br>
+        The application is not designed, intended, or represented as a medical, psychological, psychiatric, therapeutic, counseling, diagnostic, or treatment service of any kind.<br><br>
+        
+        <strong style="color: {c_accent};">2. NO MEDICAL OR PROFESSIONAL ADVICE</strong><br>
+        SUKOON does not provide:<br>
+        • medical advice<br>
+        • mental health diagnosis<br>
+        • psychological counseling<br>
+        • therapy<br>
+        • treatment plans<br>
+        • crisis intervention<br>
+        • professional guidance of any kind<br><br>
+        All content provided through the app — including text, audio, prompts, reflections, exercises, and AI-generated responses — is offered for general wellbeing and informational purposes only.<br>
+        Nothing within the app should be interpreted as a substitute for professional medical, psychological, psychiatric, legal, or other qualified services.<br><br>
+        
+        <strong style="color: {c_accent};">3. USER RESPONSIBILITY & AUTONOMY</strong><br>
+        Use of SUKOON is entirely voluntary.<br>
+        Users remain fully responsible for:<br>
+        • their interpretations of content<br>
+        • their decisions, actions, and behaviors<br>
+        • seeking appropriate professional help when needed<br><br>
+        The app does not direct, instruct, compel, or advise users to take or avoid any specific action in their personal, medical, emotional, professional, or legal lives.<br>
+        Users may discontinue use at any time without consequence.<br><br>
+        
+        <strong style="color: #ff4b4b;">4. NOT FOR EMERGENCIES OR CRISIS SITUATIONS</strong><br>
+        SUKOON is not suitable for emergencies.<br>
+        If you are experiencing:<br>
+        • thoughts of self-harm or harm to others<br>
+        • severe emotional distress<br>
+        • a mental health crisis<br>
+        • medical emergencies<br><br>
+        You should immediately contact:<br>
+        • local emergency services<br>
+        • a qualified healthcare provider<br>
+        • a licensed mental health professional<br>
+        • a trusted emergency helpline in your region<br><br>
+        The app does not monitor, detect, respond to, or intervene in crisis situations.<br><br>
+        
+        <strong style="color: {c_accent};">5. AI-GENERATED CONTENT DISCLOSURE</strong><br>
+        Some responses and reflections within SUKOON may be generated or assisted by automated systems or artificial intelligence.<br>
+        Such content:<br>
+        • is non-sentient<br>
+        • does not understand users personally<br>
+        • does not possess awareness, empathy, or intent<br>
+        • does not form relationships or attachments<br><br>
+        AI-generated content is non-authoritative and should not be relied upon as factual, professional, or personalized advice.<br><br>
+        
+        <strong style="color: {c_accent};">6. NO GUARANTEES OR OUTCOMES</strong><br>
+        SUKOON makes no guarantees, representations, or promises regarding:<br>
+        • emotional improvement<br>
+        • mental clarity<br>
+        • stress reduction<br>
+        • healing<br>
+        • recovery<br>
+        • personal growth<br>
+        • outcomes of any kind<br><br>
+        Individual experiences vary. Use of the app may or may not produce perceived benefits.<br><br>
+        
+        <strong style="color: {c_accent};">7. HABITUAL USE & DEPENDENCE DISCLAIMER</strong><br>
+        Regular or repeated use of SUKOON does not imply reliance or dependency, and the app does not encourage compulsive use.<br>
+        The platform:<br>
+        • does not use streaks, pressure mechanisms, or dependency-driven engagement<br>
+        • does not claim necessity for wellbeing<br>
+        • encourages balance with real-world activities<br><br>
+        Users are encouraged to maintain healthy routines and seek offline support as appropriate.<br><br>
+        
+        <strong style="color: {c_accent};">8. DATA INPUT & USER CONTENT</strong><br>
+        Any text, voice input, or other content voluntarily provided by users is used solely to generate general reflective or neutral responses, not for diagnosis, evaluation, or profiling.<br>
+        Users should avoid sharing sensitive personal, medical, or identifying information.<br><br>
+        
+        <strong style="color: {c_accent};">9. LIMITATION OF LIABILITY</strong><br>
+        To the maximum extent permitted by law:<br>
+        SUKOON, its founders, developers, operators, affiliates, licensors, and partners shall not be liable for any direct, indirect, incidental, consequential, emotional, psychological, medical, or other damages arising from:<br>
+        • use or inability to use the app<br>
+        • reliance on any content<br>
+        • interpretation of responses<br>
+        • habitual use<br>
+        • discontinuation of use<br><br>
+        Use of the app is at the user’s sole discretion and risk.<br><br>
+        
+        <strong style="color: {c_accent};">10. NO PROFESSIONAL RELATIONSHIP</strong><br>
+        Use of SUKOON does not create:<br>
+        • a doctor-patient relationship<br>
+        • therapist-client relationship<br>
+        • counselor-client relationship<br>
+        • fiduciary or professional relationship<br><br>
+        No such relationship is implied or established at any time.<br><br>
+        
+        <strong style="color: {c_accent};">11. CHANGES & UPDATES</strong><br>
+        This disclaimer may be updated periodically. Continued use of the app after changes constitutes acceptance of the revised terms.<br><br>
+        
+        <strong style="color: {c_accent};">12. JURISDICTION & COMPLIANCE</strong><br>
+        SUKOON operates as a general wellbeing platform and complies with applicable consumer, digital, and platform policies. It is not regulated as a medical or therapeutic service.<br><br>
+        
+        <div style="height: 1px; width: 100%; background: {btn_border}; margin: 30px 0;"></div>
+        
+        <strong style="font-weight: 500; font-size: 13px; color: {c_accent}; text-align: center; display: block; margin-bottom: 15px;">FINAL LEGAL POSITION (PLAIN LANGUAGE SUMMARY)</strong>
+        <div style="text-align: center; font-style: italic; opacity: 0.8;">
+            SUKOON:<br>
+            listens, but does not diagnose<br>
+            reflects, but does not advise<br>
+            offers space, not treatment<br>
+            allows habit, but discourages dependence<br>
+            supports calm, not crisis care
+        </div>
+    </div>
+    """
+    components.html(theme_it(disclaimer_full_html), height=600, scrolling=True)
+
 
 elif st.session_state.current_page == "Settings":
     st.markdown(f"<div class='section-header'>{t['h_lang']}</div>", unsafe_allow_html=True)
@@ -1334,4 +1466,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.16</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.17</div>", unsafe_allow_html=True)
