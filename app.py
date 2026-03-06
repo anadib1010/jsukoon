@@ -63,13 +63,12 @@ LANG = {
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "mini_disclaimer": "This application does not provide medical, psychological, therapeutic, or religious advice. It makes no claims and offers no guaranteed outcomes. Use is voluntary and at your own discretion.",
-        "pause_text": "Write a few words if you wish.<br><br>Nothing is analysed.<br><br>This space simply allows a moment of pause.",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
         "agent_btn": "🤖 AI AGENT (SMART SANCTUARY) 🤖",
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
         "record": " ", 
-        "type_here": "...",
+        "type_here": "Write a few words if you wish.\n\nThis page offers a quiet moment of pause.",
         "energy_prompt": "Pause and acknowledge how your body feels to guide the Mentor.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
@@ -97,13 +96,12 @@ LANG = {
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
         "mini_disclaimer": "यह एप्लिकेशन चिकित्सा, मनोवैज्ञानिक, चिकित्सीय या धार्मिक सलाह नहीं देता है। यह कोई दावा नहीं करता है और कोई गारंटीकृत परिणाम नहीं देता है। इसका उपयोग स्वैच्छिक है और आपके अपने विवेक पर है।",
-        "pause_text": "यदि आप चाहें तो कुछ शब्द लिखें।<br><br>कुछ भी एनालाइज (विश्लेषण) नहीं किया जाता।<br><br>यह स्थान बस कुछ पल रुकने का अवसर देता है।",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
         "agent_btn": "🤖 एआई एजेंट (स्मार्ट अभयारण्य) 🤖",
         "btn_short": "मार्गदर्शन (संक्षिप्त)", "btn_deep": "मार्गदर्शन (गहरा)",
         "record": " ", 
-        "type_here": "...",
+        "type_here": "यदि आप चाहें तो कुछ शब्द लिखें।\n\nयह पेज बस कुछ पल की शांति और ठहराव देता है।",
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
         "e_racing": "तेज़ विचार", "e_restless": "बेचैन मन", "e_overwhelmed": "अभिभूत (Overwhelmed)", 
         "e_heavy": "भारी विचार", "e_tired": "थका हुआ मन", "e_quiet": "शांति चाहिए",
@@ -331,10 +329,10 @@ st.markdown(f"""
     .market-slab {{ background: {glass_bg}; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; border: 1px solid {btn_border}; padding: 20px; margin-bottom: 15px; text-align: center; transition: all 0.5s ease; }}
     .disclaimer-box {{ text-align: left; font-size: 11px; opacity: 0.6; line-height: 1.8; background: transparent; padding: 15px; border-radius: 12px; border: 1px solid {btn_border}; margin-bottom: 20px; }}
     
-    /* PLACEHOLDER READABILITY FIX */
+    /* 🚨 PLACEHOLDER READABILITY FIX & OPACITY 🚨 */
     textarea, input {{ background: {glass_bg} !important; color: {app_text} !important; border: 1px solid {btn_border} !important; border-radius: 16px !important; backdrop-filter: blur(12px) !important; text-align: center !important; font-size: 14px !important; font-weight: 300 !important; font-family: 'Inter', sans-serif !important; padding: 15px !important; box-shadow: none !important; }}
     textarea:focus, input:focus {{ border-color: {c_accent} !important; outline: none !important; }}
-    textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.7 !important; font-weight: 300 !important; }}
+    textarea::placeholder, input::placeholder {{ color: {app_text} !important; opacity: 0.5 !important; font-weight: 300 !important; }}
     
     .journal-entry {{ background: {glass_bg}; backdrop-filter: blur(12px); border-left: 2px solid {c_accent}; padding: 20px; margin-bottom: 10px; border-radius: 12px; color: {app_text}; text-align: left; font-size: 14px; line-height: 1.6; font-weight: 300; border-top: 1px solid {btn_border}; border-right: 1px solid {btn_border}; border-bottom: 1px solid {btn_border}; }}
     </style>
@@ -837,12 +835,11 @@ if st.session_state.current_page == "Journal":
 
     st.markdown("<div style='height:25px'></div>", unsafe_allow_html=True)
     
-    # 🚨 THE NEUTRAL PAUSE REFRAME 🚨
+    # 🚨 THE NEW MINIMALIST DISCLAIMER & VANISHING PLACEHOLDER 🚨
     st.markdown(f"<div class='disclaimer-box' style='text-align:center; font-size:10px; font-weight:300; color: {app_text}; opacity: 0.6; line-height:1.6; border: 1px solid {btn_border}; margin-bottom: 25px;'>{t['mini_disclaimer']}</div>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 13px; opacity: 0.85; margin-bottom: 15px; color:{app_text}; font-weight: 300; text-align: center; letter-spacing: 1px; line-height: 1.8;'>{t['pause_text']}</p>", unsafe_allow_html=True)
-
-    voice_input = st.audio_input(t["record"])
-    text_msg = st.text_area(t["type_here"], height=150)
+    
+    voice_input = st.audio_input(t["record"], label_visibility="collapsed")
+    text_msg = st.text_area("Journal Input", label_visibility="collapsed", placeholder=t["type_here"], height=150)
     
     c_short, c_deep = st.columns(2)
     with c_short:
@@ -1462,4 +1459,4 @@ if st.session_state.current_page != "Disclaimer":
         st.rerun()
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.18</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.19</div>", unsafe_allow_html=True)
