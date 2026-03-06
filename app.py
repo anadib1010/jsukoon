@@ -13,7 +13,6 @@ REPO_NAME = "jsukoon"
 GA_ID = "G-29F4EM37KE"
 
 # --- 2. CONFIG & PWA META TAGS ---
-# 🚨 CHANGED TO 'WIDE' TO FIX PC SCROLLING DEAD ZONES 🚨
 st.set_page_config(page_title="Sukoon", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown(f"""
@@ -172,9 +171,29 @@ st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
     
-    /* 🚨 THE TRUE PC SCROLL FIX 🚨 */
-    /* Forces the content to stay centered at 600px, even though the layout is now 'Wide' */
-    .block-container {{ max-width: 600px !important; margin: auto !important; padding-top: 3.5rem !important; text-align: center !important; overflow-x: hidden !important; }}
+    /* 🚨 THE PADDING TRAP: PC SCROLL FIX 🚨 */
+    .block-container {{ 
+        max-width: 100vw !important; 
+        padding-top: 3.5rem !important; 
+        text-align: center !important; 
+        overflow-x: hidden !important; 
+    }}
+    
+    /* For PC (Wide Screens): Squeeze content to 600px using invisible padding */
+    @media (min-width: 601px) {{
+        .block-container {{
+            padding-left: calc(50vw - 300px) !important;
+            padding-right: calc(50vw - 300px) !important;
+        }}
+    }}
+    
+    /* For Phones: Use standard padding */
+    @media (max-width: 600px) {{
+        .block-container {{
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }}
+    }}
     
     /* The Waking Up Reveal */
     .stApp {{ 
@@ -1206,4 +1225,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.7 | The PC Scroll Fix</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.8 | The True PC Scroll Fix</div>", unsafe_allow_html=True)
