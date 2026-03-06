@@ -1054,32 +1054,28 @@ if st.session_state.current_page == "Journal":
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-# 🚨 THE NEW CRISIS INTERVENTION SCREEN 🚨
+# 🚨 THE GLOBAL SAFETY & CRISIS REDIRECT SCREEN 🚨
 elif st.session_state.current_page == "Crisis":
-    st.markdown("<div class='section-header' style='color: #ff4b4b;'>PLEASE READ THIS</div>", unsafe_allow_html=True)
-    st.markdown(f"<p style='font-size: 16px; margin-bottom: 25px; color:{app_text}; font-weight: 400; text-align: center;'>You are not alone. There is help available right now.</p>", unsafe_allow_html=True)
-
+    
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+    
     crisis_html = """
-    <div style="background: rgba(255, 75, 75, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 75, 75, 0.3); border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 20px; font-family: 'Inter', sans-serif;">
-        <h3 style="color: #ff4b4b; margin-bottom: 15px; font-weight: 500; font-size: 14px; letter-spacing: 2px;">NATIONAL HELPLINE (KIRAN)</h3>
-        <a href="tel:18005990019" style="text-decoration: none;">
-            <div style="background: #ff4b4b; color: white; padding: 15px; border-radius: 30px; font-size: 18px; font-weight: 600; letter-spacing: 2px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(255, 75, 75, 0.2);">📞 1800-599-0019</div>
-        </a>
+    <div style="background: rgba(255, 75, 75, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 75, 75, 0.3); border-radius: 16px; padding: 40px 25px; text-align: center; margin-bottom: 20px; font-family: 'Inter', sans-serif;">
+        <h3 style="color: #ff4b4b; margin-bottom: 25px; font-weight: 500; font-size: 13px; letter-spacing: 3px; text-transform: uppercase;">NOTICE</h3>
         
-        <h3 style="color: [C_TEXT]; margin-bottom: 10px; font-weight: 400; font-size: 12px; opacity: 0.8;">VANDREVALA FOUNDATION</h3>
-        <a href="tel:9999666555" style="text-decoration: none;">
-            <div style="background: rgba([C_RGB], 0.1); border: 1px solid rgba([C_RGB], 0.2); color: [C_TEXT]; padding: 12px; border-radius: 30px; font-size: 13px; margin-bottom: 20px;">📞 9999 666 555</div>
-        </a>
-
-        <h3 style="color: [C_TEXT]; margin-bottom: 10px; font-weight: 400; font-size: 12px; opacity: 0.8;">AASRA</h3>
-        <a href="tel:9820466726" style="text-decoration: none;">
-            <div style="background: rgba([C_RGB], 0.1); border: 1px solid rgba([C_RGB], 0.2); color: [C_TEXT]; padding: 12px; border-radius: 30px; font-size: 13px; margin-bottom: 15px;">📞 9820 466 726</div>
-        </a>
+        <p style="color: [C_TEXT]; font-size: 16px; font-weight: 300; line-height: 1.8; margin-bottom: 30px;">
+            Some topics cannot be explored here.<br>This space is limited by design.
+        </p>
         
-        <p style="font-size: 11px; opacity: 0.5; color: [C_TEXT]; margin-top: 25px; letter-spacing: 1px;">EMERGENCY POLICE: 112</p>
+        <div style="height: 1px; width: 50%; background: rgba([C_RGB], 0.2); margin: 0 auto 30px auto;"></div>
+        
+        <p style="color: [C_TEXT]; font-size: 13px; font-weight: 300; line-height: 1.8; opacity: 0.7;">
+            This app is not designed for emergencies or crisis situations.<br><br>
+            If you need immediate help, please contact your local emergency services or reach out to a trusted person.
+        </p>
     </div>
     """
-    components.html(theme_it(crisis_html), height=420)
+    components.html(theme_it(crisis_html), height=350)
     
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     if st.button("Return to Sanctuary", use_container_width=True):
@@ -1338,4 +1334,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.15</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.16</div>", unsafe_allow_html=True)
