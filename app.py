@@ -61,6 +61,7 @@ LANG = {
     "English": {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
+        "nav_exit": "✧ LEAVE SANCTUARY ✧", "exit_msg": "This moment is yours.",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
@@ -107,6 +108,7 @@ LANG = {
     "Hindi": {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
+        "nav_exit": "✧ प्रस्थान (LEAVE) ✧", "exit_msg": "यह पल आपका है।",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
         "h_mentor": "स्थान (THE SPACE)", "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
@@ -369,6 +371,49 @@ st.markdown(f"""
     .journal-entry {{ background: {glass_bg}; backdrop-filter: blur(12px); border-left: 2px solid {c_accent}; padding: 20px; margin-bottom: 10px; border-radius: 12px; color: {app_text}; text-align: left; font-size: 14px; line-height: 1.6; font-weight: 300; border-top: 1px solid {btn_border}; border-right: 1px solid {btn_border}; border-bottom: 1px solid {btn_border}; }}
     </style>
     """, unsafe_allow_html=True)
+
+# 🚨 THE SILENT EXIT TAKEOVER 🚨
+if st.session_state.current_page == "SilentExit":
+    st.markdown(f"""
+    <style>
+        header {{ display: none !important; }}
+        footer {{ display: none !important; }}
+        .stApp {{ background-color: {app_bg} !important; }}
+        
+        .exit-wrap {{
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: {app_bg};
+            display: flex; justify-content: center; align-items: center;
+            z-index: 999999;
+            flex-direction: column;
+        }}
+        .exit-text {{
+            color: {app_text}; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 4px;
+            opacity: 0; animation: fadeText 5s ease-in-out forwards; text-align: center; z-index: 10; text-transform: uppercase;
+        }}
+        .exit-circle {{
+            position: absolute; width: 2px; height: 2px; border-radius: 50%;
+            background: {c_accent}; opacity: 0; animation: breathCircle 6s ease-in-out forwards;
+        }}
+        
+        @keyframes fadeText {{
+            0% {{ opacity: 0; transform: translateY(10px); }}
+            20% {{ opacity: 0.6; transform: translateY(0); }}
+            75% {{ opacity: 0.6; transform: translateY(0); }}
+            100% {{ opacity: 0; transform: translateY(-5px); }}
+        }}
+        @keyframes breathCircle {{
+            0% {{ transform: scale(1); opacity: 0; }}
+            20% {{ opacity: 0.15; }}
+            100% {{ transform: scale(300); opacity: 0; }}
+        }}
+    </style>
+    <div class="exit-wrap">
+        <div class="exit-circle"></div>
+        <div class="exit-text">{t['exit_msg']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.stop() # Prevents any other UI from loading
 
 # 🚨 INJECT ATMOSPHERE DIVS 🚨
 st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
@@ -746,27 +791,35 @@ waterfall_html = """
 # --- 8. MAIN APP HEADER & NAV GRID ---
 # ==========================================
 
-st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
+if st.session_state.current_page != "SilentExit":
+    st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
+    st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
-with col2:
-    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
-with col3:
-    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
+    with col2:
+        if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
+    with col3:
+        if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
 
-col4, col5, col6 = st.columns(3)
-with col4:
-    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
-with col5:
-    if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
-with col6:
-    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
+    col4, col5, col6 = st.columns(3)
+    with col4:
+        if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
+    with col5:
+        if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
+    with col6:
+        if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
 
-st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div class='agent-btn'>", unsafe_allow_html=True)
+    if st.button(t["nav_exit"], use_container_width=True):
+        st.session_state.current_page = "SilentExit"
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # --- PAGES ---
@@ -1499,12 +1552,13 @@ elif st.session_state.current_page == "Settings":
             st.error("Code not recognized in the Ether.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON 🚨
-if st.session_state.current_page != "Disclaimer":
+# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON (HIDDEN IF IN EXIT MODE) 🚨
+if st.session_state.current_page not in ["Disclaimer", "SilentExit"]:
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     if st.button("Read Full Legal Disclaimer", use_container_width=True):
         st.session_state.current_page = "Disclaimer"
         st.rerun()
 
-st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.22</div>", unsafe_allow_html=True)
+if st.session_state.current_page != "SilentExit":
+    st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.23</div>", unsafe_allow_html=True)
