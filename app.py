@@ -1173,7 +1173,7 @@ elif st.session_state.current_page == "Info":
     # 🚨 THE FOUNDER'S MANIFESTO 🚨
     st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
     st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8; font-style: italic; border-left: 3px solid {c_accent};'>
-        "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your nervous system immediate shelter from a loud world. There are no forced logins to store your data, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
+        "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your overwhelmed mind immediate shelter from a loud world. There are no forced logins to track your identity, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
     </div>""", unsafe_allow_html=True)
 
     st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
@@ -1196,7 +1196,7 @@ elif st.session_state.current_page == "Info":
 
     # 🚨 THE IRONCLAD LEGAL DISCLAIMER 🚨
     st.markdown("<div class='section-header'>IMPORTANT DISCLAIMER</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='disclaimer-box' style='text-align:left; font-size:11px; font-weight:300; color: {app_text}; line-height:1.8; border-left: 3px solid #ff4b4b; background: rgba(255, 75, 75, 0.05);'>
+    st.markdown(f"""<div class='disclaimer-box' style='text-align:left; font-size:11px; font-weight:300; color: {app_text}; line-height:1.8; border-left: 3px solid #ff4b4b; background: rgba(255, 75, 75, 0.05); margin-bottom: 20px;'>
         <b>Sukoon is an interactive art and lifestyle project.</b><br><br>
         • <b>Not Medical:</b> It is not a medical device, therapy tool, or psychological service. It does not treat, diagnose, or prevent any condition.<br>
         • <b>Not Spiritual:</b> It is a strictly secular environment. It is not affiliated with any religion, spiritual practice, or belief system.<br><br>
@@ -1279,4 +1279,4 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.13 </div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.14</div>", unsafe_allow_html=True)
