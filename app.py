@@ -396,15 +396,16 @@ if not st.session_state.has_completed_ritual:
     .p2-circle {{ width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }}
     .p2-text {{ font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: #E0E0E0; }}
     
-    /* Strict Flexbox row rules to prevent overlap of choices */
+    /* 🚨 STRICT OVERLAP PREVENTION FOR RITUAL BUTTONS 🚨 */
     div[data-testid="stHorizontalBlock"] {{
         position: fixed !important; top: 65vh !important; left: 50% !important; transform: translateX(-50%) !important;
-        width: 90% !important; max-width: 380px !important; z-index: 200 !important; pointer-events: auto !important;
+        width: 90vw !important; max-width: 320px !important; z-index: 200 !important; pointer-events: auto !important;
         opacity: 0; animation: rFadeIn 2s 20s forwards;
-        display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; gap: 15px !important; justify-content: center !important;
+        display: flex !important; flex-direction: row !important; justify-content: space-between !important; gap: 0 !important;
     }}
-    div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"], div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
-        width: calc(50% - 7.5px) !important; min-width: calc(50% - 7.5px) !important; max-width: calc(50% - 7.5px) !important; flex: 1 1 calc(50% - 7.5px) !important; margin-bottom: 0 !important;
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"], div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
+        width: 47% !important; min-width: 47% !important; max-width: 47% !important; flex: 0 0 47% !important;
+        margin: 0 !important; padding: 0 !important;
     }}
     div[data-testid="stHorizontalBlock"] button {{
         background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.1) !important;
@@ -1638,4 +1639,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.sess
 
 if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.25</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.26</div>", unsafe_allow_html=True)
