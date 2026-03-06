@@ -64,7 +64,7 @@ LANG = {
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "nav_exit": "✧ LEAVE SANCTUARY ✧", "exit_msg": "This moment is yours.",
         "r_arrive": "You have arrived.", "r_nothing": "Nothing is required here.",
-        "r_breath": "Take one slow breath.", "r_sit": "Sit quietly", "r_write": "Write a few words",
+        "r_breath": "Take one slow breath.", "r_enter": "ENTER SUKOON SANCTUARY",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
@@ -113,7 +113,7 @@ LANG = {
         "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
         "nav_exit": "✧ प्रस्थान (LEAVE) ✧", "exit_msg": "यह पल आपका है।",
         "r_arrive": "आप पहुँच गए हैं।", "r_nothing": "यहाँ आपसे कुछ भी अपेक्षित नहीं है।",
-        "r_breath": "एक धीमी सांस लें।", "r_sit": "शांति से बैठें", "r_write": "कुछ शब्द लिखें",
+        "r_breath": "एक धीमी सांस लें।", "r_enter": "सुकून अभयारण्य में प्रवेश करें",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
         "h_mentor": "स्थान (THE SPACE)", "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
@@ -378,7 +378,7 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 🚨 THE 30-SECOND THRESHOLD RITUAL 🚨
+# 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
     st.markdown(f"""
@@ -396,40 +396,16 @@ if not st.session_state.has_completed_ritual:
     .p2-circle {{ width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }}
     .p2-text {{ font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: #E0E0E0; }}
     
-    /* 🚨 STRICT OVERLAP PREVENTION FOR RITUAL BUTTONS 🚨 */
-    div[data-testid="stHorizontalBlock"] {{
-        position: fixed !important; top: 65vh !important; left: 50% !important; transform: translateX(-50%) !important;
-        width: 90vw !important; max-width: 320px !important; z-index: 200 !important; pointer-events: auto !important;
-        opacity: 0; animation: rFadeIn 2s 20s forwards;
-        display: flex !important; flex-direction: row !important; justify-content: space-between !important; gap: 0 !important;
-    }}
-    div[data-testid="stHorizontalBlock"] > div[data-testid="column"], div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {{
-        width: 47% !important; min-width: 47% !important; max-width: 47% !important; flex: 0 0 47% !important;
-        margin: 0 !important; padding: 0 !important;
-    }}
-    div[data-testid="stHorizontalBlock"] button {{
-        background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.1) !important;
-        color: #E0E0E0 !important; font-weight: 300 !important; border-radius: 30px !important; backdrop-filter: blur(10px) !important;
-        width: 100% !important; height: 100% !important; min-height: 44px !important; white-space: normal !important; padding: 5px !important;
-    }}
+    .p3 {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; opacity: 0; animation: fadeP3 4s ease-in-out 20s forwards; width: 100%; }}
+    .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }}
     
-    /* Delay the skip button */
-    div[data-testid="stVerticalBlock"] > div:last-child {{
-        position: fixed; bottom: 20px; right: 20px; z-index: 200; pointer-events: auto;
-        width: auto !important; opacity: 0; animation: rFadeIn 2s 3s forwards;
-    }}
-    div[data-testid="stVerticalBlock"] > div:last-child button {{
-        background: transparent !important; border: none !important; color: #555 !important; font-size: 10px !important; box-shadow: none !important;
-    }}
-
     @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
     @keyframes fadeP2 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 90%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
+    @keyframes fadeP3 {{ 0%{{opacity:0;}} 20%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0;}} }}
     @keyframes rFadeIn {{ to {{opacity:1;}} }}
     @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
     </style>
-    """, unsafe_allow_html=True)
     
-    st.markdown(f"""
     <div class="r-wrap">
         <div class="p1">
             <div class="p1-main">{t['r_arrive']}</div>
@@ -439,23 +415,46 @@ if not st.session_state.has_completed_ritual:
             <div class="p2-circle"></div>
             <div class="p2-text">{t['r_breath']}</div>
         </div>
+        <div class="p3">
+            <div class="p3-text">{t['r_enter']}</div>
+        </div>
     </div>
+    
+    <script>
+        (function() {{
+            const interval = setInterval(() => {{
+                try {{
+                    const btns = window.parent.document.querySelectorAll('button');
+                    btns.forEach(b => {{
+                        if (b.innerText.includes('AUTO_ENTER')) {{
+                            b.style.opacity = '0'; b.style.position = 'absolute'; b.style.zIndex = '-1000'; b.style.pointerEvents = 'none';
+                            clearInterval(interval);
+                        }}
+                        if (b.innerText.includes('(skip)')) {{
+                            b.style.background = 'transparent'; b.style.border = 'none'; b.style.color = '#555'; b.style.boxShadow = 'none';
+                            b.style.position = 'fixed'; b.style.bottom = '20px'; b.style.right = '20px'; b.style.width = 'auto'; b.style.minWidth = 'auto'; b.style.fontSize = '10px';
+                            b.style.opacity = '0'; b.style.animation = 'rFadeIn 2s 3s forwards'; b.style.zIndex = '200';
+                        }}
+                    }});
+                }} catch(e) {{}}
+            }}, 100);
+
+            setTimeout(() => {{
+                try {{
+                    const btns = window.parent.document.querySelectorAll('button');
+                    btns.forEach(b => {{
+                        if (b.innerText.includes('AUTO_ENTER')) {{ b.click(); }}
+                    }});
+                }} catch(e) {{}}
+            }}, 24000);
+        }})();
+    </script>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button(t['r_sit'], use_container_width=True):
-            st.session_state.has_completed_ritual = True
-            st.session_state.current_page = "Focus"
-            st.rerun()
-    with col2:
-        if st.button(t['r_write'], use_container_width=True):
-            st.session_state.has_completed_ritual = True
-            st.session_state.current_page = "Journal"
-            st.rerun()
-            
-    st.markdown("<div></div>", unsafe_allow_html=True) # Spacer
-    if st.button("(skip)"):
+    if st.button("AUTO_ENTER", key="auto_enter_trigger"):
+        st.session_state.has_completed_ritual = True
+        st.rerun()
+    if st.button("(skip)", key="skip_trigger"):
         st.session_state.has_completed_ritual = True
         st.rerun()
         
@@ -1630,7 +1629,7 @@ elif st.session_state.current_page == "Settings":
             st.error("Code not recognized in the Ether.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON (HIDDEN IF IN EXIT MODE) 🚨
+# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON (HIDDEN IF IN EXIT MODE OR RITUAL) 🚨
 if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     if st.button("Read Full Legal Disclaimer", use_container_width=True):
@@ -1639,4 +1638,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.sess
 
 if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.26</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.27</div>", unsafe_allow_html=True)
