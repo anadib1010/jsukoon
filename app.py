@@ -390,14 +390,16 @@ st.markdown(f"""
 # 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL (PURE CSS CURTAIN) 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
+    # We immediately flag it as True so on the NEXT rerun, it won't load the curtain.
     st.session_state.has_completed_ritual = True
     
     ritual_html = f"""
     <style>
-        #ritual-curtain {{
+        .rc-wrap-curtain {{
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; z-index: 9999999;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
+            /* At exactly 24.5 seconds, the curtain completely dissolves */
             animation: hideCurtain 1.5s ease-in-out 24.5s forwards;
         }}
         
@@ -420,7 +422,7 @@ if not st.session_state.has_completed_ritual:
         @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
     </style>
     
-    <div id="ritual-curtain">
+    <div class="rc-wrap-curtain">
         <div class="p1">
             <div class="p1-main">{t['r_arrive']}</div>
             <div class="p1-sub">{t['r_nothing']}</div>
@@ -436,11 +438,11 @@ if not st.session_state.has_completed_ritual:
     """
     st.markdown(ritual_html, unsafe_allow_html=True)
     
-    # Decoupled zero-pixel Javascript injection to bypass Streamlit's onclick sanitizer
+    # Decoupled zero-pixel Javascript injection to inject the skip button safely
     components.html("""
     <script>
         const doc = window.parent.document;
-        const curtain = doc.getElementById('ritual-curtain');
+        const curtain = doc.querySelector('.rc-wrap-curtain');
         
         if (curtain) {
             // Create pure HTML skip button safely inside JS
@@ -485,18 +487,20 @@ if not st.session_state.has_completed_ritual:
 if st.session_state.current_page == "SilentExit":
     st.markdown(f"""
     <style>
-        #exit-wrap {{
+        .stApp {{ background-color: {app_bg} !important; }}
+        
+        .exit-wrap-screen {{
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: {app_bg};
             display: flex; justify-content: center; align-items: center; flex-direction: column;
             z-index: 9999999;
         }}
-        #exit-text {{
+        .exit-text-screen {{
             color: {app_text}; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px;
             opacity: 0; animation: fadeExitText 6s ease-in-out forwards; text-align: center; z-index: 10000001; text-transform: uppercase;
             position: absolute;
         }}
-        #exit-circle {{
+        .exit-circle-screen {{
             position: absolute; width: 15px; height: 15px; border-radius: 50%;
             background-color: {c_accent}; opacity: 0; animation: breathExitCircle 6s ease-in-out forwards;
             z-index: 10000000;
@@ -514,9 +518,9 @@ if st.session_state.current_page == "SilentExit":
             100% {{ transform: scale(150); opacity: 0; }}
         }}
     </style>
-    <div id="exit-wrap">
-        <div id="exit-circle"></div>
-        <div id="exit-text">{t['exit_msg']}</div>
+    <div class="exit-wrap-screen">
+        <div class="exit-circle-screen"></div>
+        <div class="exit-text-screen">{t['exit_msg']}</div>
     </div>
     """, unsafe_allow_html=True)
     st.stop() 
@@ -1078,7 +1082,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "heavy": cached_reply = "Heaviness is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
-                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड دب छोड़ें।"
+                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "heavy": cached_reply = "यह भारीपन एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
@@ -1656,4 +1660,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.sess
 
 if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.32</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.33</div>", unsafe_allow_html=True)
