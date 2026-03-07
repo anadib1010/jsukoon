@@ -87,7 +87,7 @@ LANG = {
         "energy_prompt": "Pause and acknowledge how your body feels to guide the engine.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
-        "h_ether": "THE ETHER", "h_breath": "BREATH STUDIO", "h_games": "GROUNDING GAMES",
+        "h_ether": "YOUR ETHER", "h_breath": "BREATH STUDIO", "h_games": "GROUNDING GAMES",
         "b_anchor": "Anchor (4-2-6)", "b_box": "The Box (4-4-4-4)", "b_sleep": "Deep Sleep (4-7-8)",
         "choose_visual": "CHOOSE YOUR VISUAL GUIDE", "v_wave": "The Wave", "v_moon": "The Moon", "v_lotus": "The Lotus",
         "game_release": "The Release", "game_bloom": "The Bloom", "game_convergence": "The Convergence",
