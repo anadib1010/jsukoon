@@ -403,8 +403,9 @@ if not st.session_state.has_completed_ritual:
         .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }}
         
         #sukoon-skip-btn {{
-            position: absolute; bottom: 40px; color: #555; font-family: 'Inter', sans-serif;
-            font-size: 11px; font-weight: 300; letter-spacing: 2px; cursor: pointer;
+            position: absolute; bottom: 100px; /* BUMPED UP FROM 40px */
+            color: #888; font-family: 'Inter', sans-serif;
+            font-size: 11px; font-weight: 400; letter-spacing: 2px; cursor: pointer;
             opacity: 0; animation: rFadeInSkip 2s ease forwards 3s; padding: 10px 20px; z-index: 10000000;
         }}
         
