@@ -390,7 +390,6 @@ st.markdown(f"""
 # 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL (PURE CSS CURTAIN) 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
-    # We immediately flag it as True so on the NEXT rerun, it won't load the curtain.
     st.session_state.has_completed_ritual = True
     
     ritual_html = f"""
@@ -399,7 +398,6 @@ if not st.session_state.has_completed_ritual:
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; z-index: 9999999;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
-            /* At exactly 24.5 seconds, the curtain completely dissolves */
             animation: hideCurtain 1.5s ease-in-out 24.5s forwards;
         }}
         
@@ -413,12 +411,6 @@ if not st.session_state.has_completed_ritual:
         
         .p3 {{ position: absolute; text-align: center; opacity: 0; animation: fadeP3 4.5s ease-in-out 20s forwards; width: 100%; }}
         .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }}
-        
-        .stealth-skip {{
-            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            color: #555; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 300; letter-spacing: 2px;
-            cursor: pointer; opacity: 0; animation: rFadeIn 2s 3s forwards; padding: 10px 20px; z-index: 10000000;
-        }}
         
         @keyframes hideCurtain {{ to {{ opacity: 0; visibility: hidden; pointer-events: none; display: none; }} }}
         @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
@@ -440,32 +432,52 @@ if not st.session_state.has_completed_ritual:
         <div class="p3">
             <div class="p3-text">{t['r_enter']}</div>
         </div>
-        <div id="stealth-skip-btn" class="stealth-skip">(skip)</div>
     </div>
     """
     st.markdown(ritual_html, unsafe_allow_html=True)
     
-    # We use components.html to inject a pure JS listener that avoids Streamlit's onclick sanitizer entirely.
+    # Decoupled zero-pixel Javascript injection to bypass Streamlit's onclick sanitizer
     components.html("""
     <script>
         const doc = window.parent.document;
-        const skipBtn = doc.getElementById('stealth-skip-btn');
         const curtain = doc.getElementById('ritual-curtain');
         
-        if (skipBtn && curtain) {
+        if (curtain) {
+            // Create pure HTML skip button safely inside JS
+            const skipBtn = doc.createElement('div');
+            skipBtn.innerText = '(skip)';
+            skipBtn.style.position = 'absolute';
+            skipBtn.style.bottom = '40px';
+            skipBtn.style.left = '50%';
+            skipBtn.style.transform = 'translateX(-50%)';
+            skipBtn.style.color = '#555';
+            skipBtn.style.fontFamily = 'Inter, sans-serif';
+            skipBtn.style.fontSize = '11px';
+            skipBtn.style.fontWeight = '300';
+            skipBtn.style.letterSpacing = '2px';
+            skipBtn.style.cursor = 'pointer';
+            skipBtn.style.opacity = '0';
+            skipBtn.style.transition = 'opacity 2s ease';
+            skipBtn.style.padding = '10px 20px';
+            skipBtn.style.zIndex = '10000000';
+            
+            curtain.appendChild(skipBtn);
+            
+            // Fade in skip button after 3 seconds
+            setTimeout(() => { skipBtn.style.opacity = '0.4'; }, 3000);
+            
+            // Instantly dissolve curtain on click
             skipBtn.addEventListener('click', function() {
                 curtain.style.opacity = '0';
                 curtain.style.pointerEvents = 'none';
                 setTimeout(() => { curtain.style.display = 'none'; }, 500);
             });
-        }
-        
-        // Hard fallback to ensure curtain dies
-        setTimeout(() => {
-            if (curtain) {
+            
+            // Hard fallback to permanently delete curtain at end of animation
+            setTimeout(() => {
                 curtain.style.display = 'none';
-            }
-        }, 26000);
+            }, 26000);
+        }
     </script>
     """, height=0, width=0)
 
@@ -473,39 +485,38 @@ if not st.session_state.has_completed_ritual:
 if st.session_state.current_page == "SilentExit":
     st.markdown(f"""
     <style>
-        .stApp {{ background-color: {app_bg} !important; }}
-        
-        .exit-wrap {{
+        #exit-wrap {{
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: {app_bg};
-            display: flex; justify-content: center; align-items: center;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
             z-index: 9999999;
-            flex-direction: column;
         }}
-        .exit-text {{
-            color: {app_text}; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 4px;
-            opacity: 0; animation: fadeText 5s ease-in-out forwards; text-align: center; z-index: 10; text-transform: uppercase;
+        #exit-text {{
+            color: {app_text}; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px;
+            opacity: 0; animation: fadeExitText 6s ease-in-out forwards; text-align: center; z-index: 10000001; text-transform: uppercase;
+            position: absolute;
         }}
-        .exit-circle {{
-            position: absolute; width: 2px; height: 2px; border-radius: 50%;
-            background: {c_accent}; opacity: 0; animation: breathCircle 6s ease-in-out forwards;
+        #exit-circle {{
+            position: absolute; width: 15px; height: 15px; border-radius: 50%;
+            background-color: {c_accent}; opacity: 0; animation: breathExitCircle 6s ease-in-out forwards;
+            z-index: 10000000;
         }}
         
-        @keyframes fadeText {{
+        @keyframes fadeExitText {{
             0% {{ opacity: 0; transform: translateY(10px); }}
-            20% {{ opacity: 0.6; transform: translateY(0); }}
-            75% {{ opacity: 0.6; transform: translateY(0); }}
+            20% {{ opacity: 0.8; transform: translateY(0); }}
+            80% {{ opacity: 0.8; transform: translateY(0); }}
             100% {{ opacity: 0; transform: translateY(-5px); }}
         }}
-        @keyframes breathCircle {{
+        @keyframes breathExitCircle {{
             0% {{ transform: scale(1); opacity: 0; }}
-            20% {{ opacity: 0.15; }}
-            100% {{ transform: scale(300); opacity: 0; }}
+            20% {{ opacity: 0.4; }}
+            100% {{ transform: scale(150); opacity: 0; }}
         }}
     </style>
-    <div class="exit-wrap">
-        <div class="exit-circle"></div>
-        <div class="exit-text">{t['exit_msg']}</div>
+    <div id="exit-wrap">
+        <div id="exit-circle"></div>
+        <div id="exit-text">{t['exit_msg']}</div>
     </div>
     """, unsafe_allow_html=True)
     st.stop() 
@@ -1067,7 +1078,7 @@ if st.session_state.current_page == "Journal":
                         elif cat == "heavy": cached_reply = "Heaviness is a passing cloud, and you are the mountain it passes over. Do not fight the feeling; observe it. It will pass.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                         elif cat == "racing": cached_reply = "The external world is demanding, but your internal stillness is a choice. Your thoughts are moving fast, but your physical body is safe right here, right now. Anchor yourself to the present.\n\nPlease inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds."
                     else:
-                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
+                        if cat == "sleep": cached_reply = "रात शांत है, लेकिन आपका मन शोर कर रहा है। आप अपने विचार नहीं हैं; आप उन्हें देखने वाले विशाल आकाश हैं। कल की चिंता को जाने दें। शरीर को आराम करने दें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड دب छोड़ें।"
                         elif cat == "heavy": cached_reply = "यह भारीपन एक गुजरता हुआ बादल है, और आप वह पहाड़ हैं जिसके ऊपर से यह गुजर रहा है। इस भावना से लड़ें नहीं; बिना निर्णय के इसे देखें। यह गुजर जाएगा।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
                         elif cat == "racing": cached_reply = "बाहरी दुनिया बहुत कुछ मांग रही है, लेकिन आपकी आंतरिक शांति आपकी पसंद है। आपके विचार तेजी से चल रहे हैं, लेकिन आपका भौतिक शरीर यहाँ, अभी सुरक्षित है। खुद को वर्तमान से जोड़ें।\n\nकृपया 4 सेकंड के लिए सांस अंदर लें, 2 सेकंड के लिए सांस रोकें, और 6 सेकंड के लिए सांस छोड़ें।"
 
@@ -1645,4 +1656,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.sess
 
 if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.31</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.32</div>", unsafe_allow_html=True)
