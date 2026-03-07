@@ -1296,38 +1296,117 @@ waterfall_html = """
 """
 
 # ==========================================
-# --- 8. MAIN APP HEADER & NAV GRID ---
+# --- 8. MAIN APP HEADER & BOTTOM NAV BAR ---
 # ==========================================
 
 if st.session_state.current_page != "SilentExit":
     st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
     st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:9px; opacity:0.5; letter-spacing:4px; margin-bottom: 25px; text-transform: uppercase;'>{t['subtitle']}</div>", unsafe_allow_html=True)
+    
+    # The new "Anti-App" Subtitle we discussed!
+    st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: -10px; margin-bottom: 35px; text-transform: uppercase;'>A space built for you, not from you.</div>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
+    # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
+    nav1, nav2, nav3, nav4, nav5 = st.columns(5)
+    
+    with nav1:
         if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
-    with col2:
+    with nav2:
         if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
-    with col3:
+    with nav3:
         if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
-
-    col4, col5, col6 = st.columns(3)
-    with col4:
+    with nav4:
         if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
-    with col5:
-        if st.button(t["nav_info"], use_container_width=True): st.session_state.current_page = "Info"; st.rerun()
-    with col6:
+    with nav5:
         if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
 
-    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
-    st.markdown("<div class='agent-btn'>", unsafe_allow_html=True)
-    if st.button(t["nav_exit"], use_container_width=True):
-        st.session_state.current_page = "SilentExit"
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+    # Injecting the Native App Styling for the Bottom Bar
+    nav_css = f"""
+    <style>
+        /* Pin the bar to the bottom and apply the frosted glass theme */
+        #sukoon-bottom-nav {{
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            background: {glass_bg} !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border-top: 1px solid {btn_border} !important;
+            z-index: 99999 !important;
+            padding: 10px 5px 35px 5px !important; /* iPhone safe area padding */
+            margin: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-evenly !important;
+            gap: 0 !important;
+        }}
+        
+        /* Force the 5 columns to be exactly equal */
+        #sukoon-bottom-nav > div[data-testid="column"] {{
+            width: 20% !important;
+            flex: 1 1 20% !important;
+            min-width: 0 !important;
+            padding: 0 2px !important;
+        }}
 
-    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
+        /* Turn the Streamlit buttons into clean mobile text tabs */
+        #sukoon-bottom-nav button {{
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: {app_text} !important;
+            font-size: 10px !important;
+            font-weight: 300 !important;
+            letter-spacing: 0px !important;
+            padding: 5px !important;
+            height: 100% !important;
+            min-height: 50px !important;
+            opacity: 0.4;
+            transition: opacity 0.3s ease, transform 0.2s ease;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }}
+        
+        #sukoon-bottom-nav button:active {{
+            transform: scale(0.9) !important;
+        }}
+        
+        /* Add padding to the whole app so content isn't hidden behind the nav bar */
+        .block-container {{
+            padding-bottom: 120px !important; 
+        }}
+    </style>
+    
+    <script>
+        // Javascript to find the buttons and highlight the active page!
+        setTimeout(() => {{
+            const doc = window.parent.document;
+            const blocks = doc.querySelectorAll('div[data-testid="stHorizontalBlock"]');
+            
+            // The nav bar is always the first horizontal block on the page
+            if(blocks.length > 0) {{
+                blocks[0].id = 'sukoon-bottom-nav';
+                
+                const currentPage = "{st.session_state.current_page}";
+                const buttons = blocks[0].querySelectorAll('button');
+                const pageMap = ['Journal', 'Ether', 'Focus', 'Market', 'Settings'];
+                const activeIndex = pageMap.indexOf(currentPage);
+                
+                // Light up the active tab with the theme's accent color
+                if(activeIndex !== -1 && buttons[activeIndex]) {{
+                    buttons[activeIndex].style.opacity = '1.0';
+                    buttons[activeIndex].style.color = '{c_accent}';
+                    buttons[activeIndex].style.fontWeight = '600';
+                    buttons[activeIndex].style.borderBottom = '2px solid {c_accent}';
+                }}
+            }}
+        }}, 150);
+    </script>
+    """
+    components.html(nav_css, height=0, width=0)
 
 # ==========================================
 # --- PAGES ---
