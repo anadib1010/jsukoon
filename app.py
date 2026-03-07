@@ -403,7 +403,7 @@ if not st.session_state.has_completed_ritual:
         .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }}
         
         #sukoon-skip-btn {{
-            position: absolute; bottom: 100px; /* BUMPED UP FROM 40px */
+            position: absolute; bottom: 100px;
             color: #888; font-family: 'Inter', sans-serif;
             font-size: 11px; font-weight: 400; letter-spacing: 2px; cursor: pointer;
             opacity: 0; animation: rFadeInSkip 2s ease forwards 3s; padding: 10px 20px; z-index: 10000000;
@@ -1153,7 +1153,7 @@ if st.session_state.current_page == "Journal":
                         8. CRITICAL EMOTIONAL BOUNDARY: NEVER use emotional support phrases like "I hear you", "we are here", "you are not alone", "I understand", or "you are safe". Remain completely neutral, objective, and observational.
                         """
 
-                   if btn_agent:
+                    if btn_agent:
                         context = f"""{core_philosophy}
                         The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
                         {energy_context}
@@ -1207,8 +1207,7 @@ if st.session_state.current_page == "Journal":
                 st.warning("The engine is offline. Please try again in an hour.")
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
-    
-    for entry in reversed(st.session_state.core_journal):
+for entry in reversed(st.session_state.core_journal):
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
         <style>
