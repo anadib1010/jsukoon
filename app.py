@@ -825,7 +825,7 @@ st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margi
 
 # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
 
-# 1. The Navigation Columns (This must be the very first st.columns grid on the page)
+# 1. The Navigation Columns
 nav1, nav2, nav3, nav4, nav5 = st.columns(5)
 
 with nav1:
@@ -843,11 +843,11 @@ with nav5:
 page_to_index = {"Journal": 1, "Ether": 2, "Focus": 3, "Market": 4, "Settings": 5}
 active_idx = page_to_index.get(st.session_state.current_page, 1)
 
-# 3. The "Force Single Row" CSS using first-of-type
+# 3. Target the ID we are about to create to override the global 33.33% rule
 st.markdown(f"""
 <style>
-    /* Grab ONLY the first horizontal block on the entire page */
-    div[data-testid="stHorizontalBlock"]:first-of-type {{
+    /* Pin ONLY the nav bar to the bottom */
+    #bottom-nav-bar {{
         position: fixed !important;
         bottom: 0 !important;
         left: 50% !important;
@@ -859,41 +859,42 @@ st.markdown(f"""
         -webkit-backdrop-filter: blur(25px) !important;
         border-top: 1px solid {btn_border} !important;
         z-index: 999999 !important;
-        padding: 5px 0px 25px 0px !important; /* Removed side padding, kept iPhone safe area at bottom */
+        padding: 10px 0px 25px 0px !important;
         margin: 0 !important;
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: nowrap !important; /* CRITICAL: Force single row */
-        justify-content: space-evenly !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
         gap: 0 !important;
     }}
     
-    /* Squeeze the 5 columns to exactly 20% and prevent stretching */
-    div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"] {{
+    /* CRITICAL: Force exactly 20% width to override global 33% rule */
+    #bottom-nav-bar > div[data-testid="column"],
+    #bottom-nav-bar > div[data-testid="stColumn"] {{
         width: 20% !important;
-        min-width: 0 !important; /* CRITICAL: Flexbox trick to allow shrinking */
+        min-width: 0 !important;
         max-width: 20% !important;
         flex: 1 1 20% !important;
-        padding: 0 !important; /* Kill default column padding */
+        padding: 0 !important;
         margin: 0 !important;
     }}
 
-    /* Shrink the text and buttons to fit mobile screens */
-    div[data-testid="stHorizontalBlock"]:first-of-type button {{
+    /* Shrink the buttons to fit */
+    #bottom-nav-bar button {{
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         color: {app_text} !important;
-        font-size: 9px !important; /* Down from 10px to ensure long words fit */
+        font-size: 9px !important; 
         font-weight: 300 !important;
         letter-spacing: 0.5px !important;
-        padding: 0px !important; /* Kill default button padding */
+        padding: 0px !important;
         height: 100% !important;
         min-height: 45px !important;
         width: 100% !important;
         opacity: 0.4;
         transition: opacity 0.3s ease, transform 0.2s ease;
-        white-space: nowrap !important; /* Prevent text from breaking to two lines */
+        white-space: nowrap !important;
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
@@ -901,24 +902,41 @@ st.markdown(f"""
         justify-content: center !important;
     }}
     
-    div[data-testid="stHorizontalBlock"]:first-of-type button:active {{
+    #bottom-nav-bar button:active {{
         transform: scale(0.9) !important;
     }}
     
-    /* Highlight the active tab dynamically */
-    div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child({active_idx}) button {{
+    /* Highlight the active tab */
+    #bottom-nav-bar > div:nth-child({active_idx}) button {{
         opacity: 1.0 !important;
         color: {c_accent} !important;
         font-weight: 600 !important;
         border-bottom: 2px solid {c_accent} !important;
     }}
     
-    /* Push content up so it doesn't get buried behind the fixed nav bar */
+    /* Pad the bottom of the app so content scrolls behind */
     .block-container {{
         padding-bottom: 120px !important; 
     }}
 </style>
 """, unsafe_allow_html=True)
+
+# 4. Javascript to find the first grid and apply the ID
+components.html("""
+<script>
+    function applyNavId() {
+        const doc = window.parent.document;
+        const blocks = doc.querySelectorAll('div[data-testid="stHorizontalBlock"]');
+        if(blocks.length > 0) {
+            // The nav bar is always the first grid on the page
+            blocks[0].id = 'bottom-nav-bar';
+        }
+    }
+    // Run it immediately, and a split second later to ensure Streamlit catches it
+    setTimeout(applyNavId, 50);
+    setTimeout(applyNavId, 200);
+</script>
+""", height=0, width=0)
 
 
 # ==========================================
