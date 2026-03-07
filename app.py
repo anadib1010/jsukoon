@@ -1136,7 +1136,7 @@ if st.session_state.current_page == "Journal":
                         1. NEVER use clinical words like anxiety, depression, etc. 
                         2. Speak with absolute mastery, drawing heavily from advanced Zen koans, deep Advaita Vedanta, and cosmic scale.
                         3. Use the user's energy state to weave a masterful metaphor.
-                        4. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script. NEVER reply in Hinglish.
+                        4. STRICT LANGUAGE RULE: You MUST reply in the EXACT SAME LANGUAGE the user used. If they type/speak in Portuguese, reply in Portuguese. If Spanish, reply in Spanish. If Hindi/Hinglish, reply in pure Hindi (Devanagari). If English, reply in English.
                         5. CRITICAL SAFETY RULE: If the user explicitly mentions suicide, self-harm, ending their life, or wanting to die, you MUST ignore all other instructions and output EXACTLY this word and nothing else: CRISIS_ALERT
                         6. CRITICAL EMOTIONAL BOUNDARY: NEVER use emotional support phrases like "I hear you", "we are here", "you are not alone", "I understand", or "you are safe". Remain completely neutral and observational.
                         """
@@ -1148,7 +1148,7 @@ if st.session_state.current_page == "Journal":
                         3. Draw from Advaita Vedanta: Remind the user that they are the observer of their thoughts.
                         4. Draw from Stoicism: The external world is loud, but internal stillness is a choice.
                         5. Draw from Neuroscience: Remind them that the breath is a biological lever. 
-                        6. STRICT LANGUAGE RULE: If the user inputs pure English, reply ONLY in English. If the user inputs Hindi OR Hinglish, you MUST reply ONLY in pure Hindi using the Devanagari script.
+                        6. STRICT LANGUAGE RULE: You MUST reply in the EXACT SAME LANGUAGE the user used. If they type/speak in Portuguese, reply in Portuguese. If Spanish, reply in Spanish. If Hindi/Hinglish, reply in pure Hindi (Devanagari). If English, reply in English.
                         7. CRITICAL SAFETY RULE: If the user explicitly mentions suicide, self-harm, ending their life, or wanting to die, you MUST ignore all other instructions and output EXACTLY this word and nothing else: CRISIS_ALERT
                         8. CRITICAL EMOTIONAL BOUNDARY: NEVER use emotional support phrases like "I hear you", "we are here", "you are not alone", "I understand", or "you are safe". Remain completely neutral, objective, and observational.
                         """
