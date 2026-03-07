@@ -76,7 +76,7 @@ LANG = {
         "r_breath": "Take one slow breath.", "r_enter": "ENTER SUKOON SANCTUARY",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
-        "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Unrecorded • Neutral ✦",
+        "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Neutral ✦",
         "mini_disclaimer": "This application does not provide medical, psychological, therapeutic, or religious advice. It makes no claims and offers no guaranteed outcomes. Use is voluntary and at your own discretion.",
         "zen_box": "TOUCH 3 TIMES<br>TO GROUND YOURSELF",
         "sos_btn": "⚡ AUTO-PILOT (INSTANT SOS) ⚡",
