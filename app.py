@@ -414,12 +414,19 @@ if not st.session_state.has_completed_ritual:
         .p3 {{ position: absolute; text-align: center; opacity: 0; animation: fadeP3 4.5s ease-in-out 20s forwards; width: 100%; }}
         .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }}
         
+        #sukoon-skip-btn {{
+            position: absolute; bottom: 40px; color: #555; font-family: 'Inter', sans-serif;
+            font-size: 11px; font-weight: 300; letter-spacing: 2px; cursor: pointer;
+            opacity: 0; animation: rFadeInSkip 2s ease forwards 3s; padding: 10px 20px; z-index: 10000000;
+        }}
+        
         @keyframes hideCurtain {{ to {{ opacity: 0; visibility: hidden; pointer-events: none; display: none; }} }}
         @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
         @keyframes fadeP2 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 90%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
         @keyframes fadeP3 {{ 0%{{opacity:0;}} 20%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
         @keyframes rFadeIn {{ to {{ opacity: 0.4; }} }}
         @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
+        @keyframes rFadeInSkip {{ to {{ opacity: 0.4; }} }}
     </style>
     
     <div class="rc-wrap-curtain">
@@ -434,48 +441,25 @@ if not st.session_state.has_completed_ritual:
         <div class="p3">
             <div class="p3-text">{t['r_enter']}</div>
         </div>
+        <div id="sukoon-skip-btn">(skip)</div>
     </div>
     """
     st.markdown(ritual_html, unsafe_allow_html=True)
     
-    # Decoupled zero-pixel Javascript injection to inject the skip button safely
+    # Decoupled zero-pixel Javascript injection simply attaches the listener now
     components.html("""
     <script>
         const doc = window.parent.document;
         const curtain = doc.querySelector('.rc-wrap-curtain');
+        const skipBtn = doc.getElementById('sukoon-skip-btn');
         
-        if (curtain) {
-            // Create pure HTML skip button safely inside JS
-            const skipBtn = doc.createElement('div');
-            skipBtn.innerText = '(skip)';
-            skipBtn.style.position = 'absolute';
-            skipBtn.style.bottom = '40px';
-            skipBtn.style.left = '50%';
-            skipBtn.style.transform = 'translateX(-50%)';
-            skipBtn.style.color = '#555';
-            skipBtn.style.fontFamily = 'Inter, sans-serif';
-            skipBtn.style.fontSize = '11px';
-            skipBtn.style.fontWeight = '300';
-            skipBtn.style.letterSpacing = '2px';
-            skipBtn.style.cursor = 'pointer';
-            skipBtn.style.opacity = '0';
-            skipBtn.style.transition = 'opacity 2s ease';
-            skipBtn.style.padding = '10px 20px';
-            skipBtn.style.zIndex = '10000000';
-            
-            curtain.appendChild(skipBtn);
-            
-            // Fade in skip button after 3 seconds
-            setTimeout(() => { skipBtn.style.opacity = '0.4'; }, 3000);
-            
-            // Instantly dissolve curtain on click
+        if (curtain && skipBtn) {
             skipBtn.addEventListener('click', function() {
                 curtain.style.opacity = '0';
                 curtain.style.pointerEvents = 'none';
                 setTimeout(() => { curtain.style.display = 'none'; }, 500);
             });
             
-            // Hard fallback to permanently delete curtain at end of animation
             setTimeout(() => {
                 curtain.style.display = 'none';
             }, 26000);
