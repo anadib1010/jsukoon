@@ -1333,6 +1333,10 @@ if st.session_state.current_page != "SilentExit":
 # --- PAGES ---
 # ==========================================
 
+# 🚨 THE GLOBAL REFLECTION QUOTE 🚨
+if st.session_state.current_page in ["Journal", "Ether", "Focus"]:
+    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
+
 if st.session_state.current_page == "Journal":
     
     # 🚨 THE DYNAMIC SOMATIC MOOD GRID 🚨
