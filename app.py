@@ -1207,7 +1207,8 @@ if st.session_state.current_page == "Journal":
                 st.warning("The engine is offline. Please try again in an hour.")
 
     st.markdown("<div style='height:15px'></div>", unsafe_allow_html=True)
-for entry in reversed(st.session_state.core_journal):
+    
+    for entry in reversed(st.session_state.core_journal):
         safe_speech_text = urllib.parse.quote(entry['ai'])
         html_button = f"""
         <style>
