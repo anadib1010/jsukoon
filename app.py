@@ -484,47 +484,82 @@ if not st.session_state.has_completed_ritual:
     """, height=0, width=0)
 
 # 🚨 THE SILENT EXIT TAKEOVER 🚨
-if st.session_state.current_page == "SilentExit":
-    st.markdown(f"""
-    <style>
-        .stApp {{ background-color: {app_bg} !important; }}
-        
-        .exit-wrap-screen {{
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: {app_bg};
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-            z-index: 9999999;
-        }}
-        .exit-text-screen {{
-            color: {app_text}; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px;
-            opacity: 0; animation: fadeExitText 6s ease-in-out forwards; text-align: center; z-index: 10000001; text-transform: uppercase;
-            position: absolute;
-        }}
-        .exit-circle-screen {{
-            position: absolute; width: 15px; height: 15px; border-radius: 50%;
-            background-color: {c_accent}; opacity: 0; animation: breathExitCircle 6s ease-in-out forwards;
-            z-index: 10000000;
-        }}
-        
-        @keyframes fadeExitText {{
-            0% {{ opacity: 0; transform: translateY(10px); }}
-            20% {{ opacity: 0.8; transform: translateY(0); }}
-            80% {{ opacity: 0.8; transform: translateY(0); }}
-            100% {{ opacity: 0; transform: translateY(-5px); }}
-        }}
-        @keyframes breathExitCircle {{
-            0% {{ transform: scale(1); opacity: 0; }}
-            20% {{ opacity: 0.4; }}
-            100% {{ transform: scale(150); opacity: 0; }}
-        }}
-    </style>
-    <div class="exit-wrap-screen">
-        <div class="exit-circle-screen"></div>
-        <div class="exit-text-screen">{t['exit_msg']}</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.stop() 
+import streamlit as st
+import time
 
+def show_exit_screen():
+    # Empty out the main container if you have one, or just overlay directly
+    exit_html = """
+    <style>
+    /* Force the overlay to the absolute top of the screen */
+    .sukoon-exit-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background-color: #0E1117 !important; /* Matches Streamlit dark theme */
+        z-index: 99999999 !important; /* Astronomically high to beat Streamlit's headers */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    /* The glowing exhale circle */
+    .sukoon-dot-circle {
+        width: 15px;
+        height: 15px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        animation: longExhale 5s ease-out forwards;
+    }
+
+    /* The soft message */
+    .sukoon-exit-message {
+        margin-top: 40px;
+        color: rgba(255, 255, 255, 0.7);
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 22px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        opacity: 0;
+        animation: fadeInOut 5s ease-in-out forwards;
+    }
+
+    /* Animations */
+    @keyframes longExhale {
+        0% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(6); opacity: 0; }
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+    
+    /* Optional: Hide the default Streamlit header and footer immediately */
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
+
+    <div class="sukoon-exit-overlay">
+        <div class="sukoon-dot-circle"></div>
+        <div class="sukoon-exit-message">This moment is yours.</div>
+    </div>
+    """
+    
+    # Inject the HTML/CSS
+    st.markdown(exit_html, unsafe_allow_html=True)
+    
+    # Pause the script so the 5-second animation can play out on the frontend
+    time.sleep(5)
+    
+    # Stop the app so the screen stays peaceful
+    st.stop()
 # 🚨 INJECT ATMOSPHERE DIVS 🚨
 st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
 if st.session_state.theme == "The Void":
