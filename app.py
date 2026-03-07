@@ -825,10 +825,7 @@ st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margi
 
 # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
 
-# 1. We drop an invisible 'anchor' right above the nav bar so CSS can find it exactly
-st.markdown("<div id='sukoon-nav-anchor'></div>", unsafe_allow_html=True)
-
-# 2. The Navigation Columns
+# 1. The Navigation Columns (This must be the very first st.columns grid on the page)
 nav1, nav2, nav3, nav4, nav5 = st.columns(5)
 
 with nav1:
@@ -842,59 +839,61 @@ with nav4:
 with nav5:
     if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
 
-# 3. Figure out which tab is active so we can highlight it
+# 2. Figure out which tab is active
 page_to_index = {"Journal": 1, "Ether": 2, "Focus": 3, "Market": 4, "Settings": 5}
 active_idx = page_to_index.get(st.session_state.current_page, 1)
 
-# 4. Pure CSS targeting only the block right after the anchor
+# 3. The "Force Single Row" CSS using first-of-type
 st.markdown(f"""
 <style>
-    /* Pin the specific nav block to the bottom */
-    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] {{
+    /* Grab ONLY the first horizontal block on the entire page */
+    div[data-testid="stHorizontalBlock"]:first-of-type {{
         position: fixed !important;
         bottom: 0 !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 100% !important;
+        width: 100vw !important;
         max-width: 600px !important; 
         background: {glass_bg} !important;
         backdrop-filter: blur(25px) !important;
         -webkit-backdrop-filter: blur(25px) !important;
         border-top: 1px solid {btn_border} !important;
         z-index: 999999 !important;
-        padding: 10px 5px 25px 5px !important;
+        padding: 5px 0px 25px 0px !important; /* Removed side padding, kept iPhone safe area at bottom */
         margin: 0 !important;
         display: flex !important;
         flex-direction: row !important;
-        flex-wrap: nowrap !important; 
+        flex-wrap: nowrap !important; /* CRITICAL: Force single row */
         justify-content: space-evenly !important;
         gap: 0 !important;
     }}
     
-    /* Force exact 20% width per button so they never stack into two rows */
-    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+    /* Squeeze the 5 columns to exactly 20% and prevent stretching */
+    div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"] {{
         width: 20% !important;
-        min-width: 20% !important;
+        min-width: 0 !important; /* CRITICAL: Flexbox trick to allow shrinking */
         max-width: 20% !important;
         flex: 1 1 20% !important;
-        padding: 0 2px !important;
+        padding: 0 !important; /* Kill default column padding */
         margin: 0 !important;
     }}
 
-    /* Style the buttons inside to look like mobile app tabs */
-    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] button {{
+    /* Shrink the text and buttons to fit mobile screens */
+    div[data-testid="stHorizontalBlock"]:first-of-type button {{
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         color: {app_text} !important;
-        font-size: 10px !important;
+        font-size: 9px !important; /* Down from 10px to ensure long words fit */
         font-weight: 300 !important;
-        padding: 5px !important;
+        letter-spacing: 0.5px !important;
+        padding: 0px !important; /* Kill default button padding */
         height: 100% !important;
-        min-height: 50px !important;
+        min-height: 45px !important;
+        width: 100% !important;
         opacity: 0.4;
         transition: opacity 0.3s ease, transform 0.2s ease;
-        white-space: nowrap !important;
+        white-space: nowrap !important; /* Prevent text from breaking to two lines */
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
@@ -902,19 +901,19 @@ st.markdown(f"""
         justify-content: center !important;
     }}
     
-    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] button:active {{
+    div[data-testid="stHorizontalBlock"]:first-of-type button:active {{
         transform: scale(0.9) !important;
     }}
     
-    /* MAGIC: Highlight the currently active tab dynamically! */
-    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child({active_idx}) button {{
+    /* Highlight the active tab dynamically */
+    div[data-testid="stHorizontalBlock"]:first-of-type > div[data-testid="column"]:nth-child({active_idx}) button {{
         opacity: 1.0 !important;
         color: {c_accent} !important;
         font-weight: 600 !important;
         border-bottom: 2px solid {c_accent} !important;
     }}
     
-    /* Pad the bottom of the app so content scrolls behind the bar */
+    /* Push content up so it doesn't get buried behind the fixed nav bar */
     .block-container {{
         padding-bottom: 120px !important; 
     }}
