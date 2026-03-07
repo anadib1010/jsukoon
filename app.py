@@ -1153,7 +1153,7 @@ if st.session_state.current_page == "Journal":
                         8. CRITICAL EMOTIONAL BOUNDARY: NEVER use emotional support phrases like "I hear you", "we are here", "you are not alone", "I understand", or "you are safe". Remain completely neutral, objective, and observational.
                         """
 
-                    if btn_agent:
+                   if btn_agent:
                         context = f"""{core_philosophy}
                         The user needs a custom sanctuary. Analyze their text. If their mind is racing, select 'Box' and 'forest'. If they cannot sleep, select 'Sleep_Lotus' and 'waves'.
                         {energy_context}
@@ -1164,7 +1164,7 @@ if st.session_state.current_page == "Journal":
                         length_instruction = "Keep the response short: maximum 2 paragraphs." if btn_short else "Provide a detailed, deep, and highly observational long-form reflection directly addressing their specific situation."
                         context = f"""{core_philosophy}
                         {length_instruction}
-                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: If replying in Hindi, gracefully translate this full sentence into Hindi.
+                        End your reflection with a polite, gentle breathing reminder structured exactly like this: 'Please inhale for 4 seconds, hold your breath for 2 seconds, and exhale for 6 seconds.' IMPORTANT: Gracefully translate this breathing reminder into the EXACT SAME LANGUAGE the user spoke in.
                         {energy_context}"""
                     
                     try:
