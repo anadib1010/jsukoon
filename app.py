@@ -867,7 +867,7 @@ st.markdown(f"""
         backdrop-filter: blur(25px) !important;
         -webkit-backdrop-filter: blur(25px) !important;
         border-top: 1px solid {btn_border} !important;
-        z-index: 999999 !important;
+        z-index: 2147483647 !important;
         padding: 10px 0px 25px 0px !important;
         margin: 0 !important;
         display: flex !important;
