@@ -600,7 +600,7 @@ def theme_it(html_str):
 # --- THE PARK BENCH ENGINE ---
 def get_park_bench_sentence():
     sentence = random.choice(t['park_bench'])
-    return f"<div style='text-align: center; opacity: 0.3; font-size: 11px; font-weight: 300; margin-top: 30px; margin-bottom: 20px; color: {app_text}; letter-spacing: 1px;'>{sentence}</div>"
+    return f"<div style='text-align: center; opacity: 1.0; font-size: 13px; font-weight: 400; font-style: italic; margin-top: 10px; margin-bottom: 25px; color: {c_accent}; letter-spacing: 1px;'>{sentence}</div>"
 
 # --- 6. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
