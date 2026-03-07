@@ -1306,7 +1306,7 @@ if st.session_state.current_page != "SilentExit":
     # The new "Anti-App" Subtitle we discussed!
     st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: -10px; margin-bottom: 35px; text-transform: uppercase;'>A space built for you, not from you.</div>", unsafe_allow_html=True)
 
-    # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
+   # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
     nav1, nav2, nav3, nav4, nav5 = st.columns(5)
     
     with nav1:
@@ -1320,14 +1320,15 @@ if st.session_state.current_page != "SilentExit":
     with nav5:
         if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
 
-    # 1. Inject the CSS globally so the main app can see it
+    # 1. Pure CSS approach targeting the 5-column grid
     st.markdown(f"""
     <style>
-        .sukoon-bottom-nav-active {{
+        /* Target the specific block that contains exactly 5 columns */
+        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) {{
             position: fixed !important;
             bottom: 0 !important;
             
-            /* Center it and lock it to the 600px workspace for Desktop */
+            /* Center it and lock it to the 600px workspace */
             left: 50% !important;
             transform: translateX(-50%) !important;
             width: 100% !important;
@@ -1349,15 +1350,18 @@ if st.session_state.current_page != "SilentExit":
             gap: 0 !important;
         }}
         
-        .sukoon-bottom-nav-active > div[data-testid="column"] {{
+        /* Force the 5 columns to be exactly 20% width */
+        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) > div[data-testid="column"] {{
             width: 20% !important;
             min-width: 20% !important;
             max-width: 20% !important;
             flex: 1 1 20% !important;
             padding: 0 2px !important;
+            margin: 0 !important;
         }}
 
-        .sukoon-bottom-nav-active button {{
+        /* Style the buttons inside to look like app tabs */
+        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) button {{
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
@@ -1369,9 +1373,10 @@ if st.session_state.current_page != "SilentExit":
             min-height: 50px !important;
             opacity: 0.4;
             transition: opacity 0.3s ease, transform 0.2s ease;
+            white-space: nowrap !important;
         }}
         
-        .sukoon-bottom-nav-active button:active {{
+        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) button:active {{
             transform: scale(0.9) !important;
         }}
         
@@ -1381,18 +1386,19 @@ if st.session_state.current_page != "SilentExit":
     </style>
     """, unsafe_allow_html=True)
     
-    # 2. Use Javascript to attach the CSS class and highlight the active page
+    # 2. Javascript ONLY handles lighting up the active text color
     components.html(f"""
     <script>
         setTimeout(() => {{
             const doc = window.parent.document;
             const blocks = doc.querySelectorAll('div[data-testid="stHorizontalBlock"]');
             
-            if(blocks.length > 0) {{
-                blocks[0].classList.add('sukoon-bottom-nav-active');
-                
+            // Find the block with exactly 5 children
+            let navBlock = Array.from(blocks).find(b => b.children.length === 5);
+            
+            if(navBlock) {{
                 const currentPage = "{st.session_state.current_page}";
-                const buttons = blocks[0].querySelectorAll('button');
+                const buttons = navBlock.querySelectorAll('button');
                 const pageMap = ['Journal', 'Ether', 'Focus', 'Market', 'Settings'];
                 const activeIndex = pageMap.indexOf(currentPage);
                 
