@@ -484,82 +484,81 @@ if not st.session_state.has_completed_ritual:
     """, height=0, width=0)
 
 # 🚨 THE SILENT EXIT TAKEOVER 🚨
-import streamlit as st
-import time
-
-def show_exit_screen():
-    # Empty out the main container if you have one, or just overlay directly
-    exit_html = """
+if st.session_state.current_page == "SilentExit":
+    import time
+    
+    st.markdown(f"""
     <style>
-    /* Force the overlay to the absolute top of the screen */
-    .sukoon-exit-overlay {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        background-color: #0E1117 !important; /* Matches Streamlit dark theme */
-        z-index: 99999999 !important; /* Astronomically high to beat Streamlit's headers */
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-
-    /* The glowing exhale circle */
-    .sukoon-dot-circle {
-        width: 15px;
-        height: 15px;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-        animation: longExhale 5s ease-out forwards;
-    }
-
-    /* The soft message */
-    .sukoon-exit-message {
-        margin-top: 40px;
-        color: rgba(255, 255, 255, 0.7);
-        font-family: 'Helvetica Neue', sans-serif;
-        font-size: 22px;
-        font-weight: 300;
-        letter-spacing: 2px;
-        opacity: 0;
-        animation: fadeInOut 5s ease-in-out forwards;
-    }
-
-    /* Animations */
-    @keyframes longExhale {
-        0% { transform: scale(1); opacity: 1; }
-        100% { transform: scale(6); opacity: 0; }
-    }
-
-    @keyframes fadeInOut {
-        0% { opacity: 0; }
-        20% { opacity: 1; }
-        80% { opacity: 1; }
-        100% { opacity: 0; }
-    }
-    
-    /* Optional: Hide the default Streamlit header and footer immediately */
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
+        /* Force override Streamlit's default background and padding */
+        .stApp {{ background-color: {app_bg} !important; }}
+        header {{ visibility: hidden !important; }}
+        footer {{ visibility: hidden !important; }}
+        .block-container {{ padding: 0 !important; max-width: 100% !important; }}
+        
+        .exit-wrap-screen {{
+            position: fixed !important; 
+            top: 0 !important; 
+            left: 0 !important; 
+            width: 100vw !important; 
+            height: 100vh !important;
+            background-color: {app_bg} !important;
+            display: flex !important; 
+            justify-content: center !important; 
+            align-items: center !important; 
+            flex-direction: column !important;
+            z-index: 9999999 !important;
+        }}
+        
+        .exit-text-screen {{
+            color: {app_text} !important; 
+            font-family: 'Inter', sans-serif !important; 
+            font-size: 14px !important; 
+            font-weight: 300 !important; 
+            letter-spacing: 4px !important;
+            opacity: 0; 
+            animation: fadeExitText 6s ease-in-out forwards !important; 
+            text-align: center !important; 
+            z-index: 10000001 !important; 
+            text-transform: uppercase !important;
+            position: absolute !important;
+        }}
+        
+        .exit-circle-screen {{
+            position: absolute !important; 
+            width: 15px !important; 
+            height: 15px !important; 
+            border-radius: 50% !important;
+            background-color: {c_accent} !important; 
+            box-shadow: 0 0 20px {c_accent} !important;
+            opacity: 0; 
+            animation: breathExitCircle 6s ease-in-out forwards !important;
+            z-index: 10000000 !important;
+        }}
+        
+        @keyframes fadeExitText {{
+            0% {{ opacity: 0; transform: translateY(10px); }}
+            20% {{ opacity: 0.8; transform: translateY(0); }}
+            80% {{ opacity: 0.8; transform: translateY(0); }}
+            100% {{ opacity: 0; transform: translateY(-5px); }}
+        }}
+        
+        @keyframes breathExitCircle {{
+            0% {{ transform: scale(1); opacity: 0; }}
+            20% {{ opacity: 0.4; }}
+            100% {{ transform: scale(150); opacity: 0; }}
+        }}
     </style>
-
-    <div class="sukoon-exit-overlay">
-        <div class="sukoon-dot-circle"></div>
-        <div class="sukoon-exit-message">This moment is yours.</div>
+    
+    <div class="exit-wrap-screen">
+        <div class="exit-circle-screen"></div>
+        <div class="exit-text-screen">{t['exit_msg']}</div>
     </div>
-    """
+    """, unsafe_allow_html=True)
     
-    # Inject the HTML/CSS
-    st.markdown(exit_html, unsafe_allow_html=True)
-    
-    # Pause the script so the 5-second animation can play out on the frontend
-    time.sleep(5)
-    
-    # Stop the app so the screen stays peaceful
+    # Pause for half a second to ensure the browser receives the HTML before halting
+    time.sleep(0.5)
     st.stop()
+    
 # 🚨 INJECT ATMOSPHERE DIVS 🚨
 st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
 if st.session_state.theme == "The Void":
