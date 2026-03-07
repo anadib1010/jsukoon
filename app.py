@@ -1326,8 +1326,13 @@ if st.session_state.current_page != "SilentExit":
         .sukoon-bottom-nav-active {{
             position: fixed !important;
             bottom: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
+            
+            /* Center it and lock it to the 600px workspace for Desktop */
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 100% !important;
+            max-width: 600px !important; 
+            
             background: {glass_bg} !important;
             backdrop-filter: blur(25px) !important;
             -webkit-backdrop-filter: blur(25px) !important;
@@ -1335,12 +1340,20 @@ if st.session_state.current_page != "SilentExit":
             z-index: 999999 !important;
             padding: 10px 5px 25px 5px !important;
             margin: 0 !important;
+            
+            /* Force exactly 1 row, no wrapping on Mobile */
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important; 
+            justify-content: space-between !important;
+            gap: 0 !important;
         }}
         
         .sukoon-bottom-nav-active > div[data-testid="column"] {{
             width: 20% !important;
+            min-width: 20% !important;
+            max-width: 20% !important;
             flex: 1 1 20% !important;
-            min-width: 0 !important;
             padding: 0 2px !important;
         }}
 
