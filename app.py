@@ -391,7 +391,6 @@ st.markdown(f"""
 # ==========================================
 if not st.session_state.has_completed_ritual:
     # We immediately flag it as True so on the NEXT rerun, it won't load the curtain.
-    # But for THIS render, the curtain HTML will be injected and play out.
     st.session_state.has_completed_ritual = True
     
     ritual_html = f"""
@@ -441,13 +440,34 @@ if not st.session_state.has_completed_ritual:
         <div class="p3">
             <div class="p3-text">{t['r_enter']}</div>
         </div>
-        
-        <div class="stealth-skip" onclick="document.getElementById('ritual-curtain').style.opacity='0'; setTimeout(()=>document.getElementById('ritual-curtain').style.display='none', 500);">(skip)</div>
+        <div id="stealth-skip-btn" class="stealth-skip">(skip)</div>
     </div>
     """
     st.markdown(ritual_html, unsafe_allow_html=True)
-    # Notice there is no st.stop() here. The Python backend continues rendering the app instantly.
-    # The app is just hidden beneath the CSS #ritual-curtain.
+    
+    # We use components.html to inject a pure JS listener that avoids Streamlit's onclick sanitizer entirely.
+    components.html("""
+    <script>
+        const doc = window.parent.document;
+        const skipBtn = doc.getElementById('stealth-skip-btn');
+        const curtain = doc.getElementById('ritual-curtain');
+        
+        if (skipBtn && curtain) {
+            skipBtn.addEventListener('click', function() {
+                curtain.style.opacity = '0';
+                curtain.style.pointerEvents = 'none';
+                setTimeout(() => { curtain.style.display = 'none'; }, 500);
+            });
+        }
+        
+        // Hard fallback to ensure curtain dies
+        setTimeout(() => {
+            if (curtain) {
+                curtain.style.display = 'none';
+            }
+        }, 26000);
+    </script>
+    """, height=0, width=0)
 
 # 🚨 THE SILENT EXIT TAKEOVER 🚨
 if st.session_state.current_page == "SilentExit":
@@ -1617,12 +1637,12 @@ elif st.session_state.current_page == "Settings":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON (HIDDEN IF IN EXIT MODE) 🚨
-if st.session_state.current_page not in ["Disclaimer", "SilentExit"]:
+if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     if st.button("Read Full Legal Disclaimer", use_container_width=True):
         st.session_state.current_page = "Disclaimer"
         st.rerun()
 
-if st.session_state.current_page != "SilentExit":
+if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.30</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.31</div>", unsafe_allow_html=True)
