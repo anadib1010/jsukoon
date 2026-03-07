@@ -833,7 +833,9 @@ st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 
 st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: -10px; margin-bottom: 35px; text-transform: uppercase;'>A space built to return your attention to you, not take it from you.</div>", unsafe_allow_html=True)
 
+# ==========================================
 # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
+# ==========================================
 
 # 1. The Navigation Columns
 nav1, nav2, nav3, nav4, nav5 = st.columns(5)
@@ -868,7 +870,7 @@ st.markdown(f"""
         backdrop-filter: blur(25px) !important;
         -webkit-backdrop-filter: blur(25px) !important;
         border-top: 1px solid {btn_border} !important;
-        z-index: 2147483647 !important;
+        z-index: 2147483647 !important; /* MAX Z-INDEX */
         padding: 10px 0px 25px 0px !important;
         margin: 0 !important;
         display: flex !important;
@@ -889,21 +891,21 @@ st.markdown(f"""
         margin: 0 !important;
     }}
 
-    /* Shrink the buttons to fit */
+    /* Shrink the buttons to fit, but make them BRIGHTER and THICKER */
     #bottom-nav-bar button {{
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         color: {app_text} !important;
-        font-size: 9px !important; 
-        font-weight: 300 !important;
+        font-size: 9.5px !important; 
+        font-weight: 500 !important; /* Thicker base text */
         letter-spacing: 0.5px !important;
         padding: 0px !important;
         height: 100% !important;
         min-height: 45px !important;
         width: 100% !important;
-        opacity: 0.4;
-        transition: opacity 0.3s ease, transform 0.2s ease;
+        opacity: 0.85 !important; /* Increased for high visibility */
+        transition: opacity 0.3s ease, transform 0.2s ease, font-weight 0.3s ease;
         white-space: nowrap !important;
         overflow: hidden !important;
         display: flex !important;
@@ -916,11 +918,11 @@ st.markdown(f"""
         transform: scale(0.9) !important;
     }}
     
-    /* Highlight the active tab */
+    /* Highlight the active tab (Maximum Brightness & Bold) */
     #bottom-nav-bar > div:nth-child({active_idx}) button {{
         opacity: 1.0 !important;
         color: {c_accent} !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important; /* Extra bold for the active tab */
         border-bottom: 2px solid {c_accent} !important;
     }}
     
@@ -947,7 +949,6 @@ components.html("""
     setTimeout(applyNavId, 200);
 </script>
 """, height=0, width=0)
-
 
 # ==========================================
 # --- PAGES ---
