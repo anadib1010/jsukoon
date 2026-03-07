@@ -50,13 +50,10 @@ valid_themes = ["The Void", "Sage Sanctuary", "Terracotta Earth", "Social Blue",
                 "Deep Sage", "Ocean Blue", "Ocean Green", "Red Amber", "Maroon", "Twilight Blue", 
                 "Champagne Gold", "Pink Champagne", "Liquid Gold"]
 
-# ==========================================
-# 🚨 DYNAMIC CIRCADIAN DEFAULT (IST FORCED) 🚨
-# ==========================================
 if "theme" not in st.session_state or st.session_state.theme not in valid_themes: 
     ist = timezone(timedelta(hours=5, minutes=30))
     current_hour = datetime.now(ist).hour
-    is_daytime = 6 <= current_hour < 18  # 6 AM to 6 PM IST
+    is_daytime = 6 <= current_hour < 18
     st.session_state.theme = "Pink Champagne" if is_daytime else "The Void"
     
 if "ui_language" not in st.session_state: st.session_state.ui_language = "English"
@@ -70,10 +67,9 @@ if "unlocked_nirvana" not in st.session_state: st.session_state.unlocked_nirvana
 LANG = {
     "English": {
         "nav_journal": "Journal", "nav_ether": "Ether", "nav_focus": "Focus", 
-        "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
-        "nav_exit": "✧ LEAVE SANCTUARY ✧", "exit_msg": "This moment is yours.",
+        "nav_market": "Market", "nav_settings": "Settings",
         "r_arrive": "You have arrived.", "r_nothing": "Nothing is required here.",
-        "r_breath": "Take one slow breath.", "r_enter": "ENTER YOUR SUKOON SANCTUARY",
+        "r_breath": "Take one slow breath.", "r_enter": "ENTER SUKOON SANCTUARY",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "h_mentor": "YOUR SPACE", "privacy_note": "✦ Private • Neutral ✦",
@@ -83,7 +79,7 @@ LANG = {
         "agent_btn": "🤖 AI AGENT (SMART SANCTUARY) 🤖",
         "btn_short": "GUIDE (SHORT)", "btn_deep": "GUIDE (DEEP)",
         "record": " ", 
-        "type_here": "Write a few words if you wish.\n\nThis page offers a quiet moment of pause.",
+        "type_here": "This canvas is yours. Write heavily, write nothing, or simply watch the cursor blink. There are no rules here.",
         "energy_prompt": "Pause and acknowledge how your body feels to guide the engine.",
         "e_racing": "Racing Thoughts", "e_restless": "Restless Mind", "e_overwhelmed": "Overwhelmed", 
         "e_heavy": "Heavy Thoughts", "e_tired": "Tired Mind", "e_quiet": "Need Quiet",
@@ -105,228 +101,28 @@ LANG = {
         "t_gold": "Liquid Gold (VIP)", "b_flame": "The Flame (VIP)", "game_mala": "Haptic Mala (VIP)",
         "vault_h": "SANCTUARY VAULT", "vault_p": "Have a Sanctuary Code?",
         "park_bench": [
-            "Some days move slowly. That is okay.",
-            "A quiet moment can change the rhythm of a day.",
-            "Not every thought needs an answer.",
-            "A pause can be enough for now.",
-            "Silence sometimes says what words cannot.",
-            "The mind often softens when it rests.",
-            "This moment does not need to be solved.",
-            "A few calm breaths can shift the day.",
-            "Stillness can appear in simple moments.",
-            "Even busy days contain small pauses.",
-            "Nothing urgent is required from this moment.",
-            "A gentle breath can begin again.",
-            "Quiet moments often arrive unnoticed.",
-            "The mind can rest for a while.",
-            "Some thoughts pass when given space.",
-            "A calm moment is never wasted.",
-            "The day can unfold at its own pace.",
-            "A pause can bring a different perspective.",
-            "This moment can simply exist.",
-            "Breathing slowly often changes the mood.",
-            "Not every moment needs improvement.",
-            "Sometimes a pause is the answer.",
-            "A quiet breath can be enough.",
-            "Stillness often hides in ordinary moments.",
-            "The day can continue gently from here.",
-            "A calm mind does not rush.",
-            "Small pauses can carry quiet strength.",
-            "The present moment can hold its own balance.",
-            "The mind can soften with patience.",
-            "Even brief silence can refresh the mind.",
-            "The moment can pass without resistance.",
-            "A calm breath can reset the pace.",
-            "Nothing needs to be rushed right now.",
-            "A quiet pause often brings clarity.",
-            "The mind sometimes settles on its own.",
-            "The present moment asks very little.",
-            "A slow breath can create space.",
-            "Some days unfold slowly for a reason.",
-            "Calm moments are often simple.",
-            "The mind may relax when given time.",
-            "Silence can carry gentle comfort.",
-            "Even a short pause can help.",
-            "Thoughts may fade when left alone.",
-            "The day can continue from this moment.",
-            "A moment of stillness can be enough.",
-            "The mind sometimes just needs a pause.",
-            "Calm often appears when nothing is forced.",
-            "This moment does not require judgment.",
-            "Breathing quietly can change the atmosphere.",
-            "The present moment is already here.",
-            "A few seconds of quiet can reset the day.",
-            "Some thoughts simply come and go.",
-            "The moment can pass peacefully.",
-            "Nothing urgent needs to happen here.",
-            "A quiet breath can be a small reset.",
-            "Stillness can live inside ordinary time.",
-            "A pause may reveal something new.",
-            "Calm often arrives softly.",
-            "Even a gentle breath matters.",
-            "A quiet moment belongs to you.",
-            "The day does not need to rush.",
-            "A calm mind notices simple things.",
-            "Silence can feel unfamiliar at first.",
-            "This moment can stand on its own.",
-            "A pause can slow the rhythm of thought.",
-            "The mind can soften without effort.",
-            "Even brief quiet can restore balance.",
-            "Thoughts often quiet when space is given.",
-            "The present moment holds its own pace.",
-            "Calm can grow in simple silence.",
-            "A quiet breath may begin again.",
-            "Some moments simply pass through.",
-            "The mind may settle naturally.",
-            "A gentle pause can change perspective.",
-            "The day can continue calmly.",
-            "Quiet space often reveals small clarity.",
-            "The moment can unfold without pressure.",
-            "A slow breath can bring steadiness.",
-            "Not every feeling needs explanation.",
-            "Silence sometimes brings its own answer.",
-            "Calm does not need effort.",
-            "A pause may open new awareness.",
-            "The present moment is enough for now.",
-            "Breathing slowly can quiet the mind.",
-            "Thoughts often soften with time.",
-            "A quiet pause can bring ease.",
-            "The mind can simply observe.",
-            "Nothing needs to change immediately.",
-            "The moment can stay as it is.",
-            "Even brief stillness can help.",
-            "Calm moments can appear anywhere.",
-            "A gentle breath can begin again.",
-            "The mind can pause without reason.",
-            "Quiet time has its own value.",
-            "A calm moment can shift the day.",
-            "Silence may reveal something small.",
-            "The day may continue gently.",
-            "A pause can carry quiet strength.",
-            "The mind may rest briefly.",
-            "Calm often arrives quietly.",
-            "Some moments ask only for patience.",
-            "Quiet time can restore perspective.",
-            "The present moment can remain simple.",
-            "A calm breath can slow the pace.",
-            "Thoughts may pass on their own.",
-            "Silence can bring subtle balance.",
-            "The mind can rest between thoughts.",
-            "A pause can create new space.",
-            "The moment can move gently forward.",
-            "Calm often lives in small pauses.",
-            "Even a single breath matters.",
-            "The day can slow for a moment.",
-            "The mind may soften naturally.",
-            "Quiet moments can refresh awareness.",
-            "Nothing urgent is required here.",
-            "Calm may appear when nothing is forced.",
-            "The present moment holds quiet potential.",
-            "A slow breath can change the mood.",
-            "Some thoughts dissolve quietly.",
-            "Silence often carries subtle calm.",
-            "A pause may bring balance.",
-            "The day can continue from here.",
-            "Calm moments are often unnoticed.",
-            "Even brief quiet can help the mind.",
-            "The mind may settle slowly.",
-            "A gentle breath can restore rhythm.",
-            "Nothing needs to be rushed.",
-            "The moment can remain simple.",
-            "Calm sometimes arrives quietly.",
-            "A quiet pause may be enough.",
-            "Silence can hold quiet strength.",
-            "Thoughts can move through the mind.",
-            "A moment of calm may begin here.",
-            "The mind may rest in stillness.",
-            "Small pauses matter.",
-            "Calm can appear unexpectedly.",
-            "A quiet breath can steady the moment.",
-            "The present moment does not demand much.",
-            "Thoughts may drift away.",
-            "A pause can reset the pace.",
-            "The day can move slowly.",
-            "Calm may grow in silence.",
-            "The mind can relax gently.",
-            "Even brief stillness can restore balance.",
-            "A quiet moment can be enough.",
-            "The present moment simply exists.",
-            "Calm may follow patience.",
-            "Silence can soften the mind.",
-            "A slow breath can begin again.",
-            "Nothing more is required now.",
-            "The day can unfold naturally.",
-            "A moment of quiet may help.",
-            "Calm may arrive without effort.",
-            "The mind may pause here.",
-            "Silence often carries quiet clarity.",
-            "Even a short pause can shift the day.",
-            "The present moment remains here.",
-            "A calm breath can steady the mind.",
-            "Thoughts may pass quietly.",
-            "Stillness sometimes appears unexpectedly.",
-            "Calm moments may come and go.",
-            "A pause may reveal calm.",
-            "The day continues gently.",
-            "The mind can rest briefly.",
-            "Silence can hold quiet understanding.",
-            "Even a small pause matters.",
-            "Calm may grow slowly.",
-            "The present moment stands quietly.",
-            "A gentle breath may reset the rhythm.",
-            "Thoughts may settle with time.",
-            "The moment may pass peacefully.",
-            "A calm mind notices simple things.",
-            "Quiet space can refresh the mind.",
-            "Silence may bring subtle comfort.",
-            "A pause may shift perspective.",
-            "Calm sometimes follows stillness.",
-            "The day can move at its own pace.",
-            "A quiet moment can steady the mind.",
-            "Thoughts may drift softly.",
-            "Silence often carries peace.",
-            "A gentle pause can help the moment.",
-            "Calm can appear in small breaths.",
-            "The mind can settle quietly.",
-            "Even a short pause has value.",
-            "The present moment continues calmly.",
-            "Silence may soften the day.",
-            "A slow breath may bring balance.",
-            "Thoughts may fade naturally.",
-            "Calm may live in small pauses.",
-            "The day can continue gently.",
-            "A quiet moment belongs to you.",
-            "The mind may rest here briefly.",
-            "Silence can reveal small clarity.",
-            "Calm may arrive softly.",
-            "A pause may be enough for now.",
-            "The present moment stands quietly.",
-            "A gentle breath may help the moment.",
-            "Thoughts may pass without effort.",
-            "Calm can grow in stillness.",
-            "This moment can simply be."
+            "Some days move slowly. That is okay.", "A quiet moment can change the rhythm of a day.", "Not every thought needs an answer.", "A pause can be enough for now.", "Silence sometimes says what words cannot.", "The mind often softens when it rests.", "This moment does not need to be solved.", "A few calm breaths can shift the day.", "Stillness can appear in simple moments.", "Even busy days contain small pauses.", "Nothing urgent is required from this moment.", "A gentle breath can begin again.", "Quiet moments often arrive unnoticed.", "The mind can rest for a while.", "Some thoughts pass when given space.", "A calm moment is never wasted.", "The day can unfold at its own pace.", "A pause can bring a different perspective.", "This moment can simply exist.", "Breathing slowly often changes the mood.", "Not every moment needs improvement.", "Sometimes a pause is the answer.", "A quiet breath can be enough.", "Stillness often hides in ordinary moments.", "The day can continue gently from here.", "A calm mind does not rush.", "Small pauses can carry quiet strength.", "The present moment can hold its own balance.", "The mind can soften with patience.", "Even brief silence can refresh the mind.", "The moment can pass without resistance.", "A calm breath can reset the pace.", "Nothing needs to be rushed right now.", "A quiet pause often brings clarity.", "The mind sometimes settles on its own.", "The present moment asks very little.", "A slow breath can create space.", "Some days unfold slowly for a reason.", "Calm moments are often simple.", "The mind may relax when given time.", "Silence can carry gentle comfort.", "Even a short pause can help.", "Thoughts may fade when left alone.", "The day can continue from this moment.", "A moment of stillness can be enough.", "The mind sometimes just needs a pause.", "Calm often appears when nothing is forced.", "This moment does not require judgment.", "Breathing quietly can change the atmosphere.", "The present moment is already here.", "A few seconds of quiet can reset the day.", "Some thoughts simply come and go.", "The moment can pass peacefully.", "Nothing urgent needs to happen here.", "A quiet breath can be a small reset.", "Stillness can live inside ordinary time.", "A pause may reveal something new.", "Calm often arrives softly.", "Even a gentle breath matters.", "A quiet moment belongs to you.", "The day does not need to rush.", "A calm mind notices simple things.", "Silence can feel unfamiliar at first.", "This moment can stand on its own.", "A pause can slow the rhythm of thought.", "The mind can soften without effort.", "Even brief quiet can restore balance.", "Thoughts often quiet when space is given.", "The present moment holds its own pace.", "Calm can grow in simple silence.", "A quiet breath may begin again.", "Some moments simply pass through.", "The mind may settle naturally.", "A gentle pause can change perspective.", "The day can continue calmly.", "Quiet space often reveals small clarity.", "The moment can unfold without pressure.", "A slow breath can bring steadiness.", "Not every feeling needs explanation.", "Silence sometimes brings its own answer.", "Calm does not need effort.", "A pause may open new awareness.", "The present moment is enough for now.", "Breathing slowly can quiet the mind.", "Thoughts often soften with time.", "A quiet pause can bring ease.", "The mind can simply observe.", "Nothing needs to change immediately.", "The moment can stay as it is.", "Even brief stillness can help.", "Calm moments can appear anywhere.", "A gentle breath can begin again.", "The mind can pause without reason.", "Quiet time has its own value.", "A calm moment can shift the day.", "Silence may reveal something small.", "The day may continue gently.", "A pause can carry quiet strength.", "The mind may rest briefly.", "Calm often arrives quietly.", "Some moments ask only for patience.", "Quiet time can restore perspective.", "The present moment can remain simple.", "A calm breath can slow the pace.", "Thoughts may pass on their own.", "Silence can bring subtle balance.", "The mind can rest between thoughts.", "A pause can create new space.", "The moment can move gently forward.", "Calm often lives in small pauses.", "Even a single breath matters.", "The day can slow for a moment.", "The mind may soften naturally.", "Quiet moments can refresh awareness.", "Nothing urgent is required here.", "Calm may appear when nothing is forced.", "The present moment holds quiet potential.", "A slow breath can change the mood.", "Some thoughts dissolve quietly.", "Silence often carries subtle calm.", "A pause may bring balance.", "The day can continue from here.", "Calm moments are often unnoticed.", "Even brief quiet can help the mind.", "The mind may settle slowly.", "A gentle breath can restore rhythm.", "Nothing needs to be rushed.", "The moment can remain simple.", "Calm sometimes arrives quietly.", "A quiet pause may be enough.", "Silence can hold quiet strength.", "Thoughts can move through the mind.", "A moment of calm may begin here.", "The mind may rest in stillness.", "Small pauses matter.", "Calm can appear unexpectedly.", "A quiet breath can steady the moment.", "The present moment does not demand much.", "Thoughts may drift away.", "A pause can reset the pace.", "The day can move slowly.", "Calm may grow in silence.", "The mind can relax gently.", "Even brief stillness can restore balance.", "A quiet moment can be enough.", "The present moment simply exists.", "Calm may follow patience.", "Silence can soften the mind.", "A slow breath can begin again.", "Nothing more is required now.", "The day can unfold naturally.", "A moment of quiet may help.", "Calm may arrive without effort.", "The mind may pause here.", "Silence often carries quiet clarity.", "Even a short pause can shift the day.", "The present moment remains here.", "A calm breath can steady the mind.", "Thoughts may pass quietly.", "Stillness sometimes appears unexpectedly.", "Calm moments may come and go.", "A pause may reveal calm.", "The day continues gently.", "The mind can rest briefly.", "Silence can hold quiet understanding.", "Even a small pause matters.", "Calm may grow slowly.", "The present moment stands quietly.", "A gentle breath may reset the rhythm.", "Thoughts may settle with time.", "The moment may pass peacefully.", "A calm mind notices simple things.", "Quiet space can refresh the mind.", "Silence may bring subtle comfort.", "A pause may shift perspective.", "Calm sometimes follows stillness.", "The day can move at its own pace.", "A quiet moment can steady the mind.", "Thoughts may drift softly.", "Silence often carries peace.", "A gentle pause can help the moment.", "Calm can appear in small breaths.", "The mind can settle quietly.", "Even a short pause has value.", "The present moment continues calmly.", "Silence may soften the day.", "A slow breath may bring balance.", "Thoughts may fade naturally.", "Calm may live in small pauses.", "The day can continue gently.", "A quiet moment belongs to you.", "The mind may rest here briefly.", "Silence can reveal small clarity.", "Calm may arrive softly.", "A pause may be enough for now.", "The present moment stands quietly.", "A gentle breath may help the moment.", "Thoughts may pass without effort.", "Calm can grow in stillness.", "This moment can simply be."
         ]
     },
     "Hindi": {
         "nav_journal": "जर्नल", "nav_ether": "आकाश", "nav_focus": "ध्यान", 
-        "nav_market": "बाज़ार", "nav_info": "जानकारी", "nav_settings": "सेटिंग्स",
-        "nav_exit": "✧ प्रस्थान (LEAVE) ✧", "exit_msg": "यह पल आपका है।",
-        "r_arrive": "आप पहुँच गए हैं।", "r_nothing": "यहाँ आपसे कुछ भी अपेक्षित नहीं है।",
+        "nav_market": "बाज़ार", "nav_settings": "सेटिंग्स",
+        "r_arrive": "आप पहुँच गए हैं।", "r_nothing": "यहाँ आपसे कुछ भी अपेक्षित नहीं  है।",
         "r_breath": "एक धीमी सांस लें।", "r_enter": "सुकून अभयारण्य में प्रवेश करें",
         "subtitle": "सांस लें 4 • रोकें 2 • छोड़ें 6",
         "h_ambience": "माहौल", "h_energy": "ऊर्जा की स्थिति",
-        "h_mentor": "स्थान (THE SPACE)", "privacy_note": "✦ निजी • अनरिकॉर्डेड • तटस्थ ✦",
+        "h_mentor": "आपका स्थान", "privacy_note": "✦ निजी • तटस्थ ✦",
         "mini_disclaimer": "यह एप्लिकेशन चिकित्सा, मनोवैज्ञानिक, चिकित्सीय या धार्मिक सलाह नहीं देता है। यह कोई दावा नहीं करता है और कोई गारंटीकृत परिणाम नहीं देता है। इसका उपयोग स्वैच्छिक है और आपके अपने विवेक पर है।",
         "zen_box": "खुद को शांत करने के लिए<br>3 बार छुएं",
         "sos_btn": "⚡ ऑटो-पायलट (आपातकालीन) ⚡",
         "agent_btn": "🤖 एआई एजेंट (स्मार्ट अभयारण्य) 🤖",
         "btn_short": "मार्गदर्शन (संक्षिप्त)", "btn_deep": "मार्गदर्शन (गहरा)",
         "record": " ", 
-        "type_here": "यदि आप चाहें तो कुछ शब्द लिखें।\n\nयह पेज बस कुछ पल की शांति और ठहराव देता है।",
+        "type_here": "यह स्थान आपका है। कुछ लिखें, कुछ न लिखें, या बस कर्सर को देखते रहें। यहाँ कोई नियम नहीं हैं।",
         "energy_prompt": "रुकें और महसूस करें कि आपका शरीर कैसा महसूस कर रहा है।",
         "e_racing": "तेज़ विचार", "e_restless": "बेचैन मन", "e_overwhelmed": "अभिभूत (Overwhelmed)", 
         "e_heavy": "भारी विचार", "e_tired": "थका हुआ मन", "e_quiet": "शांति चाहिए",
-        "h_ether": "आकाश (द ईथर)", "h_breath": "सांस स्टूडियो", "h_games": "ग्राउंडिंग गेम्स",
+        "h_ether": "आपका आकाश", "h_breath": "सांस स्टूडियो", "h_games": "ग्राउंडिंग गेम्स",
         "b_anchor": "एंकर (4-2-6)", "b_box": "द बॉक्स (4-4-4-4)", "b_sleep": "गहरी नींद (4-7-8)",
         "choose_visual": "अपना दृश्य मार्गदर्शक चुनें", "v_wave": "लहर (Wave)", "v_moon": "चांद (Moon)", "v_lotus": "कमल (Lotus)",
         "game_release": "रिलीज़ (छोड़ें)", "game_bloom": "ब्लूम (खिलना)", "game_convergence": "कन्वर्जेंस (संकेंद्रण)",
@@ -344,206 +140,7 @@ LANG = {
         "t_gold": "तरल सोना (VIP)", "b_flame": "लौ (VIP)", "game_mala": "स्पर्श माला (VIP)",
         "vault_h": "गुप्त तिजोरी", "vault_p": "क्या आपके पास कोड है?",
         "park_bench": [
-            "कुछ दिन धीमी गति से गुज़रते हैं। यह ठीक है।",
-            "एक शांत पल दिन की लय को बदल सकता है।",
-            "हर विचार का उत्तर देना आवश्यक नहीं है।",
-            "अभी के लिए बस थोड़ा सा ठहराव काफी है।",
-            "मौन कभी-कभी वह कह देता है जो शब्द नहीं कह पाते।",
-            "आराम मिलने पर मन अक्सर कोमल हो जाता है।",
-            "इस पल को सुलझाने की कोई आवश्यकता नहीं है।",
-            "कुछ शांत सांसें दिन को बदल सकती हैं।",
-            "ठहराव साधारण पलों में प्रकट हो सकता है।",
-            "व्यस्त दिनों में भी छोटे ठहराव होते हैं।",
-            "इस पल में कुछ भी तुरंत करने की आवश्यकता नहीं है।",
-            "एक कोमल सांस के साथ फिर से शुरुआत की जा सकती है।",
-            "शांत पल अक्सर चुपचाप आ जाते हैं।",
-            "मन कुछ देर के लिए आराम कर सकता है।",
-            "जगह देने पर कुछ विचार अपने आप चले जाते हैं।",
-            "एक शांत पल कभी व्यर्थ नहीं जाता।",
-            "दिन अपनी गति से आगे बढ़ सकता है।",
-            "एक ठहराव नज़रिया बदल सकता है।",
-            "यह पल बस ऐसे ही अस्तित्व में रह सकता है।",
-            "धीरे-धीरे सांस लेने से अक्सर मन की स्थिति बदल जाती है।",
-            "हर पल को बेहतर बनाने की ज़रूरत नहीं है।",
-            "कभी-कभी बस थोड़ा रुक जाना ही उत्तर होता है।",
-            "एक शांत सांस ही काफी हो सकती है।",
-            "ठहराव अक्सर साधारण पलों में छिपा होता है।",
-            "दिन यहाँ से शांति से आगे बढ़ सकता है।",
-            "एक शांत मन जल्दबाज़ी नहीं करता।",
-            "छोटे ठहराव अपने आप में एक खामोश ताकत रखते हैं।",
-            "वर्तमान क्षण अपना संतुलन खुद बनाए रख सकता है।",
-            "धैर्य के साथ मन कोमल हो सकता है।",
-            "थोड़ी देर का मौन भी मन को तरोताज़ा कर सकता है।",
-            "यह पल बिना किसी विरोध के गुज़र सकता है।",
-            "एक शांत सांस गति को सामान्य कर सकती है।",
-            "अभी किसी भी चीज़ में जल्दबाज़ी करने की ज़रूरत नहीं है।",
-            "एक शांत ठहराव अक्सर स्पष्टता लाता है।",
-            "मन कभी-कभी अपने आप शांत हो जाता है।",
-            "वर्तमान क्षण आपसे बहुत कम मांगता है।",
-            "एक धीमी सांस जगह बना सकती है।",
-            "कुछ दिन किसी कारण से ही धीरे गुज़रते हैं।",
-            "शांत पल अक्सर बहुत साधारण होते हैं।",
-            "समय देने पर मन आराम महसूस कर सकता है।",
-            "मौन अपने साथ एक कोमल सुकून ला सकता है।",
-            "एक छोटा सा ठहराव भी मदद कर सकता है।",
-            "अकेला छोड़ देने पर विचार धुंधले पड़ सकते हैं।",
-            "दिन इस पल से आगे बढ़ सकता है।",
-            "थोड़ी देर की शांति काफी हो सकती है।",
-            "मन को कभी-कभी बस एक ठहराव की ज़रूरत होती है।",
-            "जब किसी चीज़ पर ज़ोर नहीं डाला जाता, तो शांति अपने आप आ जाती है।",
-            "इस पल को किसी फैसले की ज़रूरत नहीं है।",
-            "शांति से सांस लेने पर माहौल बदल सकता है।",
-            "वर्तमान क्षण पहले से ही यहाँ है।",
-            "चंद सेकंड की शांति दिन को फिर से संवार सकती है।",
-            "कुछ विचार बस आते हैं और चले जाते हैं।",
-            "यह पल शांति से गुज़र सकता है।",
-            "यहाँ कुछ भी तुरंत करने की आवश्यकता नहीं है।",
-            "एक शांत सांस एक छोटी सी नई शुरुआत हो सकती है।",
-            "ठहराव साधारण समय के भीतर रह सकता है।",
-            "एक ठहराव कुछ नया दिखा सकता है।",
-            "शांति अक्सर दबे पाँव आती है।",
-            "एक कोमल सांस भी मायने रखती है।",
-            "एक शांत पल आपका अपना है।",
-            "दिन को भागने की ज़रूरत नहीं है।",
-            "एक शांत मन साधारण चीज़ों पर ध्यान देता है।",
-            "मौन शुरुआत में अनजान लग सकता है।",
-            "यह पल अपने आप में पूर्ण है।",
-            "एक ठहराव विचारों की गति को धीमा कर सकता है।",
-            "मन बिना किसी प्रयास के कोमल हो सकता है।",
-            "थोड़ी देर की शांति भी संतुलन लौटा सकती है।",
-            "जगह देने पर विचार अक्सर शांत हो जाते हैं।",
-            "वर्तमान क्षण की अपनी एक गति होती है।",
-            "साधारण मौन में शांति पनप सकती है।",
-            "एक शांत सांस फिर से शुरू हो सकती है।",
-            "कुछ पल बस गुज़रने के लिए होते हैं।",
-            "मन स्वाभाविक रूप से शांत हो सकता है।",
-            "एक कोमल ठहराव नज़रिया बदल सकता है।",
-            "दिन शांति से आगे बढ़ सकता है।",
-            "शांत जगह अक्सर छोटी सी स्पष्टता दिखाती है।",
-            "यह पल बिना किसी दबाव के आगे बढ़ सकता है।",
-            "एक धीमी सांस स्थिरता ला सकती है।",
-            "हर भावना को समझाने की ज़रूरत नहीं है।",
-            "मौन कभी-कभी अपना उत्तर खुद लाता है।",
-            "शांति के लिए प्रयास की ज़रूरत नहीं होती।",
-            "एक ठहराव नई जागरूकता खोल सकता है।",
-            "वर्तमान क्षण अभी के लिए काफी है।",
-            "धीरे सांस लेने से मन शांत हो सकता है।",
-            "विचार अक्सर समय के साथ कोमल हो जाते हैं।",
-            "एक शांत ठहराव सुकून ला सकता है।",
-            "मन केवल साक्षी बन सकता है।",
-            "किसी भी चीज़ को तुरंत बदलने की ज़रूरत नहीं है।",
-            "यह पल जैसा है, वैसा ही रह सकता है।",
-            "थोड़ी सी स्थिरता भी मदद कर सकती है।",
-            "शांत पल कहीं भी प्रकट हो सकते हैं।",
-            "एक कोमल सांस के साथ फिर से शुरुआत करें।",
-            "मन बिना किसी कारण के रुक सकता है।",
-            "शांत समय का अपना एक मूल्य है।",
-            "एक शांत पल दिन को बदल सकता है।",
-            "मौन कुछ छोटा सा प्रकट कर सकता है।",
-            "दिन धीरे-धीरे आगे बढ़ सकता है।",
-            "एक ठहराव में खामोश ताकत हो सकती है।",
-            "मन थोड़ी देर के लिए आराम कर सकता है।",
-            "शांति अक्सर खामोशी से आती है।",
-            "कुछ पल केवल धैर्य मांगते हैं।",
-            "शांत समय नज़रिया लौटा सकता है।",
-            "वर्तमान क्षण साधारण रह सकता है।",
-            "एक शांत सांस गति को धीमा कर सकती है।",
-            "विचार अपने आप गुज़र सकते हैं।",
-            "मौन एक सूक्ष्म संतुलन ला सकता है।",
-            "मन विचारों के बीच आराम कर सकता है।",
-            "एक ठहराव नई जगह बना सकता है।",
-            "यह पल धीरे से आगे बढ़ सकता है।",
-            "शांति अक्सर छोटे ठहरावों में रहती है।",
-            "एक अकेली सांस भी मायने रखती है।",
-            "दिन एक पल के लिए धीमा हो सकता है।",
-            "मन स्वाभाविक रूप से कोमल हो सकता है।",
-            "शांत पल जागरूकता को ताज़ा कर सकते हैं।",
-            "यहाँ कुछ भी तुरंत करना ज़रूरी नहीं है।",
-            "जब कोई दबाव न हो, तो शांति आ सकती है।",
-            "वर्तमान क्षण में शांत संभावनाएं हैं।",
-            "एक धीमी सांस मन की स्थिति बदल सकती है।",
-            "कुछ विचार खामोशी से विलीन हो जाते हैं।",
-            "मौन अक्सर एक सूक्ष्म शांति लाता है।",
-            "एक ठहराव संतुलन ला सकता है।",
-            "दिन यहाँ से आगे बढ़ सकता है।",
-            "शांत पल अक्सर किसी का ध्यान नहीं खींचते।",
-            "थोड़ी देर की खामोशी भी मन की मदद कर सकती है।",
-            "मन धीरे-धीरे शांत हो सकता है।",
-            "एक कोमल सांस लय को लौटा सकती है।",
-            "जल्दबाज़ी करने की कोई ज़रूरत नहीं है।",
-            "यह पल साधारण रह सकता है।",
-            "शांति कभी-कभी चुपचाप आती है।",
-            "एक शांत ठहराव ही काफी हो सकता है।",
-            "मौन में खामोश ताकत हो सकती है।",
-            "विचार मन से होकर गुज़र सकते हैं।",
-            "शांति का एक पल यहाँ से शुरू हो सकता है।",
-            "मन स्थिरता में आराम कर सकता है।",
-            "छोटे ठहराव बहुत मायने रखते हैं।",
-            "शांति अप्रत्याशित रूप से प्रकट हो सकती है।",
-            "एक शांत सांस इस पल को स्थिर कर सकती है।",
-            "वर्तमान क्षण बहुत कुछ नहीं मांगता।",
-            "विचार धीरे-धीरे दूर जा सकते हैं।",
-            "एक ठहराव गति को सामान्य कर सकता है।",
-            "दिन धीमी गति से चल सकता है।",
-            "शांति मौन में बढ़ सकती है।",
-            "मन धीरे से आराम कर सकता है।",
-            "थोड़ी सी स्थिरता भी संतुलन लौटा सकती है।",
-            "एक शांत पल काफी हो सकता है।",
-            "वर्तमान क्षण बस अस्तित्व में है।",
-            "धैर्य के बाद शांति आ सकती है।",
-            "मौन मन को कोमल बना सकता है।",
-            "एक धीमी सांस के साथ फिर शुरुआत हो सकती है।",
-            "अब और कुछ करने की आवश्यकता नहीं है।",
-            "दिन अपने आप आगे बढ़ सकता है।",
-            "शांति का एक पल मदद कर सकता है।",
-            "शांति बिना किसी प्रयास के आ सकती है।",
-            "मन यहाँ ठहर सकता है।",
-            "मौन अक्सर खामोश स्पष्टता लाता है।",
-            "एक छोटा ठहराव भी दिन को बदल सकता है।",
-            "वर्तमान क्षण यहीं बना रहता है।",
-            "एक शांत सांस मन को स्थिर कर सकती है।",
-            "विचार खामोशी से गुज़र सकते हैं।",
-            "ठहराव कभी-कभी अचानक प्रकट होता है।",
-            "शांत पल आ और जा सकते हैं।",
-            "एक ठहराव शांति प्रकट कर सकता है।",
-            "दिन धीरे-धीरे आगे बढ़ता है।",
-            "मन थोड़ी देर के लिए विश्राम कर सकता है।",
-            "मौन खामोश समझ को संजो सकता है।",
-            "एक छोटा ठहराव भी बहुत मायने रखता है।",
-            "शांति धीरे-धीरे बढ़ सकती है।",
-            "वर्तमान क्षण शांति से खड़ा है।",
-            "एक कोमल सांस लय को फिर से सेट कर सकती है।",
-            "विचार समय के साथ शांत हो सकते हैं।",
-            "यह पल शांतिपूर्वक गुज़र सकता है।",
-            "एक शांत मन साधारण चीज़ों पर ध्यान देता है।",
-            "शांत जगह मन को तरोताज़ा कर सकती है।",
-            "मौन सूक्ष्म सुकून ला सकता है।",
-            "एक ठहराव नज़रिए को बदल सकता है।",
-            "शांति कभी-कभी स्थिरता के बाद आती है।",
-            "दिन अपनी गति से चल सकता है।",
-            "एक शांत पल मन को स्थिर कर सकता है।",
-            "विचार कोमलता से बह सकते हैं।",
-            "मौन अक्सर शांति लाता है।",
-            "एक कोमल ठहराव इस पल की मदद कर सकता है।",
-            "शांति छोटी-छोटी सांसों में प्रकट हो सकती है।",
-            "मन खामोशी से शांत हो सकता है।",
-            "एक छोटे ठहराव का भी महत्व होता है।",
-            "वर्तमान क्षण शांति से आगे बढ़ता है।",
-            "मौन दिन को कोमल बना सकता है।",
-            "एक धीमी सांस संतुलन ला सकती है।",
-            "विचार स्वाभाविक रूप से धुंधले पड़ सकते हैं।",
-            "शांति छोटे ठहरावों में रह सकती है।",
-            "दिन कोमलता से आगे बढ़ सकता है।",
-            "एक शांत पल सिर्फ आपका है।",
-            "मन यहाँ कुछ देर के लिए आराम कर सकता है।",
-            "मौन एक छोटी सी स्पष्टता दिखा सकता है।",
-            "शांति दबे पाँव आ सकती है।",
-            "एक ठहराव अभी के लिए काफी हो सकता है।",
-            "वर्तमान क्षण शांति से खड़ा है।",
-            "एक कोमल सांस इस पल में मदद कर सकती है।",
-            "विचार बिना प्रयास के गुज़र सकते हैं।",
-            "शांति स्थिरता में पनप सकती है।",
-            "यह पल बस जैसा है, वैसा रह सकता है।"
+            "कुछ दिन धीमी गति से गुज़रते हैं। यह ठीक है।", "एक शांत पल दिन की लय को बदल सकता है।", "हर विचार का उत्तर देना आवश्यक नहीं है।", "अभी के लिए बस थोड़ा सा ठहराव काफी है।", "मौन कभी-कभी वह कह देता है जो शब्द नहीं कह पाते।", "आराम मिलने पर मन अक्सर कोमल हो जाता है।", "इस पल को सुलझाने की कोई आवश्यकता नहीं है।", "कुछ शांत सांसें दिन को बदल सकती हैं।", "ठहराव साधारण पलों में प्रकट हो सकता है।", "व्यस्त दिनों में भी छोटे ठहराव होते हैं।", "इस पल में कुछ भी तुरंत करने की आवश्यकता नहीं है।", "एक कोमल सांस के साथ फिर से शुरुआत की जा सकती है।", "शांत पल अक्सर चुपचाप आ जाते हैं।", "मन कुछ देर के लिए आराम कर सकता है।", "जगह देने पर कुछ विचार अपने आप चले जाते हैं।", "एक शांत पल कभी व्यर्थ नहीं जाता।", "दिन अपनी गति से आगे बढ़ सकता है।", "एक ठहराव नज़रिया बदल सकता है।", "यह पल बस ऐसे ही अस्तित्व में रह सकता है।", "धीरे-धीरे सांस लेने से अक्सर मन की स्थिति बदल जाती है।", "हर पल को बेहतर बनाने की ज़रूरत नहीं है।", "कभी-कभी बस थोड़ा रुक जाना ही उत्तर होता है।", "एक शांत सांस ही काफी हो सकती है।", "ठहराव अक्सर साधारण पलों में छिपा होता है।", "दिन यहाँ से शांति से आगे बढ़ सकता है।", "एक शांत मन जल्दबाज़ी नहीं करता।", "छोटे ठहराव अपने आप में एक खामोश ताकत रखते हैं।", "वर्तमान क्षण अपना संतुलन खुद बनाए रख सकता है।", "धैर्य के साथ मन कोमल हो सकता है।", "थोड़ी देर का मौन भी मन को तरोताज़ा कर सकता है।", "यह पल बिना किसी विरोध के गुज़र सकता है।", "एक शांत सांस गति को सामान्य कर सकती है।", "अभी किसी भी चीज़ में जल्दबाज़ी करने की ज़रूरत नहीं है।", "एक शांत ठहराव अक्सर स्पष्टता लाता है।", "मन कभी-कभी अपने आप शांत हो जाता है।", "वर्तमान क्षण आपसे बहुत कम मांगता है।", "एक धीमी सांस जगह बना सकती है।", "कुछ दिन किसी कारण से ही धीरे गुज़रते हैं।", "शांत पल अक्सर बहुत साधारण होते हैं।", "समय देने पर मन आराम महसूस कर सकता है।", "मौन अपने साथ एक कोमल सुकून ला सकता है।", "एक छोटा सा ठहराव भी मदद कर सकता है।", "अकेला छोड़ देने पर विचार धुंधले पड़ सकते हैं।", "दिन इस पल से आगे बढ़ सकता है।", "थोड़ी देर की शांति काफी हो सकती है।", "मन को कभी-कभी बस एक ठहराव की ज़रूरत होती है।", "जब किसी चीज़ पर ज़ोर नहीं डाला जाता, तो शांति अपने आप आ जाती है।", "इस पल को किसी फैसले की ज़रूरत नहीं है।", "शांति से सांस लेने पर माहौल बदल सकता है।", "वर्तमान क्षण पहले से ही यहाँ है।", "चंद सेकंड की शांति दिन को फिर से संवार सकती है।", "कुछ विचार बस आते हैं और चले जाते हैं।", "यह पल शांति से गुज़र सकता है।", "यहाँ कुछ भी तुरंत करने की आवश्यकता नहीं है।", "एक शांत सांस एक छोटी सी नई शुरुआत हो सकती है।", "ठहराव साधारण समय के भीतर रह सकता है।", "एक ठहराव कुछ नया दिखा सकता है।", "शांति अक्सर दबे पाँव आती है।", "एक कोमल सांस भी मायने रखती है।", "एक शांत पल आपका अपना है।", "दिन को भागने की ज़रूरत नहीं है।", "एक शांत मन साधारण चीज़ों पर ध्यान देता है।", "मौन शुरुआत में अनजान लग सकता है।", "यह पल अपने आप में पूर्ण है।", "एक ठहराव विचारों की गति को धीमा कर सकता है।", "मन बिना किसी प्रयास के कोमल हो सकता है।", "थोड़ी देर की शांति भी संतुलन लौटा सकती है।", "जगह देने पर विचार अक्सर शांत हो जाते हैं।", "वर्तमान क्षण की अपनी एक गति होती है।", "साधारण मौन में शांति पनप सकती है।", "एक शांत सांस फिर से शुरू हो सकती है।", "कुछ पल बस गुज़रने के लिए होते हैं।", "मन स्वाभाविक रूप से शांत हो सकता है।", "एक कोमल ठहराव नज़रिया बदल सकता है।", "दिन शांति से आगे बढ़ सकता है।", "शांत जगह अक्सर छोटी सी स्पष्टता दिखाती है।", "यह पल बिना किसी दबाव के आगे बढ़ सकता है।", "एक धीमी सांस स्थिरता ला सकती है।", "हर भावना को समझाने की ज़रूरत नहीं है।", "मौन कभी-कभी अपना उत्तर खुद लाता है।", "शांति के लिए प्रयास की ज़रूरत नहीं होती।", "एक ठहराव नई जागरूकता खोल सकता है।", "वर्तमान क्षण अभी के लिए काफी है।", "धीरे सांस लेने से मन शांत हो सकता है।", "विचार अक्सर समय के साथ कोमल हो जाते हैं।", "एक शांत ठहराव सुकून ला सकता है।", "मन केवल साक्षी बन सकता है।", "किसी भी चीज़ को तुरंत बदलने की ज़रूरत नहीं है।", "यह पल जैसा है, वैसा ही रह सकता है।", "थोड़ी सी स्थिरता भी मदद कर सकती है।", "शांत पल कहीं भी प्रकट हो सकते हैं।", "एक कोमल सांस के साथ फिर से शुरुआत करें।", "मन बिना किसी कारण के रुक सकता है।", "शांत समय का अपना एक मूल्य है।", "एक शांत पल दिन को बदल सकता है।", "मौन कुछ छोटा सा प्रकट कर सकता है।", "दिन धीरे-धीरे आगे बढ़ सकता है।", "एक ठहराव में खामोश ताकत हो सकती है।", "मन थोड़ी देर के लिए आराम कर सकता है।", "शांति अक्सर खामोशी से आती है।", "कुछ पल केवल धैर्य मांगते हैं।", "शांत समय नज़रिया लौटा सकता है।", "वर्तमान क्षण साधारण रह सकता है।", "एक शांत सांस गति को धीमा कर सकती है।", "विचार अपने आप गुज़र सकते हैं।", "मौन एक सूक्ष्म संतुलन ला सकता है।", "मन विचारों के बीच आराम कर सकता है।", "एक ठहराव नई जगह बना सकता है।", "यह पल धीरे से आगे बढ़ सकता है।", "शांति अक्सर छोटे ठहरावों में रहती है।", "एक अकेली सांस भी मायने रखती है।", "दिन एक पल के लिए धीमा हो सकता है।", "मन स्वाभाविक रूप से कोमल हो सकता है।", "शांत पल जागरूकता को ताज़ा कर सकते हैं।", "यहाँ कुछ भी तुरंत करना ज़रूरी नहीं है।", "जब कोई दबाव न हो, तो शांति आ सकती है।", "वर्तमान क्षण में शांत संभावनाएं हैं।", "एक धीमी सांस मन की स्थिति बदल सकती है।", "कुछ विचार खामोशी से विलीन हो जाते हैं।", "मौन अक्सर एक सूक्ष्म शांति लाता है।", "एक ठहराव संतुलन ला सकता है।", "दिन यहाँ से आगे बढ़ सकता है।", "शांत पल अक्सर किसी का ध्यान नहीं खींचते।", "थोड़ी देर की खामोशी भी मन की मदद कर सकती है।", "मन धीरे-धीरे शांत हो सकता है।", "एक कोमल सांस लय को लौटा सकती है।", "जल्दबाज़ी करने की कोई ज़रूरत नहीं है।", "यह पल साधारण रह सकता है।", "शांति कभी-कभी चुपचाप आती है।", "एक शांत ठहराव ही काफी हो सकता है।", "मौन में खामोश ताकत हो सकती है।", "विचार मन से होकर गुज़र सकते हैं।", "शांति का एक पल यहाँ से शुरू हो सकता है।", "मन स्थिरता में आराम कर सकता है।", "छोटे ठहराव बहुत मायने रखते हैं।", "शांति अप्रत्याशित रूप से प्रकट हो सकती है।", "एक शांत सांस इस पल को स्थिर कर सकती है।", "वर्तमान क्षण बहुत कुछ नहीं मांगता।", "विचार धीरे-धीरे दूर जा सकते हैं।", "एक ठहराव गति को सामान्य कर सकता है।", "दिन धीमी गति से चल सकता है।", "शांति मौन में बढ़ सकती है।", "मन धीरे से आराम कर सकता है।", "थोड़ी सी स्थिरता भी संतुलन लौटा सकती है।", "एक शांत पल काफी हो सकता है।", "वर्तमान क्षण बस अस्तित्व में है।", "धैर्य के बाद शांति आ सकती है।", "मौन मन को कोमल बना सकता है।", "एक धीमी सांस के साथ फिर शुरुआत हो सकती है।", "अब और कुछ करने की आवश्यकता नहीं है।", "दिन अपने आप आगे बढ़ सकता है।", "शांति का एक पल मदद कर सकता है।", "शांति बिना किसी प्रयास के आ सकती है।", "मन यहाँ ठहर सकता है।", "मौन अक्सर खामोश स्पष्टता लाता है।", "एक छोटा ठहराव भी दिन को बदल सकता है।", "वर्तमान क्षण यहीं बना रहता है।", "एक शांत सांस मन को स्थिर कर सकती है।", "विचार खामोशी से गुज़र सकते हैं।", "ठहराव कभी-कभी अचानक प्रकट होता है।", "शांत पल आ और जा सकते हैं।", "एक ठहराव शांति प्रकट कर सकता है।", "दिन धीरे-धीरे आगे बढ़ता है।", "मन थोड़ी देर के लिए विश्राम कर सकता है।", "मौन खामोश समझ को संजो सकता है।", "एक छोटा ठहराव भी बहुत मायने रखता है।", "शांति धीरे-धीरे बढ़ सकती है।", "वर्तमान क्षण शांति से खड़ा है।", "एक कोमल सांस लय को फिर से सेट कर सकती है।", "विचार समय के साथ शांत हो सकते हैं।", "यह पल शांतिपूर्वक गुज़र सकता है।", "एक शांत मन साधारण चीज़ों पर ध्यान देता है।", "शांत जगह मन को तरोताज़ा कर सकती है।", "मौन सूक्ष्म सुकून ला सकता है।", "एक ठहराव नज़रिए को बदल सकता है।", "शांति कभी-कभी स्थिरता के बाद आती है।", "दिन अपनी गति से चल सकता है।", "एक शांत पल मन को स्थिर कर सकता है।", "विचार कोमलता से बह सकते हैं।", "मौन अक्सर शांति लाता है।", "एक कोमल ठहराव इस पल की मदद कर सकता है।", "शांति छोटी-छोटी सांसों में प्रकट हो सकती है।", "मन खामोशी से शांत हो सकता है।", "एक छोटे ठहराव का भी महत्व होता है।", "वर्तमान क्षण शांति से आगे बढ़ता है।", "मौन दिन को कोमल बना सकता है।", "एक धीमी सांस संतुलन ला सकती है।", "विचार स्वाभाविक रूप से धुंधले पड़ सकते हैं।", "शांति छोटे ठहरावों में रह सकती है।", "दिन कोमलता से आगे बढ़ सकता है।", "एक शांत पल सिर्फ आपका है।", "मन यहाँ कुछ देर के लिए आराम कर सकता है।", "मौन एक छोटी सी स्पष्टता दिखा सकता है।", "शांति दबे पाँव आ सकती है।", "एक ठहराव अभी के लिए काफी हो सकता है।", "वर्तमान क्षण शांति से खड़ा है।", "एक कोमल सांस इस पल में मदद कर सकती है।", "विचार बिना प्रयास के गुज़र सकते हैं।", "शांति स्थिरता में पनप सकती है।", "यह पल बस जैसा है, वैसा रह सकता है।"
         ]
     }
 }
@@ -598,9 +195,13 @@ def theme_it(html_str):
     return html_str.replace("[C_BG]", "transparent").replace("[C_GLASS]", glass_bg).replace("[C_BORDER]", btn_border).replace("[C_TEXT]", app_text).replace("[C_ACCENT]", c_accent).replace("[C_RGB]", c_rgb)
 
 # --- THE PARK BENCH ENGINE ---
-def get_park_bench_sentence():
+def get_top_quote():
     sentence = random.choice(t['park_bench'])
     return f"<div style='text-align: center; opacity: 1.0; font-size: 13px; font-weight: 400; font-style: italic; margin-top: 10px; margin-bottom: 25px; color: {c_accent}; letter-spacing: 1px;'>{sentence}</div>"
+
+def get_bottom_quote():
+    sentence = random.choice(t['park_bench'])
+    return f"<div style='text-align: center; opacity: 0.3; font-size: 11px; font-weight: 300; margin-top: 30px; margin-bottom: 20px; color: {app_text}; letter-spacing: 1px;'>{sentence}</div>"
 
 # --- 6. THE BRAIN SETUP ---
 api_key = st.secrets.get("GEMINI_API_KEY")
@@ -770,7 +371,6 @@ st.markdown(f"""
 # 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL (PURE CSS CURTAIN) 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
-    # We immediately flag it as True so on the NEXT rerun, it won't load the curtain.
     st.session_state.has_completed_ritual = True
     
     ritual_html = f"""
@@ -779,7 +379,6 @@ if not st.session_state.has_completed_ritual:
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; z-index: 9999999;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
-            /* At exactly 24.5 seconds, the curtain completely dissolves */
             animation: hideCurtain 1.5s ease-in-out 24.5s forwards;
         }}
         
@@ -826,7 +425,6 @@ if not st.session_state.has_completed_ritual:
     """
     st.markdown(ritual_html, unsafe_allow_html=True)
     
-    # Decoupled zero-pixel Javascript injection simply attaches the listener now
     components.html("""
     <script>
         const doc = window.parent.document;
@@ -839,90 +437,11 @@ if not st.session_state.has_completed_ritual:
                 curtain.style.pointerEvents = 'none';
                 setTimeout(() => { curtain.style.display = 'none'; }, 500);
             });
-            
-            setTimeout(() => {
-                curtain.style.display = 'none';
-            }, 26000);
+            setTimeout(() => { curtain.style.display = 'none'; }, 26000);
         }
     </script>
     """, height=0, width=0)
 
-# 🚨 THE SILENT EXIT TAKEOVER 🚨
-if st.session_state.current_page == "SilentExit":
-    import time
-    
-    st.markdown(f"""
-    <style>
-        /* Force override Streamlit's default background and padding */
-        .stApp {{ background-color: {app_bg} !important; }}
-        header {{ visibility: hidden !important; }}
-        footer {{ visibility: hidden !important; }}
-        .block-container {{ padding: 0 !important; max-width: 100% !important; }}
-        
-        .exit-wrap-screen {{
-            position: fixed !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            width: 100vw !important; 
-            height: 100vh !important;
-            background-color: {app_bg} !important;
-            display: flex !important; 
-            justify-content: center !important; 
-            align-items: center !important; 
-            flex-direction: column !important;
-            z-index: 9999999 !important;
-        }}
-        
-        .exit-text-screen {{
-            color: {app_text} !important; 
-            font-family: 'Inter', sans-serif !important; 
-            font-size: 14px !important; 
-            font-weight: 300 !important; 
-            letter-spacing: 4px !important;
-            opacity: 0; 
-            animation: fadeExitText 6s ease-in-out forwards !important; 
-            text-align: center !important; 
-            z-index: 10000001 !important; 
-            text-transform: uppercase !important;
-            position: absolute !important;
-        }}
-        
-        .exit-circle-screen {{
-            position: absolute !important; 
-            width: 15px !important; 
-            height: 15px !important; 
-            border-radius: 50% !important;
-            background-color: {c_accent} !important; 
-            box-shadow: 0 0 20px {c_accent} !important;
-            opacity: 0; 
-            animation: breathExitCircle 6s ease-in-out forwards !important;
-            z-index: 10000000 !important;
-        }}
-        
-        @keyframes fadeExitText {{
-            0% {{ opacity: 0; transform: translateY(10px); }}
-            20% {{ opacity: 0.8; transform: translateY(0); }}
-            80% {{ opacity: 0.8; transform: translateY(0); }}
-            100% {{ opacity: 0; transform: translateY(-5px); }}
-        }}
-        
-        @keyframes breathExitCircle {{
-            0% {{ transform: scale(1); opacity: 0; }}
-            20% {{ opacity: 0.4; }}
-            100% {{ transform: scale(150); opacity: 0; }}
-        }}
-    </style>
-    
-    <div class="exit-wrap-screen">
-        <div class="exit-circle-screen"></div>
-        <div class="exit-text-screen">{t['exit_msg']}</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Pause for half a second to ensure the browser receives the HTML before halting
-    time.sleep(0.5)
-    st.stop()
-    
 # 🚨 INJECT ATMOSPHERE DIVS 🚨
 st.markdown("<div class='ambient-aura'></div>", unsafe_allow_html=True)
 if st.session_state.theme == "The Void":
@@ -1299,119 +818,109 @@ waterfall_html = """
 # --- 8. MAIN APP HEADER & BOTTOM NAV BAR ---
 # ==========================================
 
-if st.session_state.current_page != "SilentExit":
-    st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
-    st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
-    
-    # The new "Anti-App" Subtitle we discussed!
-    st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: -10px; margin-bottom: 35px; text-transform: uppercase;'>A space built for you, not from you.</div>", unsafe_allow_html=True)
+st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
+st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 
-   # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
-    nav1, nav2, nav3, nav4, nav5 = st.columns(5)
-    
-    with nav1:
-        if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
-    with nav2:
-        if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
-    with nav3:
-        if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
-    with nav4:
-        if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
-    with nav5:
-        if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
+st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: -10px; margin-bottom: 35px; text-transform: uppercase;'>A space built to return your attention to you, not take it from you.</div>", unsafe_allow_html=True)
 
-    # 1. Pure CSS approach targeting the 5-column grid
-    st.markdown(f"""
-    <style>
-        /* Target the specific block that contains exactly 5 columns */
-        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) {{
-            position: fixed !important;
-            bottom: 0 !important;
-            
-            /* Center it and lock it to the 600px workspace */
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 100% !important;
-            max-width: 600px !important; 
-            
-            background: {glass_bg} !important;
-            backdrop-filter: blur(25px) !important;
-            -webkit-backdrop-filter: blur(25px) !important;
-            border-top: 1px solid {btn_border} !important;
-            z-index: 999999 !important;
-            padding: 10px 5px 25px 5px !important;
-            margin: 0 !important;
-            
-            /* Force exactly 1 row, no wrapping on Mobile */
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important; 
-            justify-content: space-between !important;
-            gap: 0 !important;
-        }}
-        
-        /* Force the 5 columns to be exactly 20% width */
-        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) > div[data-testid="column"] {{
-            width: 20% !important;
-            min-width: 20% !important;
-            max-width: 20% !important;
-            flex: 1 1 20% !important;
-            padding: 0 2px !important;
-            margin: 0 !important;
-        }}
+# 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
 
-        /* Style the buttons inside to look like app tabs */
-        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) button {{
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: {app_text} !important;
-            font-size: 10px !important;
-            font-weight: 300 !important;
-            padding: 5px !important;
-            height: 100% !important;
-            min-height: 50px !important;
-            opacity: 0.4;
-            transition: opacity 0.3s ease, transform 0.2s ease;
-            white-space: nowrap !important;
-        }}
-        
-        div[data-testid="stHorizontalBlock"]:has(> div:nth-child(5):last-child) button:active {{
-            transform: scale(0.9) !important;
-        }}
-        
-        .block-container {{
-            padding-bottom: 120px !important; 
-        }}
-    </style>
-    """, unsafe_allow_html=True)
+# 1. We drop an invisible 'anchor' right above the nav bar so CSS can find it exactly
+st.markdown("<div id='sukoon-nav-anchor'></div>", unsafe_allow_html=True)
+
+# 2. The Navigation Columns
+nav1, nav2, nav3, nav4, nav5 = st.columns(5)
+
+with nav1:
+    if st.button(t["nav_journal"], use_container_width=True): st.session_state.current_page = "Journal"; st.rerun()
+with nav2:
+    if st.button(t["nav_ether"], use_container_width=True): st.session_state.current_page = "Ether"; st.rerun()
+with nav3:
+    if st.button(t["nav_focus"], use_container_width=True): st.session_state.current_page = "Focus"; st.rerun()
+with nav4:
+    if st.button(t["nav_market"], use_container_width=True): st.session_state.current_page = "Market"; st.rerun()
+with nav5:
+    if st.button(t["nav_settings"], use_container_width=True): st.session_state.current_page = "Settings"; st.rerun()
+
+# 3. Figure out which tab is active so we can highlight it
+page_to_index = {"Journal": 1, "Ether": 2, "Focus": 3, "Market": 4, "Settings": 5}
+active_idx = page_to_index.get(st.session_state.current_page, 1)
+
+# 4. Pure CSS targeting only the block right after the anchor
+st.markdown(f"""
+<style>
+    /* Pin the specific nav block to the bottom */
+    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] {{
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100% !important;
+        max-width: 600px !important; 
+        background: {glass_bg} !important;
+        backdrop-filter: blur(25px) !important;
+        -webkit-backdrop-filter: blur(25px) !important;
+        border-top: 1px solid {btn_border} !important;
+        z-index: 999999 !important;
+        padding: 10px 5px 25px 5px !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important; 
+        justify-content: space-evenly !important;
+        gap: 0 !important;
+    }}
     
-    # 2. Javascript ONLY handles lighting up the active text color
-    components.html(f"""
-    <script>
-        setTimeout(() => {{
-            const doc = window.parent.document;
-            const blocks = doc.querySelectorAll('div[data-testid="stHorizontalBlock"]');
-            
-            // Find the block with exactly 5 children
-            let navBlock = Array.from(blocks).find(b => b.children.length === 5);
-            
-            if(navBlock) {{
-                const currentPage = "{st.session_state.current_page}";
-                const buttons = navBlock.querySelectorAll('button');
-                const pageMap = ['Journal', 'Ether', 'Focus', 'Market', 'Settings'];
-                const activeIndex = pageMap.indexOf(currentPage);
-                
-                if(activeIndex !== -1 && buttons[activeIndex]) {{
-                    buttons[activeIndex].style.opacity = '1.0';
-                    buttons[activeIndex].style.color = '{c_accent}';
-                    buttons[activeIndex].style.fontWeight = '600';
-                    buttons[activeIndex].style.borderBottom = '2px solid {c_accent}';
-                }}
-            }}
-        }}, 100);
-    </script>
-    """, height=0, width=0)
+    /* Force exact 20% width per button so they never stack into two rows */
+    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+        width: 20% !important;
+        min-width: 20% !important;
+        max-width: 20% !important;
+        flex: 1 1 20% !important;
+        padding: 0 2px !important;
+        margin: 0 !important;
+    }}
+
+    /* Style the buttons inside to look like mobile app tabs */
+    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] button {{
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: {app_text} !important;
+        font-size: 10px !important;
+        font-weight: 300 !important;
+        padding: 5px !important;
+        height: 100% !important;
+        min-height: 50px !important;
+        opacity: 0.4;
+        transition: opacity 0.3s ease, transform 0.2s ease;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }}
+    
+    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] button:active {{
+        transform: scale(0.9) !important;
+    }}
+    
+    /* MAGIC: Highlight the currently active tab dynamically! */
+    div.element-container:has(#sukoon-nav-anchor) + div.element-container > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child({active_idx}) button {{
+        opacity: 1.0 !important;
+        color: {c_accent} !important;
+        font-weight: 600 !important;
+        border-bottom: 2px solid {c_accent} !important;
+    }}
+    
+    /* Pad the bottom of the app so content scrolls behind the bar */
+    .block-container {{
+        padding-bottom: 120px !important; 
+    }}
+</style>
+""", unsafe_allow_html=True)
+
 
 # ==========================================
 # --- PAGES ---
@@ -1419,7 +928,7 @@ if st.session_state.current_page != "SilentExit":
 
 # 🚨 THE GLOBAL REFLECTION QUOTE 🚨
 if st.session_state.current_page in ["Journal", "Ether", "Focus"]:
-    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
+    st.markdown(get_top_quote(), unsafe_allow_html=True)
 
 if st.session_state.current_page == "Journal":
     
@@ -1736,7 +1245,7 @@ if st.session_state.current_page == "Journal":
         st.markdown(f"<div class='journal-entry'><b>{entry['time']}</b><br><br>{formatted_text}</div>", unsafe_allow_html=True)
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
         
-    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
+    st.markdown(get_bottom_quote(), unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Crisis":
     
@@ -1772,15 +1281,12 @@ elif st.session_state.current_page == "AutoPilot":
     st.audio(f"https://cdn.jsdelivr.net/gh/{GITHUB_USER}/{REPO_NAME}@main/waves.mp3", format="audio/mp3", autoplay=True)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     
-    # 1. The Breathing Box
     components.html(theme_it(base_breath_html.replace("breathCanvas", "breath_sos").replace("[JS_INJECT]", breath_js_dict["Box"])), height=270)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
     
-    # 2. The Thought Release Game
     components.html(theme_it(release_game_html.replace("gameCanvas", "game_sos")), height=370)
     st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
 
-    # 3. The Waterfall Cascade
     components.html(theme_it(waterfall_html.replace("[CANVAS_ID]", "waterfall_sos")), height=160)
 
 elif st.session_state.current_page == "AgentSanctuary":
@@ -1800,7 +1306,7 @@ elif st.session_state.current_page == "Ether":
     ether_ui = ether_html.replace("starCanvas", "ether_main")
     components.html(theme_it(ether_ui), height=450)
     
-    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
+    st.markdown(get_bottom_quote(), unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Focus":
     
@@ -1876,7 +1382,7 @@ elif st.session_state.current_page == "Focus":
         st.markdown(f"<p style='font-size: 12px; opacity: 0.6; margin-bottom: 20px; color:{app_text}; font-weight: 300;'>Tap to drop the bead. Feel the rhythm.</p>", unsafe_allow_html=True)
         components.html(theme_it(mala_html), height=370)
 
-    st.markdown(get_park_bench_sentence(), unsafe_allow_html=True)
+    st.markdown(get_bottom_quote(), unsafe_allow_html=True)
 
 elif st.session_state.current_page == "Market":
     st.markdown(f"<div class='section-header'>{t['h_market']}</div>", unsafe_allow_html=True)
@@ -1910,8 +1416,6 @@ elif st.session_state.current_page == "Market":
         
     products_html += '</div>'
     st.markdown(products_html, unsafe_allow_html=True)
-
-
 
 # 🚨 THE FULL LEGAL DISCLAIMER PAGE 🚨
 elif st.session_state.current_page == "Disclaimer":
@@ -2047,33 +1551,7 @@ elif st.session_state.current_page == "Settings":
         if st.button("English", use_container_width=True): st.session_state.ui_language = "English"; st.rerun()
     with l_col2:
         if st.button("हिंदी (Hindi)", use_container_width=True): st.session_state.ui_language = "Hindi"; st.rerun()
-    # (Inside the Settings Block, right after the Vault section ends...)
-    
-    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
-    
-    # --- MOVED INFO CONTENT ---
-    st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8; font-style: italic; border-left: 3px solid {c_accent};'>
-        "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your overwhelmed mind immediate shelter from a loud world. There are no forced logins to track your identity, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
-    </div>""", unsafe_allow_html=True)
-
-    st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8;'>
-        <b>1.</b> Open this link in Safari (iPhone) or Chrome (Android).<br><br>
-        <b>2.</b> Tap the Share or Menu (⋮) icon.<br><br>
-        <b>3.</b> Select 'Add to Home Screen'.<br><br>
-        <b>4.</b> Open Sukoon directly from your home screen.
-    </div>""", unsafe_allow_html=True)
-
-    st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
-    faqs = [
-        ("Is the Space free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
-        ("What is the 4-2-6 Rhythm?", "It is a breathing pacing technique designed to help you slow down and find stillness."),
-        ("Is this therapy?", "No. Sukoon is purely a lifestyle companion for personal reflection. It is not therapy or psychology."),
-        ("Are the objects religious?", "No. They are entirely secular, tactile tools intended only for physical grounding and focus.")
-    ]
-    for q, a in faqs:
-        st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # 🚨 THE 14-THEME GRID 🚨
     st.markdown(f"<div class='section-header'>{t['h_theme']}</div>", unsafe_allow_html=True)
@@ -2140,13 +1618,40 @@ elif st.session_state.current_page == "Settings":
             st.error("Code not recognized in the Ether.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON (HIDDEN IF IN EXIT MODE) 🚨
-if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.session_state.has_completed_ritual:
+    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+    
+    # --- MOVED INFO CONTENT ---
+    st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8; font-style: italic; border-left: 3px solid {c_accent};'>
+        "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your overwhelmed mind immediate shelter from a loud world. There are no forced logins to track your identity, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
+    </div>""", unsafe_allow_html=True)
+
+    st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
+    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8;'>
+        <b>1.</b> Open this link in Safari (iPhone) or Chrome (Android).<br><br>
+        <b>2.</b> Tap the Share or Menu (⋮) icon.<br><br>
+        <b>3.</b> Select 'Add to Home Screen'.<br><br>
+        <b>4.</b> Open Sukoon directly from your home screen.
+    </div>""", unsafe_allow_html=True)
+
+    st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
+    faqs = [
+        ("Is the Space free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
+        ("What is the 4-2-6 Rhythm?", "It is a breathing pacing technique designed to help you slow down and find stillness."),
+        ("Is this therapy?", "No. Sukoon is purely a lifestyle companion for personal reflection. It is not therapy or psychology."),
+        ("Are the objects religious?", "No. They are entirely secular, tactile tools intended only for physical grounding and focus.")
+    ]
+    for q, a in faqs:
+        st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
+
+
+# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON 🚨
+if st.session_state.current_page != "Disclaimer" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
     if st.button("Read Full Legal Disclaimer", use_container_width=True):
         st.session_state.current_page = "Disclaimer"
         st.rerun()
 
-if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
+if st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.33</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.34</div>", unsafe_allow_html=True)
