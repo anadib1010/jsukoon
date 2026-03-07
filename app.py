@@ -1906,30 +1906,7 @@ elif st.session_state.current_page == "Market":
     products_html += '</div>'
     st.markdown(products_html, unsafe_allow_html=True)
 
-elif st.session_state.current_page == "Info":
-    
-    st.markdown("<div class='section-header'>THE FOUNDER'S MANIFESTO</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8; font-style: italic; border-left: 3px solid {c_accent};'>
-        "I built Sukoon not as a clinical treatment, but as a living digital sanctuary to give your overwhelmed mind immediate shelter from a loud world. There are no forced logins to track your identity, no targeted ads to break the immersion, and no paywalls to block your peace. This app will never buzz your phone to demand your attention or guilt you over a broken daily streak. It is simply a quiet canvas that sits patiently in your pocket, ready to help you wash away the noise the exact moment you need it."
-    </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div class='section-header'>INSTALL SUKOON</div>", unsafe_allow_html=True)
-    st.markdown(f"""<div class='market-slab' style='text-align:left; font-size:13px; font-weight:300; color: {app_text}; line-height:1.8;'>
-        <b>1.</b> Open this link in Safari (iPhone) or Chrome (Android).<br><br>
-        <b>2.</b> Tap the Share or Menu (⋮) icon.<br><br>
-        <b>3.</b> Select 'Add to Home Screen'.<br><br>
-        <b>4.</b> Open Sukoon directly from your home screen.
-    </div>""", unsafe_allow_html=True)
-
-    st.markdown("<div class='section-header'>FREQUENTLY ASKED</div>", unsafe_allow_html=True)
-    faqs = [
-        ("Is the Space free?", "Yes, the Digital Sanctuary is currently fully open and free for all early users."),
-        ("What is the 4-2-6 Rhythm?", "It is a breathing pacing technique designed to help you slow down and find stillness."),
-        ("Is this therapy?", "No. Sukoon is purely a lifestyle companion for personal reflection. It is not therapy or psychology."),
-        ("Are the objects religious?", "No. They are entirely secular, tactile tools intended only for physical grounding and focus.")
-    ]
-    for q, a in faqs:
-        st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
 
 # 🚨 THE FULL LEGAL DISCLAIMER PAGE 🚨
 elif st.session_state.current_page == "Disclaimer":
