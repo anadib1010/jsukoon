@@ -73,7 +73,7 @@ LANG = {
         "nav_market": "Market", "nav_info": "Info", "nav_settings": "Settings",
         "nav_exit": "✧ LEAVE SANCTUARY ✧", "exit_msg": "This moment is yours.",
         "r_arrive": "You have arrived.", "r_nothing": "Nothing is required here.",
-        "r_breath": "Take one slow breath.", "r_enter": "ENTER SUKOON SANCTUARY",
+        "r_breath": "Take one slow breath.", "r_enter": "ENTER YOUR SUKOON SANCTUARY",
         "subtitle": "INHALE 4 • HOLD 2 • EXHALE 6",
         "h_ambience": "AMBIENCE", "h_energy": "ENERGY STATE",
         "h_mentor": "THE SPACE", "privacy_note": "✦ Private • Neutral ✦",
