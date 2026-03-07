@@ -16,6 +16,15 @@ GA_ID = "G-29F4EM37KE"
 # --- 2. CONFIG & PWA META TAGS ---
 st.set_page_config(page_title="Sukoon", layout="wide", initial_sidebar_state="collapsed")
 
+# 🚨 HIDE STREAMLIT BRANDING GLOABALLY 🚨
+st.markdown("""
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown(f"""
     <head>
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -378,47 +387,47 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL (CSS CURTAIN) 🚨
+# 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL (PURE CSS CURTAIN) 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
-    st.session_state.has_completed_ritual = True
-    
-    ritual_html = f"""
+    st.markdown("""
     <style>
-        #ritual-overlay {{
+        /* Hide all Streamlit buttons while ritual is active */
+        div[data-testid="stButton"] { display: none !important; }
+        
+        #ritual-curtain {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: {app_bg}; z-index: 9999999;
+            background-color: #050505; z-index: 9999999;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
-            animation: hideOverlay 1s ease-in-out 25s forwards;
-        }}
-        #ritual-overlay * {{ box-sizing: border-box; }}
+        }
         
-        .p1 {{ position: absolute; text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; padding: 0 20px; }}
-        .p1-main {{ font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; color: {app_text}; }}
-        .p1-sub {{ font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: {c_accent}; }}
+        .p1 { position: absolute; text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; padding: 0 20px; }
+        .p1-main { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; color: #E0E0E0; }
+        .p1-sub { font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: #888; }
         
-        .p2 {{ position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }}
-        .p2-circle {{ width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba({c_rgb}, 0.3); background: radial-gradient(circle, rgba({c_rgb}, 0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }}
-        .p2-text {{ font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: {app_text}; text-align: center; }}
+        .p2 { position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }
+        .p2-circle { width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }
+        .p2-text { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: #E0E0E0; text-align: center; }
         
-        .p3 {{ position: absolute; text-align: center; opacity: 0; animation: fadeP3 5s ease-in-out 20s forwards; width: 100%; }}
-        .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: {app_text}; text-transform: uppercase; }}
+        .p3 { position: absolute; text-align: center; opacity: 0; animation: fadeP3 5s ease-in-out 20s forwards; width: 100%; }
+        .p3-text { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }
         
-        .skip-btn {{
-            position: absolute; bottom: 20px; right: 20px; background: transparent; border: none;
-            color: {app_text}; opacity: 0; font-size: 10px; font-weight: 300; letter-spacing: 1px; cursor: pointer;
-            animation: rFadeIn 2s 3s forwards; z-index: 10000000;
-        }}
+        .stealth-skip {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            color: #555; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 300; letter-spacing: 2px;
+            cursor: pointer; opacity: 0; animation: rFadeIn 2s 3s forwards; padding: 10px 20px; z-index: 10000000;
+        }
         
-        @keyframes hideOverlay {{ to {{ opacity: 0; visibility: hidden; pointer-events: none; display: none; }} }}
-        @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
-        @keyframes fadeP2 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 90%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
-        @keyframes fadeP3 {{ 0%{{opacity:0;}} 20%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0;}} }}
-        @keyframes rFadeIn {{ to {{ opacity: 0.4; }} }}
-        @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
+        @keyframes fadeP1 { 0%{opacity:0;} 10%{opacity:1;} 80%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
+        @keyframes fadeP2 { 0%{opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
+        @keyframes fadeP3 { 0%{opacity:0;} 20%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;} }
+        @keyframes rFadeIn { to { opacity: 0.4; } }
+        @keyframes rBreathe { 0%{transform:scale(0.8); opacity:0.3;} 40%{transform:scale(1.8); opacity:0.8;} 100%{transform:scale(0.8); opacity:0.3;} }
     </style>
+    """, unsafe_allow_html=True)
     
-    <div id="ritual-overlay">
+    st.markdown(f"""
+    <div id="ritual-curtain">
         <div class="p1">
             <div class="p1-main">{t['r_arrive']}</div>
             <div class="p1-sub">{t['r_nothing']}</div>
@@ -430,10 +439,30 @@ if not st.session_state.has_completed_ritual:
         <div class="p3">
             <div class="p3-text">{t['r_enter']}</div>
         </div>
-        <button class="skip-btn" onclick="document.getElementById('ritual-overlay').style.display='none';">(skip)</button>
+        <div class="stealth-skip" onclick="unlockSanctuary()">(skip)</div>
     </div>
-    """
-    st.markdown(ritual_html, unsafe_allow_html=True)
+    
+    <script>
+        function unlockSanctuary() {{
+            document.getElementById('ritual-curtain').style.display = 'none';
+            const btns = window.parent.document.querySelectorAll('button');
+            btns.forEach(b => {{
+                if (b.innerText.includes('UNLOCK_SANCTUARY_HIDDEN')) {{
+                    b.click();
+                }}
+            }});
+        }}
+        // Auto-unlock after 24 seconds
+        setTimeout(unlockSanctuary, 24000);
+    </script>
+    """, unsafe_allow_html=True)
+
+    # Hidden Streamlit Button to permanently save the state
+    if st.button("UNLOCK_SANCTUARY_HIDDEN", key="unlock_trigger"):
+        st.session_state.has_completed_ritual = True
+        st.rerun()
+        
+    st.stop()
 
 # 🚨 THE SILENT EXIT TAKEOVER 🚨
 if st.session_state.current_page == "SilentExit":
@@ -1613,4 +1642,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.sess
 
 if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.28</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.29</div>", unsafe_allow_html=True)
