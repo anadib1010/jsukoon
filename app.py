@@ -19,18 +19,18 @@ st.set_page_config(page_title="Sukoon", layout="wide", initial_sidebar_state="co
 # 🚨 HIDE STREAMLIT BRANDING GLOBALLY 🚨
 st.markdown("""
     <style>
-        /* Hide top menu and header */
+        /* Hide top menu, header, and colored decoration line */
         #MainMenu {visibility: hidden;}
         header {visibility: hidden;}
-        
-        /* Completely destroy the footer and logo so it cannot block clicks */
-        footer {display: none !important;}
-        [data-testid="stFooter"] {display: none !important;}
-        .viewerBadge_container {display: none !important;}
-        .viewerBadge_link {display: none !important;}
-        
-        /* Remove the top colored decoration line Streamlit adds */
         [data-testid="stDecoration"] {display: none !important;}
+        
+        /* Completely destroy the standard footer */
+        footer {display: none !important; pointer-events: none !important;}
+        [data-testid="stFooter"] {display: none !important; pointer-events: none !important;}
+        
+        /* WILD-CARD HUNTING: Target the dynamically injected cloud badge */
+        [class*="viewerBadge"] {display: none !important; pointer-events: none !important;}
+        a[href*="streamlit"] {display: none !important; pointer-events: none !important;}
     </style>
 """, unsafe_allow_html=True)
 
