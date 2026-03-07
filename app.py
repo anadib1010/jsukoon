@@ -1671,9 +1671,25 @@ elif st.session_state.current_page == "Settings":
         st.markdown(f"<div style='font-weight: 500; font-size: 13px; color: {c_accent}; margin-top: 15px; text-align: left;'>{q}</div><div style='font-size: 13px; font-weight: 300; opacity: 0.7; margin-bottom: 10px; text-align: left; border-bottom: 1px solid {btn_border}; padding-bottom: 15px; color: {app_text}; line-height:1.6;'>{a}</div>", unsafe_allow_html=True)
 
 
-# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON 🚨
+# 🚨 THE GLOBAL FOOTER DISCLAIMER BUTTON & MOBILE FALLBACK NAV 🚨
 if st.session_state.current_page != "Disclaimer" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+    
+    # --- FALLBACK QUICK ACCESS (To bypass the Streamlit Logo on mobile) ---
+    if st.session_state.current_page == "Journal":
+        # Using keys to prevent Duplicate Widget errors with the bottom nav bar
+        alt_col1, alt_col2 = st.columns(2)
+        with alt_col1:
+            if st.button(t['nav_market'], key="fallback_market", use_container_width=True): 
+                st.session_state.current_page = "Market"
+                st.rerun()
+        with alt_col2:
+            if st.button(t['nav_settings'], key="fallback_settings", use_container_width=True): 
+                st.session_state.current_page = "Settings"
+                st.rerun()
+        st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+    
+    # --- THE LEGAL DISCLAIMER BUTTON ---
     if st.button("Read Full Legal Disclaimer", use_container_width=True):
         st.session_state.current_page = "Disclaimer"
         st.rerun()
