@@ -378,35 +378,47 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
 # ==========================================
-# 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL 🚨
+# 🚨 THE SEAMLESS 30-SECOND THRESHOLD RITUAL (CSS CURTAIN) 🚨
 # ==========================================
 if not st.session_state.has_completed_ritual:
-    st.markdown(f"""
+    st.session_state.has_completed_ritual = True
+    
+    ritual_html = f"""
     <style>
-    .stApp {{ background-color: #050505 !important; color: #E0E0E0 !important; }}
-    header, footer {{ display: none !important; }}
-    
-    .r-wrap {{ position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; }}
-    
-    .p1 {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; }}
-    .p1-main {{ font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; color: #E0E0E0; }}
-    .p1-sub {{ font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: #888; }}
-    
-    .p2 {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }}
-    .p2-circle {{ width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: radial-gradient(circle, rgba(255,255,255,0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }}
-    .p2-text {{ font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: #E0E0E0; }}
-    
-    .p3 {{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; opacity: 0; animation: fadeP3 4s ease-in-out 20s forwards; width: 100%; }}
-    .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: #E0E0E0; text-transform: uppercase; }}
-    
-    @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
-    @keyframes fadeP2 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 90%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
-    @keyframes fadeP3 {{ 0%{{opacity:0;}} 20%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0;}} }}
-    @keyframes rFadeIn {{ to {{opacity:1;}} }}
-    @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
+        #ritual-overlay {{
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: {app_bg}; z-index: 9999999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            animation: hideOverlay 1s ease-in-out 25s forwards;
+        }}
+        #ritual-overlay * {{ box-sizing: border-box; }}
+        
+        .p1 {{ position: absolute; text-align: center; animation: fadeP1 5s ease-in-out forwards; width: 100%; padding: 0 20px; }}
+        .p1-main {{ font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 300; letter-spacing: 2px; color: {app_text}; }}
+        .p1-sub {{ font-family: 'Inter', sans-serif; font-size: 11px; opacity: 0; animation: rFadeIn 1s 2s forwards; margin-top: 15px; color: {c_accent}; }}
+        
+        .p2 {{ position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: fadeP2 15s ease-in-out 5s forwards; width: 100%; }}
+        .p2-circle {{ width: 80px; height: 80px; border-radius: 50%; border: 1px solid rgba({c_rgb}, 0.3); background: radial-gradient(circle, rgba({c_rgb}, 0.05), transparent); animation: rBreathe 5s ease-in-out infinite 5s; }}
+        .p2-text {{ font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300; letter-spacing: 2px; margin-top: 30px; color: {app_text}; text-align: center; }}
+        
+        .p3 {{ position: absolute; text-align: center; opacity: 0; animation: fadeP3 5s ease-in-out 20s forwards; width: 100%; }}
+        .p3-text {{ font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; letter-spacing: 4px; color: {app_text}; text-transform: uppercase; }}
+        
+        .skip-btn {{
+            position: absolute; bottom: 20px; right: 20px; background: transparent; border: none;
+            color: {app_text}; opacity: 0; font-size: 10px; font-weight: 300; letter-spacing: 1px; cursor: pointer;
+            animation: rFadeIn 2s 3s forwards; z-index: 10000000;
+        }}
+        
+        @keyframes hideOverlay {{ to {{ opacity: 0; visibility: hidden; pointer-events: none; display: none; }} }}
+        @keyframes fadeP1 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
+        @keyframes fadeP2 {{ 0%{{opacity:0;}} 10%{{opacity:1;}} 90%{{opacity:1;}} 100%{{opacity:0; visibility:hidden;}} }}
+        @keyframes fadeP3 {{ 0%{{opacity:0;}} 20%{{opacity:1;}} 80%{{opacity:1;}} 100%{{opacity:0;}} }}
+        @keyframes rFadeIn {{ to {{ opacity: 0.4; }} }}
+        @keyframes rBreathe {{ 0%{{transform:scale(0.8); opacity:0.3;}} 40%{{transform:scale(1.8); opacity:0.8;}} 100%{{transform:scale(0.8); opacity:0.3;}} }}
     </style>
     
-    <div class="r-wrap">
+    <div id="ritual-overlay">
         <div class="p1">
             <div class="p1-main">{t['r_arrive']}</div>
             <div class="p1-sub">{t['r_nothing']}</div>
@@ -418,47 +430,10 @@ if not st.session_state.has_completed_ritual:
         <div class="p3">
             <div class="p3-text">{t['r_enter']}</div>
         </div>
+        <button class="skip-btn" onclick="document.getElementById('ritual-overlay').style.display='none';">(skip)</button>
     </div>
-    
-    <script>
-        (function() {{
-            const interval = setInterval(() => {{
-                try {{
-                    const btns = window.parent.document.querySelectorAll('button');
-                    btns.forEach(b => {{
-                        if (b.innerText.includes('AUTO_ENTER')) {{
-                            b.style.opacity = '0'; b.style.position = 'absolute'; b.style.zIndex = '-1000'; b.style.pointerEvents = 'none';
-                            clearInterval(interval);
-                        }}
-                        if (b.innerText.includes('(skip)')) {{
-                            b.style.background = 'transparent'; b.style.border = 'none'; b.style.color = '#555'; b.style.boxShadow = 'none';
-                            b.style.position = 'fixed'; b.style.bottom = '20px'; b.style.right = '20px'; b.style.width = 'auto'; b.style.minWidth = 'auto'; b.style.fontSize = '10px';
-                            b.style.opacity = '0'; b.style.animation = 'rFadeIn 2s 3s forwards'; b.style.zIndex = '200';
-                        }}
-                    }});
-                }} catch(e) {{}}
-            }}, 100);
-
-            setTimeout(() => {{
-                try {{
-                    const btns = window.parent.document.querySelectorAll('button');
-                    btns.forEach(b => {{
-                        if (b.innerText.includes('AUTO_ENTER')) {{ b.click(); }}
-                    }});
-                }} catch(e) {{}}
-            }}, 24000);
-        }})();
-    </script>
-    """, unsafe_allow_html=True)
-
-    if st.button("AUTO_ENTER", key="auto_enter_trigger"):
-        st.session_state.has_completed_ritual = True
-        st.rerun()
-    if st.button("(skip)", key="skip_trigger"):
-        st.session_state.has_completed_ritual = True
-        st.rerun()
-        
-    st.stop()
+    """
+    st.markdown(ritual_html, unsafe_allow_html=True)
 
 # 🚨 THE SILENT EXIT TAKEOVER 🚨
 if st.session_state.current_page == "SilentExit":
@@ -1638,4 +1613,4 @@ if st.session_state.current_page not in ["Disclaimer", "SilentExit"] and st.sess
 
 if st.session_state.current_page != "SilentExit" and st.session_state.has_completed_ritual:
     st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.27</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:10px; font-weight:300; letter-spacing:1px; opacity:0.3; color:{app_text};'>Sukoon Sanctuary v157.28</div>", unsafe_allow_html=True)
