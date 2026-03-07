@@ -1231,26 +1231,37 @@ if st.session_state.current_page == "Journal":
                 m.pitch = 0.9; 
                 m.rate = 0.82; 
                 
-                var isHindi = /[\u0900-\u097F]/.test(decodedText);
+                // 🌍 THE MULTILINGUAL UNICODE DETECTOR 🌍
+                var isDevanagari = /[\u0900-\u097F]/.test(decodedText); // Hindi, Marathi, Nepali, Sanskrit
+                var isKannada = /[\u0C80-\u0CFF]/.test(decodedText);
+                var isTelugu = /[\u0C00-\u0C7F]/.test(decodedText);
+                var isTamil = /[\u0B80-\u0BFF]/.test(decodedText);
+                var isMalayalam = /[\u0D00-\u0D7F]/.test(decodedText);
+                var isBengali = /[\u0980-\u09FF]/.test(decodedText); // Bengali, Assamese
+                var isGujarati = /[\u0A80-\u0AFF]/.test(decodedText);
                 
                 function setVoiceAndSpeak() {{
                     var voices = window.speechSynthesis.getVoices(); 
                     var voice = null;
                     
-                    if (isHindi) {{ 
-                        voice = voices.find(v => v.lang.includes('hi') && (v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Lekha'))) 
-                             || voices.find(v => v.lang.includes('hi'));
-                        m.lang = 'hi-IN'; 
-                    }} 
+                    // Route to the correct native voice engine based on script
+                    if (isDevanagari) {{ voice = voices.find(v => v.lang.includes('hi')); m.lang = 'hi-IN'; }}
+                    else if (isKannada) {{ voice = voices.find(v => v.lang.includes('kn')); m.lang = 'kn-IN'; }}
+                    else if (isTelugu) {{ voice = voices.find(v => v.lang.includes('te')); m.lang = 'te-IN'; }}
+                    else if (isTamil) {{ voice = voices.find(v => v.lang.includes('ta')); m.lang = 'ta-IN'; }}
+                    else if (isMalayalam) {{ voice = voices.find(v => v.lang.includes('ml')); m.lang = 'ml-IN'; }}
+                    else if (isBengali) {{ voice = voices.find(v => v.lang.includes('bn')); m.lang = 'bn-IN'; }}
+                    else if (isGujarati) {{ voice = voices.find(v => v.lang.includes('gu')); m.lang = 'gu-IN'; }}
                     else {{
-                        const preferredNames = ['samantha', 'serena', 'tessa', 'victoria', 'karen', 'moira', 'premium', 'enhanced', 'natural', 'uk english female'];
+                        // Fallback for English, Portuguese, Spanish, etc. (Latin Script)
+                        const preferredNames = ['samantha', 'serena', 'tessa', 'victoria', 'karen', 'moira', 'premium', 'enhanced', 'natural'];
                         for (let pref of preferredNames) {{
                             let match = voices.find(v => v.name.toLowerCase().includes(pref) && v.lang.includes('en'));
                             if (match) {{ voice = match; break; }}
                         }}
                         if (!voice) {{
-                            voice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
-                                    voices.find(v => v.lang === 'en-US' && v.name.includes('Female')) ||
+                            voice = voices.find(v => v.lang.includes('en-GB') && v.name.includes('Female')) || 
+                                    voices.find(v => v.lang.includes('en-US') && v.name.includes('Female')) ||
                                     voices.find(v => v.lang.includes('en'));
                         }}
                         m.lang = voice ? voice.lang : 'en-US';
