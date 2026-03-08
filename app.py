@@ -229,7 +229,7 @@ st.markdown(f"""
     /* THE PADDING TRAP: PC SCROLL FIX */
     .block-container {{ 
         max-width: 100vw !important; 
-        padding-top: 3.5rem !important; 
+        padding-top: 1rem !important; /* REDUCED FROM 3.5rem */
         text-align: center !important; 
         overflow-x: hidden !important; 
     }}
