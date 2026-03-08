@@ -377,7 +377,13 @@ st.markdown(f"""
     div[data-testid="stHorizontalBlock"]:has(> div:nth-child(3):last-child) > div[data-testid="column"] {{ width: calc(33.333% - 8px) !important; min-width: calc(33.333% - 8px) !important; max-width: calc(33.333% - 8px) !important; flex: 1 1 calc(33.333% - 8px) !important; }}
     div[data-testid="stHorizontalBlock"]:has(> div:nth-child(4):last-child) > div[data-testid="column"] {{ width: calc(25% - 8px) !important; min-width: calc(25% - 8px) !important; max-width: calc(25% - 8px) !important; flex: 1 1 calc(25% - 8px) !important; }}
     @keyframes pulse {{ 0% {{ transform: scale(1); opacity: 0.2; border-width: 1px; }} 50% {{ transform: scale(1.6); opacity: 0.8; border-width: 3px; }} 100% {{ transform: scale(1); opacity: 0.2; border-width: 1px; }} }}
-    .breathing-circle {{ width: 50px; height: 50px; border: 2px solid {c_accent}; border-radius: 50%; margin: 15px auto 25px auto; animation: pulse 12s infinite ease-in-out !important; box-shadow: 0 0 20px rgba({c_rgb}, 0.3); transition: all 0.8s ease; }}
+    .breathing-circle {{ 
+        width: 50px; height: 50px; border: 2px solid {c_accent}; 
+        border-radius: 50%; 
+        margin: 15px auto 55px auto; /* INCREASED BOTTOM MARGIN TO 55px */
+        animation: pulse 12s infinite ease-in-out !important; 
+        box-shadow: 0 0 20px rgba({c_rgb}, 0.3); transition: all 0.8s ease; 
+    }}
     .main-title {{ text-align: center; letter-spacing: 14px; font-weight: 300; font-size: 2.2rem; color: {app_text}; text-transform: uppercase; margin-bottom: 5px; }}
     .section-header {{ font-size: 11px; letter-spacing: 5px; font-weight: 500; text-transform: uppercase; margin: 35px 0 15px 0; color: {c_accent}; padding-bottom: 8px; opacity: 0.8; }}
     .theme-group-header {{ font-size: 9px; letter-spacing: 3px; font-weight: 400; text-transform: uppercase; margin: 20px 0 10px 0; color: {app_text}; opacity: 0.5; text-align: left; padding-left: 5px; }}
