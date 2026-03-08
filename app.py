@@ -236,26 +236,26 @@ st.markdown(f"""
     /* 🚨 SQUASH STREAMLIT'S MASSIVE VERTICAL GAPS 🚨 */
     
     /* Target the invisible vertical columns Streamlit wraps everything in */
-    div[data-testid="stVerticalBlock"] {
-        gap: 8px !important; /* Shrinks the default 1.5rem gap down to a tight 8px */
-    }
+    div[data-testid="stVerticalBlock"] {{
+        gap: 8px !important;
+    }}
     
     /* Remove the hidden padding Streamlit adds to the bottom of every element */
-    div[data-testid="stVerticalBlock"] > div {
+    div[data-testid="stVerticalBlock"] > div {{
         padding-bottom: 0px !important;
         margin-bottom: 0px !important;
-    }
+    }}
     
     /* Pull Markdown text (like your headers and descriptions) closer to the buttons below them */
-    .stMarkdown {
+    .stMarkdown {{
         margin-bottom: -5px !important; 
-    }
+    }}
     
     /* Pull the audio player tighter */
-    div[data-testid="stAudio"] {
+    div[data-testid="stAudio"] {{
         margin-top: -10px !important;
         margin-bottom: -10px !important;
-    }
+    }}
     /* For PC (Wide Screens) */
     @media (min-width: 601px) {{
         .block-container {{
