@@ -859,7 +859,7 @@ waterfall_html = """
 st.markdown("<div class='main-title'>SUKOON</div>", unsafe_allow_html=True)
 st.markdown("<div class='breathing-circle'></div>", unsafe_allow_html=True)
 
-st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: 15px; margin-bottom: 35px; text-transform: uppercase;'>A space built to return your attention to you, not take it from you.</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='font-size:10px; opacity:0.6; letter-spacing:2px; margin-top: 5px; margin-bottom: 35px; text-transform: uppercase;'>A space built to return your attention to you, not take it from you.</div>", unsafe_allow_html=True)
 
 # ==========================================
 # 🚨 THE MOBILE BOTTOM NAVIGATION BAR (5 TABS) 🚨
